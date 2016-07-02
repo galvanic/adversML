@@ -12,8 +12,7 @@ import pickle
 from itertools import starmap
 
 
-def process_trec_dataset(trec_folderpath,
-         min_df=1, max_features=None,
+def process_trec_dataset(trec_folderpath, options,
          max_emails=None, verbose=True):
     '''
     Returns features and labels for the TREC dataset, given the
@@ -22,10 +21,8 @@ def process_trec_dataset(trec_folderpath,
     Inputs:
     - trec_folderpath: assumes absolute filepath and that the TREC
                        folder structure has not been changed
-    - min_df: used by sklearn's CountVectorizer, the minimum
-              document frequency of a feature (int or float)
-    - max_features: used by sklearn's CountVectorizer, keep only
-              the X top features by frequency
+    - options: dictionary of values for sklearn's CountVectorizer
+               arguments
     - max_emails: for debugging
 
     Outputs:
@@ -100,10 +97,9 @@ def process_trec_dataset(trec_folderpath,
     ## Extract features from emails
     ## we are only interested in presence of a word not frequency
     vectorizer = CountVectorizer(
-                    min_df=min_df,
-                    max_features=max_features,
                     binary=True,
-                    dtype=np.bool_)
+                    dtype=np.bool_,
+                    **options)
     X = vectorizer.fit_transform(corpus) ## X: features
     ## keep X as a sparse matrix to take up less memory space
 
@@ -126,9 +122,9 @@ def main(ifilepath, outfolder):
     ## Get the data
     X, Y, feature_names = process_trec_dataset(
         trec_folderpath=ifilepath,
+        options=options,
         max_emails=100,
-        verbose=True,
-        **options)
+        verbose=True)
 
     ## Save the data
     saved_at = time.strftime('%y%m%d%H%M', time.localtime(time.time()))
