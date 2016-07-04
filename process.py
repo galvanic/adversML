@@ -32,6 +32,7 @@ def process_trec_dataset(trec_folderpath, options,
 
     TODO yield labels then features one after the other so as
          to not have to keep everything in memory ?
+    TODO strip html stuff ? or valuable features ?
     '''
     index_filepath = os.path.join(trec_folderpath, 'full', 'index')
 
@@ -85,11 +86,7 @@ def process_trec_dataset(trec_folderpath, options,
         else:
             body = email.get_payload(decode=False)
 
-        ## TODO strip html stuff ? or valuable features ?
-        try:
-            corpus.append((email_num, body))
-        except NameError:
-            pass
+        corpus.append((email_num, body))
 
     indices, corpus = zip(*corpus)
 
@@ -106,7 +103,7 @@ def process_trec_dataset(trec_folderpath, options,
     return X, Y, vectorizer.get_feature_names()
 
 
-def main(ifilepath, outfolder):
+def main(ifilepath, outfolder, sparse_X=False):
     '''
     Process dataset to get features and labels, including option
     to save these to a file.
@@ -123,8 +120,11 @@ def main(ifilepath, outfolder):
     X, Y, feature_names = process_trec_dataset(
         trec_folderpath=ifilepath,
         options=options,
-        max_emails=100,
+        max_emails=None,
         verbose=True)
+
+    if not sparse_X:
+        X = X.toarray()
 
     ## Save the data
     saved_at = time.strftime('%y%m%d%H%M', time.localtime(time.time()))
