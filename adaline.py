@@ -22,8 +22,9 @@ def max_iters(max_iterations=10):
     return lambda: not next(counter)
 
 
-def trainAdaline(features, labels,
-                 termination_condition=max_iters(15)):
+def train_adaline(features, labels,
+                  termination_condition=max_iters(100),
+                  verbose=False):
     '''
     Returns the optimal weights for a given training set (features
     and corresponding label inputs) for the ADALINE model.
@@ -50,7 +51,10 @@ def trainAdaline(features, labels,
     x, w, y = map(np.matrix, [features, weights, labels])
 
     ## 2. Evaluate the termination condition
+    i = 1
     while not termination_condition():
+        if verbose: print('iteration %d' % i)
+        i += 1
 
         ## batch gradient descent
         gradient = -1/N * np.sum(np.multiply((y - x*w), x), axis=0)
