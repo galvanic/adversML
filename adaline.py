@@ -47,13 +47,12 @@ def train_adaline(features, labels,
     ## 0. Prepare notations
     X, Y = features, labels
     N, D = features.shape   # N #training samples; D #features
-    eta = 1                 # learning rate
+    rate = 0.05             # learning rate
+    cost = []               # keep track of cost
+    error = []              # keep track of error
 
-    ## 1. Initialise weights at random
-    weights = np.random.rand(D, 1)
-
-    ## more notation
-    x, w, y = map(np.matrix, [features, weights, labels])
+    ## 1. Initialise weights
+    W = np.zeros((D, 1))
 
     ## 2. Evaluate the termination condition
     i = 1
@@ -61,14 +60,25 @@ def train_adaline(features, labels,
         if verbose: print('iteration %d' % i)
         i += 1
 
+        ## current iteration classifier output
+        O = np.dot(X, W)
+
         ## batch gradient descent
-        gradient = -1/N * np.sum(np.multiply((y - x*w), x), axis=0)
+        gradient = -1/N * np.sum(np.multiply((Y - O), X), axis=0)
 
         ## 3. Update weights
-        weights = w - eta * gradient.T
-        w = np.matrix(weights)
+        W = W - rate * gradient.T
 
-    return weights
+        ## Keep track of error and cost (weights from previous iteration)
+        T = np.zeros(O.shape) # threshold/step activation function
+        T[O > 0] = 1
+        current_error = np.sum(T != Y)/N # mean error over samples
+        error.append(current_error)
+
+        current_cost = np.mean(np.square(Y-O)) # Means Square
+        cost.append(current_cost)
+
+    return W, cost, error
 
 
 def main():
@@ -82,7 +92,9 @@ def main():
     y = np.random.randint(2, size=(N,1))
 
     ## train model
-    optimal_weights = trainAdaline(features, labels)
+    optimal_weights, cost, error = train_adaline(features=x, labels=y,
+                                    termination_condition=max_iters(10))
+    print(cost)
     print(optimal_weights.T)
     return
 
