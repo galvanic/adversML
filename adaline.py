@@ -7,7 +7,6 @@ import sys
 import numpy as np
 import numpy.random as rand
 
-
 ### Helper functions for termination conditions
 
 def Counter(max_iterations):
@@ -16,7 +15,7 @@ def Counter(max_iterations):
         yield i
         i -= 1
 
-def max_iters(max_iterations=10):
+def max_iters(max_iterations):
     '''Assumes max_iterations is a Natural Integer.'''
     counter = Counter(max_iterations)
     return lambda: not next(counter)
@@ -29,6 +28,7 @@ def train_adaline(features, labels,
     Returns the optimal weights for a given training set (features
     and corresponding label inputs) for the ADALINE model.
     These weights are found using the gradient descent method.
+    /!\ Assumes bias term is already in the features input.
 
     Inputs:
     - features: N * D Numpy matrix of binary values (0 and 1)
@@ -39,8 +39,13 @@ def train_adaline(features, labels,
 
     Output:
     - optimal_weights: D * 1 Numpy vector of real values
+
+    TODO implement stochastic gradient descent
+    TODO implement regularization
+    TODO yield learning rate as it is learning ?
     '''
     ## 0. Prepare notations
+    X, Y = features, labels
     N, D = features.shape   # N #training samples; D #features
     eta = 1                 # learning rate
 
@@ -67,11 +72,14 @@ def train_adaline(features, labels,
 
 
 def main():
+    '''Test Adaline training'''
     ## make dummy data
     ## 10 training samples and 3 features
     ## so a 10 * 3 matrix
-    features = np.random.randint(2, size=(10,3))
-    labels   = np.random.randint(2, size=(10,1))
+    N = 10
+    D = 3
+    x = np.random.randint(2, size=(N,D))
+    y = np.random.randint(2, size=(N,1))
 
     ## train model
     optimal_weights = trainAdaline(features, labels)
