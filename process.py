@@ -129,7 +129,7 @@ def main(ifilepath, outfolder):
     ## Save the data
     saved_at = time.strftime('%y%m%d%H%M', time.localtime(time.time()))
     ## TODO make folder if doesn't exist yet
-    outfilepath = os.path.join(outfolder, saved_at)
+    outfilepath = os.path.join(outfolder, 'trec2007-%s' % saved_at)
 
     with open('%s-features.dat' % outfilepath, 'wb') as outfile:
         pickle.dump(X, outfile)
@@ -143,6 +143,8 @@ def main(ifilepath, outfolder):
         title = time.strftime('Data processed on %y/%m/%d at %H:%M',
             time.localtime(time.time()))
         outfile.write('%s\n%s\n' % (title, '='*len(title)))
+
+        outfile.write('TREC 2007 dataset\n')
 
         subtitle = 'Options'
         outfile.write('\n%s\n%s\n\n%s\n' % (
