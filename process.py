@@ -82,7 +82,8 @@ def process_trec_dataset(trec_folderpath, options,
                 content_dispo = str(part.get('Content-Disposition'))
 
                 # skip any text/plain (txt) attachments
-                if content_type == 'text/plain' and 'attachment' not in content_dispo:
+                ## include both 'text/plain' and 'text/html'
+                if 'text' in content_type and 'attachment' not in content_dispo:
                     body = part.get_payload(decode=False)
                     break ## only keep the first email
         else:
