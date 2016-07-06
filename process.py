@@ -33,6 +33,8 @@ def process_trec_dataset(trec_folderpath, options,
     TODO yield labels then features one after the other so as
          to not have to keep everything in memory ?
     TODO strip html stuff ? or valuable features ?
+    TODO stemming
+    TODO use vocabulary and stop words to not keep all features
     '''
     index_filepath = os.path.join(trec_folderpath, 'full', 'index')
 
@@ -94,37 +96,57 @@ def process_trec_dataset(trec_folderpath, options,
     ## Extract features from emails
     ## we are only interested in presence of a word not frequency
     vectorizer = CountVectorizer(
-                    binary=True,
                     dtype=np.bool_,
                     **options)
     X = vectorizer.fit_transform(corpus) ## X: features
     ## keep X as a sparse matrix to take up less memory space
 
+    if verbose: print(X.shape)
+
     return X, Y, vectorizer.get_feature_names()
 
 
-def main(ifilepath, outfolder, sparse_X=False):
+def main(infolder, outfolder, sparse_X=False):
     '''
     Process dataset to get features and labels, including option
     to save these to a file.
+
+    Inputs:
+    - infolder: path of the trec dataset folder
+    - outfolder: path of the folder to save processed dataset to
+    - sparse_X: whether to save the X features data as a sparse array or a
+                regular numpy array
     '''
-    ifilepath, outfolder = map(os.path.abspath, [ifilepath, outfolder])
+    infolder, outfolder = map(os.path.abspath, [infolder, outfolder])
 
     ## set up options
     options = {
+        'encoding': 'utf-8',
+        'decode_error': 'strict',
+        'strip_accents': 'unicode',
+        'stop_words': 'english',
+        'lowercase': True,
         'min_df': 1,
         'max_features': 10000,
+        'vocabulary': None,
+        'binary': True,
     }
 
     ## Get the data
     X, Y, feature_names = process_trec_dataset(
-        trec_folderpath=ifilepath,
+        trec_folderpath=infolder,
         options=options,
         max_emails=None,
         verbose=True)
 
+    memory_error_occurred = False
     if not sparse_X:
-        X = X.toarray()
+        try:
+            X = X.toarray()
+        except MemoryError:
+            memory_error_occurred = True
+            print('MemoryError: could not save as Numpy array, saving as sparse array instead')
+            pass
 
     ## Save the data
     saved_at = time.strftime('%y%m%d%H%M', time.localtime(time.time()))
@@ -146,6 +168,9 @@ def main(ifilepath, outfolder, sparse_X=False):
 
         outfile.write('TREC 2007 dataset\n')
 
+        if sparse_X or memory_error_occurred:
+            outfile.write('X saved as sparse array\n.')
+
         subtitle = 'Options'
         outfile.write('\n%s\n%s\n\n%s\n' % (
             subtitle,
@@ -163,7 +188,7 @@ def main(ifilepath, outfolder, sparse_X=False):
 
 if __name__ == '__main__':
 
-    ifilepath = sys.argv[1]
+    infolder = sys.argv[1]
     outfolder = sys.argv[2]
-    sys.exit(main(ifilepath, outfolder))
+    sys.exit(main(infolder, outfolder))
 
