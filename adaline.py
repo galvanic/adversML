@@ -22,6 +22,7 @@ def max_iters(max_iterations):
 
 
 def train_adaline(features, labels,
+                  rate=0.1,
                   termination_condition=max_iters(100),
                   verbose=False):
     '''
@@ -35,6 +36,7 @@ def train_adaline(features, labels,
         with N: the number of training examples
         and D:        the number of features for each example
     - labels:   N * 1 Numpy vector of binary values (0 and 1)
+    - rate:     learning rate, a float between 0 and 1
     - termination_condition: self-explanatory
 
     Output:
@@ -47,7 +49,6 @@ def train_adaline(features, labels,
     ## 0. Prepare notations
     X, Y = features, labels
     N, D = features.shape   # N #training samples; D #features
-    rate = 0.05             # learning rate
     cost = []               # keep track of cost
     error = []              # keep track of error
 
@@ -93,6 +94,7 @@ def main():
 
     ## train model
     optimal_weights, cost, error = train_adaline(features=x, labels=y,
+                                    rate=0.05,
                                     termination_condition=max_iters(10))
     print(cost)
     print(optimal_weights.T)
