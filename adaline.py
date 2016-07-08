@@ -81,6 +81,26 @@ def train_adaline(features, labels,
 
     return W, cost, error
 
+def test_adaline(weights, features):
+    '''
+    TEST PHASE
+
+    TODO not sure what makes sense to measure here ?
+    '''
+    ## notation
+    X, W = features, weights
+    N, D = features.shape
+
+    O = np.dot(X, W)
+
+    T = np.zeros(O.shape) # threshold/step activation function
+    T[O > 0] = 1
+    cost = np.mean(np.square(T-O)) # Means Square
+
+    labels = T
+
+    return labels, cost
+
 
 def main():
     '''Test Adaline training'''
