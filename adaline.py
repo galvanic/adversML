@@ -2,6 +2,16 @@
 # coding: utf-8
 
 '''
+Implementation of the Adaline model.
+Training is done using batch gradient descent.
+
+TODO make an Adaline class with train and test as methods
+TODO stochastic gradient descent (for online learning)
+TODO implement regularisation
+TODO cost and error could be measured outside the function ?
+     or at least use a callable to calculate them, otherwise duplicated code
+     across models
+TODO clean up the code further, especially duplicated sections (adaline model etc.)
 '''
 import sys
 import numpy as np
@@ -31,20 +41,22 @@ def train_adaline(features, labels,
     These weights are found using the gradient descent method.
     /!\ Assumes bias term is already in the features input.
 
+    TRAINING PHASE
+
     Inputs:
     - features: N * D Numpy matrix of binary values (0 and 1)
         with N: the number of training examples
         and D:        the number of features for each example
-    - labels:   N * 1 Numpy vector of binary values (0 and 1)
+    - labels:   N * 1 Numpy vector of binary values (-1 and 1)
     - rate:     learning rate, a float between 0 and 1
     - termination_condition: self-explanatory
 
     Output:
     - optimal_weights: D * 1 Numpy vector of real values
 
-    TODO implement stochastic gradient descent
-    TODO implement regularization
-    TODO yield learning rate as it is learning ?
+    TODO yield cost, error, weights as it is learning ?
+         this could allow possibility to inject new learning rate during training
+    TODO implement an autostop if cost is rising instead of falling ?
     '''
     ## 0. Prepare notations
     X, Y = features, labels
@@ -58,8 +70,6 @@ def train_adaline(features, labels,
     ## 2. Evaluate the termination condition
     i = 1
     while not termination_condition():
-        if verbose: print('iteration %d' % i)
-        i += 1
 
         ## current iteration classifier output
         O = np.dot(X, W)
@@ -78,6 +88,9 @@ def train_adaline(features, labels,
 
         current_cost = np.mean(np.square(Y-O)) # Means Square
         cost.append(current_cost)
+
+        if verbose: print('iteration %d:\tcost = %.3f' % (i, cost[-1]))
+        i += 1
 
     return W, cost, error
 
