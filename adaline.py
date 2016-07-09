@@ -34,6 +34,7 @@ def max_iters(max_iterations):
 def train_adaline(features, labels,
                   rate=0.1,
                   termination_condition=max_iters(100),
+                  label_type='01',
                   verbose=False):
     '''
     Returns the optimal weights for a given training set (features
@@ -82,9 +83,14 @@ def train_adaline(features, labels,
         W = W - rate * gradient
 
         ## Keep track of error and cost (weights from previous iteration)
-        T = np.zeros(O.shape) # threshold/step activation function
-        T[O > 0] = 1
-        current_error = np.sum(T != Y)/N # mean error over samples
+        if label_type is '01':
+            T = np.zeros(O.shape) # equivalent to threshold/step activation function
+            T[O > 0.5] = 1
+        else: # label type is '-11'
+            T = np.ones(O.shape) # equivalent to threshold/step activation function
+            T[O < 0] = -1
+
+        current_error = np.mean(T != Y) # mean error over samples
         error.append(current_error)
 
         current_cost = np.mean(np.square(Y-O)) # Means Square
@@ -108,7 +114,7 @@ def test_adaline(weights, features):
     O = np.dot(X, W)
 
     T = np.zeros(O.shape) # threshold/step activation function
-    T[O > 0] = 1
+    T[O > 0.5] = 1
     cost = np.mean(np.square(T-O)) # Means Square
 
     labels = T
@@ -124,7 +130,7 @@ def main():
     N = 10
     D = 3
     x = np.random.randint(2, size=(N,D))
-    y = np.random.randint(2, size=(N,1))
+    y = np.random.randint(2, size=(N,1)) #* 2 - 1
 
     ## train model
     optimal_weights, cost, error = train_adaline(features=x, labels=y,
