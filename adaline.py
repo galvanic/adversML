@@ -75,10 +75,11 @@ def train_adaline(features, labels,
         O = np.dot(X, W)
 
         ## batch gradient descent
-        gradient = -1/N * np.sum(np.multiply((Y - O), X), axis=0)
+        gradient = - np.mean(np.multiply((Y - O), X), axis=0)
+        gradient = gradient.reshape(W.shape)
 
         ## 3. Update weights
-        W = W - rate * gradient.T
+        W = W - rate * gradient
 
         ## Keep track of error and cost (weights from previous iteration)
         T = np.zeros(O.shape) # threshold/step activation function
