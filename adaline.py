@@ -124,20 +124,42 @@ def test_adaline(weights, features):
 
 def main():
     '''Test Adaline training'''
-    ## make dummy data
+    ## dummy data
     ## 10 training samples and 3 features
     ## so a 10 * 3 matrix
-    N = 10
-    D = 3
-    x = np.random.randint(2, size=(N,D))
-    y = np.random.randint(2, size=(N,1)) #* 2 - 1
+    x = np.array([[1, 0, 1],
+                  [0, 0, 0],
+                  [1, 0, 1],
+                  [1, 1, 1],
+                  [1, 1, 0],
+                  [1, 1, 0],
+                  [1, 1, 0],
+                  [1, 1, 0],
+                  [1, 1, 0],
+                  [0, 1, 0]],
+                  dtype=np.int8)
+    y = np.array([[1],
+                  [1],
+                  [1],
+                  [0],
+                  [0],
+                  [0],
+                  [0],
+                  [0],
+                  [0],
+                  [1]],
+                  dtype=np.int8) #* 2 - 1
 
     ## train model
-    optimal_weights, cost, error = train_adaline(features=x, labels=y,
-                                    rate=0.05,
-                                    termination_condition=max_iters(10))
-    print(cost)
-    print(optimal_weights.T)
+    weights, cost, error = train_adaline(features=x, labels=y,
+                                         rate=1,
+                                         termination_condition=max_iters(100))
+    print('\n   cost: %.3f' % cost[-1])
+    print('\n  error: %.3f' % error[-1])
+    print('\nweights: %.3f' % weights[0])
+    #from code import interact; interact(local=dict(globals(), **locals()))
+    for w in weights[1:]:
+        print('         %.3f' % w)
     return
 
 if __name__ == '__main__':
