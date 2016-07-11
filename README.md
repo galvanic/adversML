@@ -17,6 +17,10 @@ MSc thesis code for:
 
     all the features of the poisoning emails are set to zero
 
+  - ham attack: **hamattack.py**
+
+    contaminating emails contain features indicative of the ham class
+
 
 - training and testing of binary classification models:
 
