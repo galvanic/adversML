@@ -32,6 +32,7 @@ def max_iters(max_iterations):
 
 
 def train_adaline(features, labels,
+                  W=None,
                   rate=0.1,
                   termination_condition=max_iters(100),
                   label_type='01',
@@ -49,11 +50,12 @@ def train_adaline(features, labels,
         with N: the number of training examples
         and D:        the number of features for each example
     - labels:   N * 1 Numpy vector of binary values (-1 and 1)
+    - W:        D * 1 Numpy vector, beginning weights
     - rate:     learning rate, a float between 0 and 1
     - termination_condition: self-explanatory
 
     Output:
-    - optimal_weights: D * 1 Numpy vector of real values
+    - W: D * 1 Numpy vector of real values
 
     TODO yield cost, error, weights as it is learning ?
          this could allow possibility to inject new learning rate during training
@@ -66,7 +68,8 @@ def train_adaline(features, labels,
     error = []              # keep track of error
 
     ## 1. Initialise weights
-    W = np.zeros((D, 1))
+    if W is None:
+        W = np.zeros((D, 1))
 
     ## 2. Evaluate the termination condition
     i = 1
