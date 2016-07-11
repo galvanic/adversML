@@ -11,7 +11,8 @@ TODO implement regularisation
 TODO cost and error could be measured outside the function ?
      or at least use a callable to calculate them, otherwise duplicated code
      across models
-TODO clean up the code further, especially duplicated sections (adaline model etc.)
+TODO clean up the code further, especially duplicated sections (adaline model
+     etc.)
 '''
 import sys
 import numpy as np
@@ -58,7 +59,8 @@ def train_adaline(features, labels,
     - W: D * 1 Numpy vector of real values
 
     TODO yield cost, error, weights as it is learning ?
-         this could allow possibility to inject new learning rate during training
+         this could allow possibility to inject new learning rate during
+         training
     TODO implement an autostop if cost is rising instead of falling ?
     '''
     ## 0. Prepare notations
@@ -103,6 +105,7 @@ def train_adaline(features, labels,
         i += 1
 
     return W, cost, error
+
 
 def test_adaline(weights, features):
     '''
@@ -167,3 +170,4 @@ def main():
 
 if __name__ == '__main__':
     sys.exit(main())
+
