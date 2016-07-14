@@ -2,109 +2,142 @@
 # coding: utf-8
 
 '''
-Translation of Luis Munoz's MATLAB code for the Naive Bayes classifier model.
-Not tested yet.
+Inspired by Luis Munoz's MATLAB code for the Naive Bayes classifier model.
 '''
 import sys
+import numpy as np
 
 
-def NaiveBayesBinaryClassifier(X_train, X_test, Y_train, Y_test):
+def process_parameters(p, tolerance=1e-10):
     '''
-    Computes the training and test error of a Naive Bayes binary
-    classifier for features following a Bernouilli distribution.
-    For example, a feature could be the presence of the word
-    'viagra' or not (1 or 0 respectively).
+    Returns parameters where NaNs, zeros and ones have been modified to avoid
+    under/overflows (??)
+    Helper function for the training function.
 
-    Uses Maximum Likelihood.
-
-    There are D features and N samples. N_train is the number of
-    training samples.
-
-    Input:
-    - X_train: N_train * D matrix of features for training
-               Features are binary (1 or 0)
-    - Y_train: N_train * 1 vector of labels for each train sample
-    - X_test:  N_test  * D matrix of features for testing
-    - Y_test:  N_test  * 1 vector of labels for each test example
-
-    Output:
-    - error_train: classification error for the training data
-    - error_test:  classification error for the test data
-    - pfa:         false alarm probability on the test data
-    - pm:          miss probability on the test data
-    - posteriors:  values of the posterior of the parameters
-
-    TODO ASK which parameters ?
+    TODO write better docstring and explanation
     '''
-    N_train, D = X_train.shape # number of N:training samples, D:features
-    N_test = X_test.shape[0]
+    p[np.isnan(p)] = tolerance
+    p[p == 0]      = tolerance
+    p[p == 1]      = 1 - tolerance
+    return p
 
-    # prior probability based on the training samples
-    prior = np.sum(Y_train)/N_train
 
-    # parameters of the model (for the classes 1 and 0 respectively)
-    p1 = np.zeros((D, 1))
-    p0 = np.zeros((D, 0))
+def train_naivebayes(features, labels):
+    '''
+    Returns the parameters for a Naive Bayes model
 
-    # indices of the training samples labeled as 1 and 0 respectively
-    ind1 = Y_train[Y_train == 1]
-    ind0 = Y_train[Y_train == 0]
+    Logs are used because otherwise multiplications of very small numbers,
+    which leads to problems of over/underflows
 
-    # tolerance factor (useful when the parameters take values of 0 or 1)
-    tolerance = 1e-50
+    TRAINING PHASE
 
-    # estimate the parameters of the likelihood for class 1
-    p1 = np.sum(X_train[ind1, :]).T / len(ind1)
-    c = np.arange(len(p1))[np.isnan(p1)]
-    p1[c] = tolerance
-    c = p1[p1 == 1]
-    p1[c] = 1 - tolerance
-    c = p1[p1 == 0]
-    p1[c] = tolerance
+    Inputs:
+    - features: N * D Numpy matrix of binary values (0 and 1)
+        with N: the number of training examples
+        and D:        the number of features for each example
+    - labels:   N * 1 Numpy vector of binary values (0 and 1)
 
-    # estimate the parameters of the likelihood for class 0
-    p0 = np.sum(X_train[ind0, :]).T / len(ind0)
-    c = np.arange(len(p0))[np.isnan(p0)]
-    p0[c] = tolerance
-    c = p0[p0 == 1]
-    p0[c] = 1 - tolerance
-    c = p0[p0 == 0]
-    p0[c] = tolerance
+    Outputs:
+    - parameters
+    '''
+    ## setup
+    X, Y = features, labels
+    _ham_label = 0
+    spam_label = 1
+    N, D = X.shape    ## number of N: training samples, D: features
+    tolerance = 1e-10 ## tolerance factor (to avoid under/overflows)
 
-    ## logs are used because otherwise multiplications of very small numbers
+    ## estimate prior probability of spam class
+    prior_spam = np.sum(Y == spam_label) / N
+    prior__ham = 1 - prior_spam
 
-    # compute train predictions
-    predictions_train = np.zeros((N_train, 1))
-    for ii in range(N_train):
-        log_post1 = np.log(prior) + X_train[ii, :]*np.log(p1) + (1-X_train[ii, :])*np.log(1-p1)
-        log_post0 = np.log(1-prior) + X_train[ii, :]*np.log(p0) + (1-X_train[ii, :])*np.log(1-p0)
-        predictions_train[ii] = (log_post1 > log_post0)
+    indices__ham = np.nonzero(Y == _ham_label)[0]
+    indices_spam = np.nonzero(Y == spam_label)[0]
+    N__ham = len(indices__ham)
+    N_spam = len(indices_spam)
 
-    # compute test predictions
-    predictions_test = np.zeros((N_test, 1))
-    for ii in range(N_test):
-        log_post1 = np.log(prior) + X_test[ii, :]*np.log(p1) + (1-X_test[ii, :])*np.log(1-p1)
-        log_post0 = np.log(1-prior) + X_test[ii, :]*np.log(p0) + (1-X_test[ii, :])*np.log(1-p0)
-        predictions_test[ii] = (log_post1 > log_post0)
+    ## TODO ask are these likelihoods or posteriors ??
+    ## TODO ask, what is supposed to be returned ?
+    ## estimate likelihood parameters for each class
+    p__ham = np.sum(X[indices__ham], axis=0) / N__ham  ## presence of features in  ham class
+    p_spam = np.sum(X[indices_spam], axis=0) / N_spam  ## presence of features in spam class
 
-    # posterior parameters
-    posteriors = { 'p0': p0; 'p1': p1 }
+    p__ham, p_spam = map(lambda p: p.reshape((D, 1)), [p__ham, p_spam])
+    p__ham, p_spam = map(process_parameters, [p__ham, p_spam])
 
-    ## monitoring of performance
-    # compute train and test errors
-    error_train = np.sum(predictions_train != Y_train) / N_train
-    error_test = np.sum(predictions_test != Y_test) / N_test
+    return prior__ham, prior_spam, p__ham, p_spam
 
-    # false alarm probability in the test data
-    pfa = np.sum((predictions_test == 1) & (Y_test == 0)) / np.sum(Y_test == 0)
 
-    # miss probability in the test data
-    pm = np.sum((predictions_test == 0) & (Y_test == 1)) / np.sum(Y_test == 1)
+def test_naivebayes(parameters, features):
+    '''
+    TEST PHASE
 
-    return error_train, error_test, pfa, pm, posteriors
+    Inputs:
+    - parameters
+    - features
+
+    Outputs:
+    - predicted: labels
+    '''
+    ## notation
+    X, prior__ham, prior_spam, p__ham, p_spam = features, *parameters
+    N, D = X.shape
+
+    ## TODO is there a way to vectorise this ?
+    predicted = np.zeros((N, 1)) ## prediction of class for each sample
+    for i in range(1): ## i is the sample index
+
+        ## apply model
+        log_posterior__ham = np.log(prior__ham) +                \
+                             np.dot(X[i, :], np.log(p__ham)) +   \
+                             np.dot((1-X[i, :]), np.log(1-p__ham))
+        log_posterior_spam = np.log(prior_spam)   +              \
+                             np.dot(X[i, :], np.log(p_spam)) +   \
+                             np.dot((1-X[i, :]), np.log(1-p_spam))
+
+        ## TODO ask why the 1-X[i, :] ?
+
+        ## calculate output
+        ## assign class which is most likely over the other for sample i
+        ## this works because labels are 0 and 1 for ham and spam respectively
+        predicted[i] = (log_posterior_spam > log_posterior__ham)
+
+    return predicted
+
+
+def performance(Y_train, O_train, Y_test, O_test):
+    '''
+    TODO could actually draw a table for TP, FP, FN, TN ? :)
+    '''
+    _ham_label = 0
+    spam_label = 1
+
+    ## monitoring performance
+    ## error
+    calculate_error = lambda O, Y, N: np.sum(O != Y) / N
+    error_train = calculate_error(O_train, Y_train, len(Y_train))
+    error_test  = calculate_error(O_test , Y_test , len(Y_test ))
+    print('error training set:\t%.3f' % error_train)
+    print('error testing  set:\t%.3f' % error_test )
+
+    ## False Positive Rate (=fall-out) ~also called false alarm rate
+    FP = np.sum((O_test == spam_label) & (Y_test == _ham_label))
+    N =  np.sum(Y_test == _ham_label) ## FP + TN
+    FPR = FP / N
+    print('false positive rate:\t%.3f' % FPR)
+
+    ## False Negative Rate ~miss rate
+    FN = np.sum((O_test == _ham_label) & (Y_test == spam_label))
+    P =  np.sum(Y_test == spam_label) ## TP + FN
+    FNR = FN / P
+    print('false negative rate:\t%.3f' % FNR)
+
+    return
 
 
 def main():
+    '''
+    '''
     return
 
 
