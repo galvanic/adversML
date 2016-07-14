@@ -10,7 +10,7 @@ TODO could actually draw a table for TP, FP, FN, TN ? :)
 import numpy as np
 
 
-def cost(Y, O):
+def get_cost(Y, O):
     '''
     Calculate cost using Means Squared
 
@@ -20,7 +20,7 @@ def cost(Y, O):
     return cost
 
 
-def error(Y, O):
+def get_error(Y, O):
     '''
     Calculates error
     '''
@@ -29,7 +29,7 @@ def error(Y, O):
     return error
 
 
-def FPR(Y, O, ham_label=0, spam_label=1):
+def get_FPR(Y, O, ham_label=0, spam_label=1):
     '''
     Calculates False Positive Rate (=fall-out), also called false alarm rate
     '''
@@ -39,7 +39,7 @@ def FPR(Y, O, ham_label=0, spam_label=1):
     return FPR
 
 
-def FNR(Y, O, ham_label=0, spam_label=1):
+def get_FNR(Y, O, ham_label=0, spam_label=1):
     '''
     Calculates False Negative Rate, also called miss rate
     '''
