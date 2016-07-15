@@ -56,8 +56,6 @@ def train_naivebayes(features, labels):
     N__ham = len(indices__ham)
     N_spam = len(indices_spam)
 
-    ## TODO ask are these likelihoods or posteriors ??
-    ## TODO ask, what is supposed to be returned ?
     ## estimate likelihood parameters for each class
     p__ham = np.sum(X[indices__ham], axis=0) / N__ham  ## presence of features in  ham class
     p_spam = np.sum(X[indices_spam], axis=0) / N_spam  ## presence of features in spam class
@@ -95,44 +93,12 @@ def test_naivebayes(parameters, features):
                              np.dot(X[i, :], np.log(p_spam)) +   \
                              np.dot((1-X[i, :]), np.log(1-p_spam))
 
-        ## TODO ask why the 1-X[i, :] ?
-
         ## calculate output
         ## assign class which is most likely over the other for sample i
         ## this works because labels are 0 and 1 for ham and spam respectively
         predicted[i] = (log_posterior_spam > log_posterior__ham)
 
     return predicted
-
-
-def performance(Y_train, O_train, Y_test, O_test):
-    '''
-    TODO could actually draw a table for TP, FP, FN, TN ? :)
-    '''
-    _ham_label = 0
-    spam_label = 1
-
-    ## monitoring performance
-    ## error
-    calculate_error = lambda O, Y, N: np.sum(O != Y) / N
-    error_train = calculate_error(O_train, Y_train, len(Y_train))
-    error_test  = calculate_error(O_test , Y_test , len(Y_test ))
-    print('error training set:\t%.3f' % error_train)
-    print('error testing  set:\t%.3f' % error_test )
-
-    ## False Positive Rate (=fall-out) ~also called false alarm rate
-    FP = np.sum((O_test == spam_label) & (Y_test == _ham_label))
-    N =  np.sum(Y_test == _ham_label) ## FP + TN
-    FPR = FP / N
-    print('false positive rate:\t%.3f' % FPR)
-
-    ## False Negative Rate ~miss rate
-    FN = np.sum((O_test == _ham_label) & (Y_test == spam_label))
-    P =  np.sum(Y_test == spam_label) ## TP + FN
-    FNR = FN / P
-    print('false negative rate:\t%.3f' % FNR)
-
-    return
 
 
 def main():
