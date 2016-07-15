@@ -17,6 +17,7 @@ TODO clean up the code further, especially duplicated sections (adaline model
 import sys
 import numpy as np
 import numpy.random as rand
+from performance import get_cost, get_error
 
 ### Helper functions for termination conditions
 
@@ -81,7 +82,7 @@ def train_adaline(features, labels,
         O = np.dot(X, W)
 
         ## batch gradient descent
-        gradient = - np.mean(np.multiply((Y - O), X), axis=0)
+        gradient = -np.mean(np.multiply((Y - O), X), axis=0)
         gradient = gradient.reshape(W.shape)
 
         ## 3. Update weights
@@ -95,10 +96,10 @@ def train_adaline(features, labels,
             T = np.ones(O.shape) # equivalent to threshold/step activation function
             T[O < 0] = -1
 
-        current_error = np.mean(T != Y) # mean error over samples
+        current_error = get_error(T, Y)
         error.append(current_error)
 
-        current_cost = np.mean(np.square(Y-O)) # Means Square
+        current_cost = get_cost(Y, O)
         cost.append(current_cost)
 
         if verbose: print('iteration %d:\tcost = %.3f' % (i, cost[-1]))
@@ -112,18 +113,23 @@ def test_adaline(weights, features):
     TEST PHASE
 
     TODO not sure what makes sense to measure here ?
+         => performance can be calculated outside the function
     '''
     ## notation
     X, W = features, weights
     N, D = features.shape
 
+    ## apply model
     O = np.dot(X, W)
 
+    ## calculate output
     T = np.zeros(O.shape) # threshold/step activation function
     T[O > 0.5] = 1
-    cost = np.mean(np.square(T-O)) # Means Square
-
     labels = T
+
+    ## calculate cost
+    ## TODO ask why are we calculating this cost ?
+    cost = get_cost(T, O)
 
     return labels, cost
 
