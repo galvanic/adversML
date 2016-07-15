@@ -57,13 +57,13 @@ def train_naivebayes(features, labels):
     N_spam = len(indices_spam)
 
     ## estimate likelihood parameters for each class
-    p__ham = np.sum(X[indices__ham], axis=0) / N__ham  ## presence of features in  ham class
-    p_spam = np.sum(X[indices_spam], axis=0) / N_spam  ## presence of features in spam class
+    l__ham = np.sum(X[indices__ham], axis=0) / N__ham  ## presence of features in  ham class
+    l_spam = np.sum(X[indices_spam], axis=0) / N_spam  ## presence of features in spam class
 
-    p__ham, p_spam = map(lambda p: p.reshape((D, 1)), [p__ham, p_spam])
-    p__ham, p_spam = map(process_parameters, [p__ham, p_spam])
+    l__ham, p_spam = map(lambda p: p.reshape((D, 1)), [l__ham, l_spam])
+    l__ham, p_spam = map(process_parameters, [l__ham, l_spam])
 
-    return prior__ham, prior_spam, p__ham, p_spam
+    return prior__ham, prior_spam, l__ham, l_spam
 
 
 def test_naivebayes(parameters, features):
@@ -78,7 +78,7 @@ def test_naivebayes(parameters, features):
     - predicted: labels
     '''
     ## notation
-    X, prior__ham, prior_spam, p__ham, p_spam = features, *parameters
+    X, prior__ham, prior_spam, l__ham, l_spam = features, *parameters
     N, D = X.shape
 
     ## TODO is there a way to vectorise this ?
@@ -87,11 +87,11 @@ def test_naivebayes(parameters, features):
 
         ## apply model
         log_posterior__ham = np.log(prior__ham) +                \
-                             np.dot(X[i, :], np.log(p__ham)) +   \
-                             np.dot((1-X[i, :]), np.log(1-p__ham))
+                             np.dot(X[i, :], np.log(l__ham)) +   \
+                             np.dot((1-X[i, :]), np.log(1-l__ham))
         log_posterior_spam = np.log(prior_spam)   +              \
-                             np.dot(X[i, :], np.log(p_spam)) +   \
-                             np.dot((1-X[i, :]), np.log(1-p_spam))
+                             np.dot(X[i, :], np.log(l_spam)) +   \
+                             np.dot((1-X[i, :]), np.log(1-l_spam))
 
         ## calculate output
         ## assign class which is most likely over the other for sample i
