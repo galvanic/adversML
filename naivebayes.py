@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
+from __future__ import division
 
 '''
 Inspired by Luis Munoz's MATLAB code for the Naive Bayes classifier model.
+
+/!\ run with python3
 '''
 import sys
 import numpy as np
