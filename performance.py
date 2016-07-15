@@ -16,16 +16,15 @@ def get_cost(Y, O):
 
     TODO ask does this make sense in here or grouped with gradient descent ?
     '''
-    cost = np.mean(np.square(T - O))
+    cost = np.mean(np.square(Y - O))
     return cost
 
 
 def get_error(Y, O):
     '''
-    Calculates error
+    Calculates mean error over samples
     '''
-    N = len(Y)
-    error = np.sum(O != Y) / N
+    error = np.mean(Y != O)
     return error
 
 
