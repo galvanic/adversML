@@ -9,6 +9,7 @@ Inspired by Luis Munoz's MATLAB code for the Naive Bayes classifier model.
 '''
 import sys
 import numpy as np
+from performance import get_error, get_FPR, get_FNR
 
 
 def process_parameters(p, tolerance=1e-10):
@@ -48,7 +49,7 @@ def train_naivebayes(features, labels):
     _ham_label = 0
     spam_label = 1
     N, D = X.shape    ## number of N: training samples, D: features
-    tolerance = 1e-10 ## tolerance factor (to avoid under/overflows)
+    tolerance = 1e-30 ## tolerance factor (to avoid under/overflows)
 
     ## estimate prior probability of spam class
     prior_spam = np.sum(Y == spam_label) / N
@@ -106,8 +107,39 @@ def test_naivebayes(parameters, features):
 
 def main():
     '''
+    test my implementation
     '''
+    import pickle
+
+    with open('../datasets/processed/trec2007-1607061515-features.dat', 'rb') as infile:
+        X = pickle.load(infile)
+
+    with open('../datasets/processed/trec2007-1607061515-labels.dat', 'rb') as infile:
+        Y = pickle.load(infile)
+
+    N, D = X.shape
+
+    permutated_indices = np.random.permutation(N)
+    X = X[permutated_indices]
+    Y = Y[permutated_indices]
+
+    N_train = int(np.round(N * 0.5))
+    X_train = X[:N_train]
+    Y_train = Y[:N_train]
+    X_test = X[N_train:]
+    Y_test = Y[N_train:]
+
+    parameters = train_naivebayes(features=X_train, labels=Y_train)
+    O_train = test_naivebayes(parameters=parameters, features=X_train)
+    O_test = test_naivebayes(parameters=parameters, features=X_test)
+
+    print('error training set:\t%.3f' % get_error(Y_train, O_train))
+    print('error testing  set:\t%.3f' % get_error(Y_test, O_test))
+    print('false positive rate:\t%.3f' % get_FPR(Y_test, O_test))
+    print('false negative rate:\t%.3f' % get_FNR(Y_test, O_test))
+
     return
+
 
 
 if __name__ == '__main__':
