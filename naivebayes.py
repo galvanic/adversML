@@ -113,6 +113,40 @@ def main():
     '''
     test my implementation
     '''
+    ## dummy data
+    ## 10 training samples and 3 features
+    ## so a 10 * 3 matrix
+    x = np.array([[1, 0, 1],
+                  [0, 0, 0],
+                  [1, 0, 1],
+                  [1, 1, 1],
+                  [1, 1, 0],
+                  [1, 1, 0],
+                  [1, 1, 0],
+                  [1, 1, 0],
+                  [1, 1, 0],
+                  [0, 1, 0]],
+                  dtype=np.int8)
+    y = np.array([[1],
+                  [1],
+                  [1],
+                  [0],
+                  [0],
+                  [0],
+                  [0],
+                  [0],
+                  [0],
+                  [1]],
+                  dtype=np.int8) #* 2 - 1
+
+    p = train_naivebayes(features=x, labels=y)
+    o = test_naivebayes(parameters=p, features=x)
+
+    print('error set:\t%.3f' % get_error(y, o))
+    print('false positive rate:\t%.3f' % get_FPR(y, o))
+    print('false negative rate:\t%.3f' % get_FNR(y, o))
+
+
     import pickle
 
     with open('../datasets/processed/trec2007-1607061515-features.dat', 'rb') as infile:
