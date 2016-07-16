@@ -26,7 +26,8 @@ def process_parameters(p, tolerance=1e-10):
     return p
 
 
-def train_naivebayes(features, labels):
+def train_naivebayes(features, labels,
+                     ham_label=0, spam_label=1):
     '''
     Returns the parameters for a Naive Bayes model
 
@@ -46,8 +47,6 @@ def train_naivebayes(features, labels):
     '''
     ## setup
     X, Y = features, labels
-    ham_label = 0
-    spam_label = 1
     N, D = X.shape    ## number of N: training samples, D: features
     tolerance = 1e-30 ## tolerance factor (to avoid under/overflows)
 
@@ -71,7 +70,8 @@ def train_naivebayes(features, labels):
     return prior_ham, prior_spam, likeli_ham, likeli_spam
 
 
-def test_naivebayes(parameters, features):
+def test_naivebayes(parameters, features,
+                    ham_label=0, spam_label=1):
     '''
     TEST PHASE
 
@@ -88,7 +88,6 @@ def test_naivebayes(parameters, features):
 
     ## apply model
     ## Bernouilli Naive Bayes, takes into account absence of a feature
-    ## TODO figure out why log of posterior calculation is this
     log_posterior_ham  = np.log(prior_ham) +                    \
                          np.dot(   X,  np.log(  likeli_ham)) +  \
                          np.dot((1-X), np.log(1-likeli_ham))
@@ -104,6 +103,9 @@ def test_naivebayes(parameters, features):
     ## assign class which is most likely over the other
     ## this works because labels are 0 and 1 for ham and spam respectively
     predicted = (log_posterior_spam > log_posterior_ham)
+
+    if ham_label == -1:
+        predicted = predicted * 2 - 1
 
     return predicted
 
