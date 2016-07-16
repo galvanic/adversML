@@ -61,13 +61,14 @@ def train_naivebayes(features, labels):
     N_spam = len(indices_spam)
 
     ## estimate likelihood parameters for each class
-    l__ham = np.sum(X[indices__ham], axis=0) / N__ham  ## presence of features in  ham class
-    l_spam = np.sum(X[indices_spam], axis=0) / N_spam  ## presence of features in spam class
+    ## looks at presence of features in each class
+    likeli__ham = np.sum(X[indices__ham], axis=0) / N__ham
+    likeli_spam = np.sum(X[indices_spam], axis=0) / N_spam
 
-    l__ham, p_spam = map(lambda p: p.reshape((D, 1)), [l__ham, l_spam])
-    l__ham, p_spam = map(process_parameters, [l__ham, l_spam])
+    likeli__ham, likeli_spam = map(lambda p: p.reshape((D, 1)), [likeli__ham, likeli_spam])
+    likeli__ham, likeli_spam = map(process_parameters, [likeli__ham, likeli_spam])
 
-    return prior__ham, prior_spam, l__ham, l_spam
+    return prior__ham, prior_spam, likeli__ham, likeli_spam
 
 
 def test_naivebayes(parameters, features):
@@ -82,25 +83,28 @@ def test_naivebayes(parameters, features):
     - predicted: labels
     '''
     ## notation
-    X, prior__ham, prior_spam, l__ham, l_spam = features, *parameters
+    X, prior__ham, prior_spam, likeli__ham, likeli_spam = features, *parameters
     N, D = X.shape
 
-    ## TODO is there a way to vectorise this ?
-    predicted = np.zeros((N, 1)) ## prediction of class for each sample
-    for i in range(1): ## i is the sample index
+    ## apply model
+    ## Bernouilli Naive Bayes, takes into account absence of a feature
+    ## TODO figure out why log of posterior calculation is this
+    log_posterior__ham = np.log(prior__ham) +                   \
+                         np.dot(   X,  np.log(  likeli__ham)) + \
+                         np.dot((1-X), np.log(1-likeli__ham))
+    log_posterior_spam = np.log(prior_spam)   +                 \
+                         np.dot(   X,  np.log(  likeli_spam)) + \
+                         np.dot((1-X), np.log(1-likeli_spam))
 
-        ## apply model
-        log_posterior__ham = np.log(prior__ham) +                \
-                             np.dot(X[i, :], np.log(l__ham)) +   \
-                             np.dot((1-X[i, :]), np.log(1-l__ham))
-        log_posterior_spam = np.log(prior_spam)   +              \
-                             np.dot(X[i, :], np.log(l_spam)) +   \
-                             np.dot((1-X[i, :]), np.log(1-l_spam))
+    ## no need to normalise since we are just interested in which
+    ## posterior is higher (ie. which label is most likely given the data)
 
-        ## calculate output
-        ## assign class which is most likely over the other for sample i
-        ## this works because labels are 0 and 1 for ham and spam respectively
-        predicted[i] = (log_posterior_spam > log_posterior__ham)
+    log_posterior__ham, log_posterior_spam = map(np.ravel,
+        [log_posterior__ham, log_posterior_spam])
+    ## calculate output
+    ## assign class which is most likely over the other
+    ## this works because labels are 0 and 1 for ham and spam respectively
+    predicted = (log_posterior_spam > log_posterior__ham)
 
     return predicted
 
