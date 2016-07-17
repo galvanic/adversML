@@ -32,3 +32,14 @@ MSc thesis code for:
 
 
 A few [ipython notebooks](https://ipython.org/notebook.html) try the implementations out and can serve as examples: [**notebooks/**](https://github.com/galvanic/adversML/tree/master/notebooks)
+
+TODO
+----
+
+- implement mutual information
+- test pipeline wirth attacks
+- add other dataset extraction, classifier models, and attacks
+- assert all matrix shapes and types
+- decide on what to do for the different ham labels
+- decide on appropriate format/type for experiment and how to post-process it
+- seek feedback to refine pipeline
