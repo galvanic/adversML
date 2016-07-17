@@ -124,7 +124,7 @@ def test_adaline(weights, features,
         T = np.ones(O.shape)
         T[O < 0] = -1
 
-    return labels
+    return T
 
 
 def main():
