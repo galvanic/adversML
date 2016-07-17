@@ -97,7 +97,11 @@ def train_adaline(features, labels,
     return W, cost, error
 
 
-def test_adaline(weights, features):
+def test_adaline(weights, features,
+        ## params
+        ham_label=0,
+        spam_label=1,
+        ):
     '''
     TEST PHASE
 
@@ -112,9 +116,13 @@ def test_adaline(weights, features):
     O = np.dot(X, W)
 
     ## calculate output
-    T = np.zeros(O.shape) # threshold/step activation function
-    T[O > 0.5] = 1
-    labels = T
+    ## T is equivalent to threshold/step activation function
+    if ham_label is 0:               ## spam label assumed 1
+        T = np.zeros(O.shape)
+        T[O > 0.5] = 1
+    else:   ## ham label is assumed -1, spam label assumed 1
+        T = np.ones(O.shape)
+        T[O < 0] = -1
 
     ## calculate cost
     ## TODO ask why are we calculating this cost ?
