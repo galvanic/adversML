@@ -17,9 +17,9 @@ TODO clean up the code further, especially duplicated sections (adaline model
 '''
 import sys
 import numpy as np
-import numpy.random as rand
-from gradientdescent import max_iters
+
 from performance import get_cost, get_error
+from gradientdescent import max_iters
 
 
 def train_adaline(features, labels,
