@@ -6,10 +6,10 @@ from __future__ import division
 Implementation of the Adaline model.
 Training is done using batch gradient descent.
 
-TODO make an Adaline class with train and test as methods
 TODO stochastic gradient descent (for online learning)
-TODO implement regularisation
-TODO cost and error could be measured outside the function ?
+TODO ? make an Adaline class with train and test as methods
+TODO ? implement regularisation
+TODO ? cost and error could be measured outside the function
      or at least use a callable to calculate them, otherwise duplicated code
      across models
 TODO clean up the code further, especially duplicated sections (adaline model
