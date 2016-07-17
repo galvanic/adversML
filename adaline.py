@@ -124,11 +124,7 @@ def test_adaline(weights, features,
         T = np.ones(O.shape)
         T[O < 0] = -1
 
-    ## calculate cost
-    ## TODO ask why are we calculating this cost ?
-    cost = get_cost(T, O)
-
-    return labels, cost
+    return labels
 
 
 def main():
