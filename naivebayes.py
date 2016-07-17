@@ -14,6 +14,7 @@ from performance import get_error, get_FPR, get_FNR
 
 def process_parameters(p, tolerance=1e-10):
     '''
+    Helper function for training naivebayes.
     Returns parameters where NaNs, zeros and ones have been modified to avoid
     under/overflows (??)
     Helper function for the training function.
@@ -26,8 +27,11 @@ def process_parameters(p, tolerance=1e-10):
     return p
 
 
-def train_naivebayes(features, labels,
-                     ham_label=0, spam_label=1):
+def train(features, labels,
+        ## params
+        ham_label,
+        spam_label=1,
+        ):
     '''
     Returns the parameters for a Naive Bayes model
 
@@ -70,13 +74,16 @@ def train_naivebayes(features, labels,
     return prior_ham, prior_spam, likeli_ham, likeli_spam
 
 
-def test_naivebayes(parameters, features,
-                    ham_label=0, spam_label=1):
+def test(parameters, features,
+        ## params
+        ham_label,
+        spam_label=1,
+        ):
     '''
     TEST PHASE
 
     Inputs:
-    - parameters
+    - parameters: model parameters
     - features
 
     Outputs:
@@ -142,8 +149,8 @@ def main():
 
     label_types = {'ham_label': 0, 'spam_label': 1}
 
-    p = train(features=x, labels=y)
-    o = test(parameters=p, features=x)
+    p = train(features=x, labels=y, **label_types)
+    o = test(parameters=p, features=x, **label_types)
 
     print('error set:\t%.3f' % get_error(y, o))
     print('false positive rate:\t%.3f' % get_FPR(y, o, **label_types))
@@ -170,9 +177,9 @@ def main():
     X_test = X[N_train:]
     Y_test = Y[N_train:]
 
-    parameters = train(features=X_train, labels=Y_train)
-    O_train = test(parameters=parameters, features=X_train)
-    O_test = test(parameters=parameters, features=X_test)
+    parameters = train(features=X_train, labels=Y_train, **label_types)
+    O_train = test(parameters=parameters, features=X_train, **label_types)
+    O_test = test(parameters=parameters, features=X_test, **label_types)
 
     print('error training set:\t%.3f' % get_error(Y_train, O_train))
     print('error testing  set:\t%.3f' % get_error(Y_test, O_test))

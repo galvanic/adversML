@@ -22,12 +22,15 @@ from performance import get_cost, get_error
 from gradientdescent import max_iters
 
 
-def train_adaline(features, labels,
-                  W=None,
-                  rate=0.1,
-                  termination_condition=max_iters(100),
-                  label_type='01',
-                  verbose=False):
+def train(features, labels,
+        ## params:
+        initial_weights=None,
+        learning_rate=0.01,
+        termination_condition=max_iters(100),
+        ham_label=0,
+        spam_label=1,
+        verbose=False,
+        ):
     '''
     Returns the optimal weights for a given training set (features
     and corresponding label inputs) for the ADALINE model.
@@ -39,11 +42,11 @@ def train_adaline(features, labels,
     Inputs:
     - features: N * D Numpy matrix of binary values (0 and 1)
         with N: the number of training examples
-        and D:        the number of features for each example
+        and D:  the number of features for each example
     - labels:   N * 1 Numpy vector of binary values (-1 and 1)
-    - W:        D * 1 Numpy vector, beginning weights
-    - rate:     learning rate, a float between 0 and 1
-    - termination_condition: self-explanatory
+    - initial_weights: D * 1 Numpy vector, beginning weights
+    - learning_rate: learning rate, a float between 0 and 1
+    - termination_condition: returns a bool
 
     Output:
     - W: D * 1 Numpy vector of real values
@@ -60,8 +63,7 @@ def train_adaline(features, labels,
     error = []              # keep track of error
 
     ## 1. Initialise weights
-    if W is None:
-        W = np.zeros((D, 1))
+    W = np.zeros((D, 1)) if initial_weights is None else initial_weights.reshape((D, 1))
 
     ## 2. Evaluate the termination condition
     i = 1
@@ -70,19 +72,22 @@ def train_adaline(features, labels,
         ## current iteration classifier output
         O = np.dot(X, W)
 
+        ## specialty of ADALINE is that training is done on the weighted sum,
+        ## _before_ the activation function
         ## batch gradient descent
         gradient = -np.mean(np.multiply((Y - O), X), axis=0)
         gradient = gradient.reshape(W.shape)
 
         ## 3. Update weights
-        W = W - rate * gradient
+        W = W - learning_rate * gradient
 
         ## Keep track of error and cost (weights from previous iteration)
-        if label_type is '01':
-            T = np.zeros(O.shape) # equivalent to threshold/step activation function
+        ## T is equivalent to threshold/step activation function
+        if ham_label is 0:               ## spam label assumed 1
+            T = np.zeros(O.shape)
             T[O > 0.5] = 1
-        else: # label type is '-11'
-            T = np.ones(O.shape) # equivalent to threshold/step activation function
+        else:   ## ham label is assumed -1, spam label assumed 1
+            T = np.ones(O.shape)
             T[O < 0] = -1
 
         current_error = get_error(T, Y)
@@ -94,10 +99,10 @@ def train_adaline(features, labels,
         if verbose: print('iteration %d:\tcost = %.3f' % (i, cost[-1]))
         i += 1
 
-    return W, cost, error
+    return W#, cost, error
 
 
-def test_adaline(weights, features,
+def test(parameters, features,
         ## params
         ham_label=0,
         spam_label=1,
@@ -109,7 +114,7 @@ def test_adaline(weights, features,
          => performance can be calculated outside the function
     '''
     ## notation
-    X, W = features, weights
+    X, W = features, parameters
     N, D = features.shape
 
     ## apply model
@@ -156,15 +161,10 @@ def main():
                   dtype=np.int8) #* 2 - 1
 
     ## train model
-    weights, cost, error = train_adaline(features=x, labels=y,
-                                         rate=1,
-                                         termination_condition=max_iters(100))
-    print('\n   cost: %.3f' % cost[-1])
-    print('\n  error: %.3f' % error[-1])
-    print('\nweights: %.3f' % weights[0])
-    #from code import interact; interact(local=dict(globals(), **locals()))
-    for w in weights[1:]:
-        print('         %.3f' % w)
+    weights = train(features=x, labels=y,
+        learning_rate=1,
+        termination_condition=max_iters(100))
+    print('weights: %s' % ([' %.3f' % w for w in weights]))
     return
 
 if __name__ == '__main__':
