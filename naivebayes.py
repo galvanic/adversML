@@ -43,7 +43,7 @@ def train(features, labels,
     Inputs:
     - features: N * D Numpy matrix of binary values (0 and 1)
         with N: the number of training examples
-        and D:        the number of features for each example
+        and  D: the number of features for each example
     - labels:   N * 1 Numpy vector of binary values (0 and 1)
 
     Outputs:

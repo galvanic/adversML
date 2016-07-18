@@ -42,3 +42,11 @@ TODO
 - decide on what to do for the different ham labels
 - decide on appropriate format/type for experiment and how to post-process it
 - seek feedback to refine pipeline
+- implement data loading from different filetypes
+
+optimisations:
+
+- implement stochastic and batch training
+- ? optimise pipeline for experiments where the same dataset, same attacks, etc. are used
+    or not worth the time ?
+- profile code

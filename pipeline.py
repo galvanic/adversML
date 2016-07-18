@@ -93,7 +93,7 @@ def perform_experiment(experiment):
     ## apply model
     classifier = experiment['classifier']
     train_params = experiment['training_parameters']
-    test_params  = experiment['testing_parameters']
+    test_params  = experiment['testing_parameters' ]
 
     ## training phase
     model_parameters = classifier.train(features=X_train, labels=Y_train, **train_params)
@@ -115,6 +115,7 @@ def perform_experiment(experiment):
 
 def main():
     '''
+    Test the pipeline
     '''
     experiments = [
         {
