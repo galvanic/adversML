@@ -67,12 +67,6 @@ def perform_experiment(experiment):
 
     N, D = X.shape
 
-    ## prepare dataset
-    if experiment['classifier'] != 'naive bayes':
-        X = add_bias(X)
-    if experiment['label_type']['ham_label'] == -1:
-        Y = convert_labels(Y)
-
     ## split dataset into training and testing sets
     permutated_indices = np.random.permutation(N)
     X = X[permutated_indices]
@@ -87,6 +81,12 @@ def perform_experiment(experiment):
     ## apply attack
     X_train = experiment['attack'](X_train, **experiment['attack_parameters'])
     X_test  = experiment['attack'](X_test,  **experiment['attack_parameters'])
+
+    ## prepare dataset
+    if experiment['classifier'] != 'naive bayes':
+        X_train, X_test = map(add_bias, [X_train, X_test])
+    if experiment['label_type']['ham_label'] == -1:
+        Y_train, Y_test = map(convert_labels, [Y_train, Y_test])
 
     ## apply model
     classifier = experiment['classifier']
