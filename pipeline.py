@@ -35,7 +35,8 @@ def process_experiment_declaration(experiment):
     experiment['training_parameters']['ham_label'] = ham_label
     experiment['testing_parameters' ]['ham_label'] = ham_label
 
-    if not experiment['attack']:
+    attack = experiment['attack']
+    if not attack:
         def no_attack(x, **kwargs):
             return x
         experiment['attack'] = no_attack
