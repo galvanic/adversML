@@ -79,8 +79,10 @@ def perform_experiment(experiment):
     Y_test  = Y[N_train:]
 
     ## apply attack
-    X_train = experiment['attack'](X_train, **experiment['attack_parameters'])
-    X_test  = experiment['attack'](X_test,  **experiment['attack_parameters'])
+    attack = experiment['attack']
+    attack_params = experiment['attack_parameters']
+    X_train, Y_train = attack.apply(features=X_train, labels=Y_train, **attack_params)
+    X_test,  Y_test  = attack.apply(features=X_test,  labels=Y_test,  **attack_params)
 
     ## prepare dataset
     if experiment['classifier'] != 'naive bayes':
@@ -124,12 +126,13 @@ def main():
                 'ham_label': -1,
                 'spam_label': 1,
             },
-            'attack': None,
+            'attack': empty,
             'attack_parameters': {
+                'percentage_samples_poisoned': 0.1,
             },
             'classifier': adaline,
             'training_parameters': {
-                'learning_rate': 0.15,
+                'learning_rate': 0.06,
                 'initial_weights': None,
                 'termination_condition': max_iters(40),
                 'verbose': False,
@@ -147,8 +150,9 @@ def main():
                 'ham_label': -1,
                 'spam_label': 1,
             },
-            'attack': None,
+            'attack': empty,
             'attack_parameters': {
+                'percentage_samples_poisoned': 0.1,
             },
             'classifier': naivebayes,
             'training_parameters': {

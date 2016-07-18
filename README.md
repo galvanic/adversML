@@ -37,7 +37,6 @@ TODO
 ----
 
 - implement mutual information
-- test pipeline wirth attacks
 - add other dataset extraction, classifier models, and attacks
 - assert all matrix shapes and types
 - decide on what to do for the different ham labels

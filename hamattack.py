@@ -5,9 +5,12 @@ from __future__ import division
 '''
 import numpy as np
 
-def apply_ham_attack(features, labels,
-                     percentage_poisoned=0.1,
-                     feature_selection_method=None):
+def apply(features, labels,
+        ## params
+        percentage_samples_poisoned,
+        percentage_features_poisoned,
+        feature_selection_method=None
+        ):
     '''
     Returns the input data with *added* data that is crafted specifically to
     cause a poisoning ham attack, where features of the contaminating emails
@@ -18,8 +21,10 @@ def apply_ham_attack(features, labels,
         with N: the number of training examples
         and D:        the number of features for each example
     - labels:   N * 1 Numpy vector of binary values (-1 and 1)
-    - percentage_poisoned: float between 0 and 1
+    - percentage_samples_poisoned: float between 0 and 1
         percentage of the dataset under the attacker's control
+    - percentage_features_poisoned: float between 0 and 1
+        percentage of the features under the attacker's control
     - feature_selection_method: string
 
     Outputs:
@@ -32,7 +37,7 @@ def apply_ham_attack(features, labels,
     ## notations
     x, y = features, labels
     N, D = features.shape ## number of N: samples, D: features
-    num_poisoned = int(N * percentage_poisoned)
+    num_poisoned = int(N * percentage_samples_poisoned)
 
     ## find the most salient (positive) features, indicative of the ham class
     ham_indices = y[y == 0]

@@ -8,8 +8,10 @@ Assumes no bias has been added yet.
 '''
 import numpy as np
 
-def apply_empty_attack(features, labels,
-                       percentage_poisoned=0.1):
+def apply(features, labels,
+        ## params
+        percentage_samples_poisoned,
+        ):
     '''
     Returns the input data with *added* data that is crafted specifically to
     cause a poisoning empty attack, where all features are set to zero.
@@ -19,7 +21,7 @@ def apply_empty_attack(features, labels,
         with N: the number of training examples
         and D:        the number of features for each example
     - labels:   N * 1 Numpy vector of binary values (-1 and 1)
-    - percentage_poisoned: float between 0 and 1
+    - percentage_samples_poisoned: float between 0 and 1
         percentage of the dataset under the attacker's control
 
     Outputs:
@@ -31,7 +33,7 @@ def apply_empty_attack(features, labels,
     '''
     ## notations
     N, D = features.shape ## number of N: samples, D: features
-    num_poisoned = int(N * percentage_poisoned)
+    num_poisoned = int(N * percentage_samples_poisoned)
 
     empty_features = np.zeros((num_poisoned, D))
     X = np.append(features, empty_features, axis=0)
