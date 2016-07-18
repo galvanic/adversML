@@ -13,7 +13,7 @@ def apply(features, labels,
         percentage_samples_poisoned,
         ):
     '''
-    Returns the input data with *added* data that is crafted specifically to
+    Returns the input data with *replaced* data that is crafted specifically to
     cause a poisoning empty attack, where all features are set to zero.
 
     Inputs:
@@ -27,20 +27,19 @@ def apply(features, labels,
     Outputs:
     - X: poisoned features
     - Y: poisoned labels
-
-    TODO not sure if poisoned data is added to dataset or replaces samples in
-         the dataset
     '''
     ## notations
-    N, D = features.shape ## number of N: samples, D: features
+    X, Y = features, labels
+    N, D = X.shape ## number of N: samples, D: features
     num_poisoned = int(N * percentage_samples_poisoned)
 
-    empty_features = np.zeros((num_poisoned, D))
-    X = np.append(features, empty_features, axis=0)
+    ## randomly replace some samples with the poisoned ones
+    ## so that total number of samples doesn't change
+    poisoned_indices = np.random.choice(N, num_poisoned)
+    X[poisoned_indices] = 0
 
     ## the contamination assumption
-    poisoned_labels = np.ones((num_poisoned, 1))
-    Y = np.append(labels, poisoned_labels, axis=0)
+    Y[poisoned_indices] = 1
 
     return X, Y
 

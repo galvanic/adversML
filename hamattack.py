@@ -12,7 +12,7 @@ def apply(features, labels,
         feature_selection_method=None,
         ):
     '''
-    Returns the input data with *added* data that is crafted specifically to
+    Returns the input data with *replaced* data that is crafted specifically to
     cause a poisoning ham attack, where features of the contaminating emails
     are selected because they are indicative of the ham class.
 
@@ -20,7 +20,7 @@ def apply(features, labels,
     - features: N * D Numpy matrix of binary values (0 and 1)
         with N: the number of training examples
         and  D: the number of features for each example
-    - labels:   N * 1 Numpy vector of binary values (-1 and 1)
+    - labels:   N * 1 Numpy vector of binary values (0 and 1)
     - percentage_samples_poisoned: float between 0 and 1
         percentage of the dataset under the attacker's control
     - percentage_features_poisoned: float between 0 and 1
@@ -30,34 +30,30 @@ def apply(features, labels,
     Outputs:
     - X: poisoned features
     - Y: poisoned labels
-
-    TODO not sure if poisoned data is added to dataset or replaces samples in
-         the dataset
     '''
     ## notations
-    x, y = features, labels
-    N, D = features.shape ## number of N: samples, D: features
+    ham_label = 0
+    X, Y = features, labels
+    N, D = X.shape ## number of N: samples, D: features
     num_poisoned = int(N * percentage_samples_poisoned)
 
     ## find the most salient (positive) features, indicative of the ham class
-    ham_indices = y[y == 0]
-    hams = x[ham_indices, :][0, :, :]
+    ham_mask = np.ravel(Y == ham_label)
+    hams = X[ham_mask]
 
     if not feature_selection_method:
         count = np.sum(hams, axis=0)
-        salient = (count != 0) ## feature indices that are salient for ham class
+        salient_mask = (count != 0) ## feature indices that are salient for ham class
 
-    ham_attack = np.zeros((1, D))
-    ham_attack[:, salient] = 1
-    ham_attack = np.array([ham_attack,] * num_poisoned)
-    ham_attack = ham_attack[:, 0, :]
-
-    ## injection of poisoned features into training dataset
-    X = np.append(features, ham_attack, axis=0)
+    ## randomly replace some samples with the poisoned ones
+    ## so that total number of samples doesn't change
+    poisoned_indices = np.random.choice(N, num_poisoned)
+    X[poisoned_indices] = 0
+    X[poisoned_indices][:, salient_mask] = 1
 
     ## the contamination assumption
-    poisoned_labels = np.ones((num_poisoned, 1))
-    Y = np.append(labels, poisoned_labels, axis=0)
+    Y[poisoned_indices] = 1
+
 
     return X, Y
 
