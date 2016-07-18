@@ -85,7 +85,7 @@ def perform_experiment(experiment):
     X_test,  Y_test  = attack.apply(features=X_test,  labels=Y_test,  **attack_params)
 
     ## prepare dataset
-    if experiment['classifier'] != 'naive bayes':
+    if experiment['classifier'] != naivebayes:
         X_train, X_test = map(add_bias, [X_train, X_test])
     if experiment['label_type']['ham_label'] == -1:
         Y_train, Y_test = map(convert_labels, [Y_train, Y_test])
