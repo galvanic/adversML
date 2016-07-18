@@ -8,7 +8,7 @@ import numpy as np
 def apply(features, labels,
         ## params
         percentage_samples_poisoned,
-        percentage_features_poisoned,
+        percentage_features_poisoned=1.0,
         feature_selection_method=None,
         ):
     '''

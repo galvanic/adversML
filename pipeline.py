@@ -127,7 +127,7 @@ def main():
                 'ham_label': -1,
                 'spam_label': 1,
             },
-            'attack': empty,
+            'attack': hamattack,
             'attack_parameters': {
                 'percentage_samples_poisoned': 0.1,
             },
@@ -151,7 +151,7 @@ def main():
                 'ham_label': -1,
                 'spam_label': 1,
             },
-            'attack': empty,
+            'attack': hamattack,
             'attack_parameters': {
                 'percentage_samples_poisoned': 0.1,
             },
