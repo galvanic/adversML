@@ -37,8 +37,9 @@ def process_experiment_declaration(experiment):
 
     attack = experiment['attack']
     if not attack:
-        def no_attack(x, **kwargs):
-            return x
+        class no_attack():
+            def apply(features, labels, **kwargs):
+                return features, labels
         experiment['attack'] = no_attack
     return experiment
 
@@ -126,7 +127,7 @@ def main():
                 'ham_label': -1,
                 'spam_label': 1,
             },
-            'attack': hamattack,
+            'attack': None,
             'attack_parameters': {
                 'percentage_samples_poisoned': 0.1,
             },
@@ -150,7 +151,7 @@ def main():
                 'ham_label': -1,
                 'spam_label': 1,
             },
-            'attack': hamattack,
+            'attack': None,
             'attack_parameters': {
                 'percentage_samples_poisoned': 0.1,
             },
