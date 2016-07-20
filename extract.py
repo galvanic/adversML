@@ -12,8 +12,7 @@ import pickle
 from itertools import starmap
 
 
-def process_trec_dataset(trec_folderpath, options,
-         max_emails=None, verbose=True):
+def process_trec_dataset(trec_folderpath, countvectorizer_params, verbose=True):
     '''
     Returns features and labels for the TREC dataset, given the
     filepath of the index (where the labels are).
@@ -43,7 +42,6 @@ def process_trec_dataset(trec_folderpath, options,
     ## corresponding email spam/ham label is (see regex)
     with open(index_filepath, 'r') as ifile:
         raw_labels = ifile.readlines()
-        if max_emails: raw_labels = raw_labels[:max_emails]
 
     labels = []
     for label in raw_labels:
@@ -98,7 +96,7 @@ def process_trec_dataset(trec_folderpath, options,
     ## we are only interested in presence of a word not frequency
     vectorizer = CountVectorizer(
                     dtype=np.bool_,
-                    **options)
+                    **countvectorizer_params)
     X = vectorizer.fit_transform(corpus) ## X: features
     ## keep X as a sparse matrix to take up less memory space
 
@@ -121,7 +119,7 @@ def main(infolder, outfolder, sparse_X=False):
     infolder, outfolder = map(os.path.abspath, [infolder, outfolder])
 
     ## set up options
-    options = {
+    countvectorizer_params = {
         'encoding': 'utf-8',
         'decode_error': 'strict',
         'strip_accents': 'unicode',
@@ -136,16 +134,13 @@ def main(infolder, outfolder, sparse_X=False):
     ## Get the data
     X, Y, feature_names = process_trec_dataset(
         trec_folderpath=infolder,
-        options=options,
-        max_emails=None,
+        countvectorizer_params=countvectorizer_params,
         verbose=True)
 
-    memory_error_occurred = False
     if not sparse_X:
         try:
             X = X.toarray()
         except MemoryError:
-            memory_error_occurred = True
             print('MemoryError: could not save as Numpy array, saving as sparse array instead')
             pass
 
@@ -163,20 +158,21 @@ def main(infolder, outfolder, sparse_X=False):
     ## make readme file with details of processing
     with open('%s-readme.md' % outfilepath, 'w') as outfile:
 
-        title = time.strftime('Data processed on %y/%m/%d at %H:%M',
+        title = time.strftime('Processed on %y/%m/%d at %H:%M',
             time.localtime(time.time()))
-        outfile.write('%s\n%s\n' % (title, '='*len(title)))
+        outfile.write('%s\n' % title)
 
         outfile.write('TREC 2007 dataset\n')
 
-        if sparse_X or memory_error_occurred:
-            outfile.write('X saved as sparse array\n.')
+        outfile.write('X: (%d x %d) \t%s \tdtype: %s\n' % (*X.shape, type(X).__name__, X.dtype))
+        outfile.write('Y: (%d x %d) \t%s \tdtype: %s\n' % (*Y.shape, type(Y).__name__, Y.dtype))
 
-        subtitle = 'Options'
+        subtitle = 'CountVectorizer params'
         outfile.write('\n%s\n%s\n\n%s\n' % (
             subtitle,
             '-'*len(subtitle),
-            '\n'.join(list(starmap(lambda k,v: '%s: %s' % (k,v), options.items()))) ))
+            '\n'.join(list(starmap(lambda k,v: '%s: %s' % (k,v),
+                countvectorizer_params.items()))) ))
 
         subtitle = 'Features'
         outfile.write('\n%s\n%s\n\n%s\n' % (
