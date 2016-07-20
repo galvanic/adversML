@@ -120,7 +120,7 @@ def main():
     experiments = [
         {
             'dataset': 'trec2007',
-            'dataset_filename': 'trec2007-1607061515',
+            'dataset_filename': 'trec2007-1607201347',
             'feature_extraction_parameters': {
             },
             'label_type': {
@@ -144,7 +144,7 @@ def main():
 
         {
             'dataset': 'trec2007',
-            'dataset_filename': 'trec2007-1607061515',
+            'dataset_filename': 'trec2007-1607201347',
             'feature_extraction_parameters': {
             },
             'label_type': {
