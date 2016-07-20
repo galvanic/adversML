@@ -43,11 +43,6 @@ def process_experiment_declaration(experiment):
     return experiment
 
 
-## helper functions to prepare dataset
-add_bias = lambda x: np.insert(x, 0, values=1, axis=1) # add bias term
-convert_labels = lambda y: y*2 - 1
-
-
 def perform_experiment(experiment):
     '''
     Returns the performance of the experiment.
@@ -65,6 +60,10 @@ def perform_experiment(experiment):
 
     with open('%s-labels.dat' % ifilepath, 'rb') as infile:
         Y = pickle.load(infile)
+
+    ## normalise Y labels to (-1, 1)
+    if tuple(np.unique(Y)) == (0, 1):
+        Y = np.array(Y, dtype=np.int8) * 2 - 1
 
     N, D = X.shape
 
@@ -86,10 +85,9 @@ def perform_experiment(experiment):
     X_test,  Y_test  = attack.apply(features=X_test,  labels=Y_test,  **attack_params)
 
     ## prepare dataset
+    add_bias = lambda x: np.insert(x, 0, values=1, axis=1) # add bias term
     if experiment['classifier'] != naivebayes:
         X_train, X_test = map(add_bias, [X_train, X_test])
-    if experiment['label_type']['ham_label'] == -1:
-        Y_train, Y_test = map(convert_labels, [Y_train, Y_test])
 
     ## apply model
     classifier = experiment['classifier']

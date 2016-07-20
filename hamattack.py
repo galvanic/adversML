@@ -10,6 +10,7 @@ def apply(features, labels,
         percentage_samples_poisoned,
         percentage_features_poisoned=1.0,
         feature_selection_method=None,
+        ham_label=-1,
         ):
     '''
     Returns the input data with *replaced* data that is crafted specifically to
@@ -20,7 +21,7 @@ def apply(features, labels,
     - features: N * D Numpy matrix of binary values (0 and 1)
         with N: the number of training examples
         and  D: the number of features for each example
-    - labels:   N * 1 Numpy vector of binary values (0 and 1)
+    - labels:   N * 1 Numpy vector of binary values (-1 and 1)
     - percentage_samples_poisoned: float between 0 and 1
         percentage of the dataset under the attacker's control
     - percentage_features_poisoned: float between 0 and 1
@@ -32,12 +33,11 @@ def apply(features, labels,
     - Y: poisoned labels
     '''
     ## notations
-    ham_label = 0
     X, Y = features, labels
     N, D = X.shape ## number of N: samples, D: features
     num_poisoned = int(N * percentage_samples_poisoned)
 
-    ## find the most salient (positive) features, indicative of the ham class
+    ## find the most salient features, indicative of the ham class
     ham_mask = np.ravel(Y == ham_label)
     hams = X[ham_mask]
 

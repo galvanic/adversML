@@ -55,9 +55,9 @@ def process_trec_dataset(trec_folderpath, countvectorizer_params, verbose=True):
     indices, labels = zip(*labels)
 
     ## format the labels into desired matrix
-    d = {'spam': 1, 'ham': 0}
-    Y = np.fromiter(map(lambda l: d[l], labels), dtype=np.uint8)
-    Y = np.matrix(Y.reshape(len(Y), 1))
+    d = {'spam': 1, 'ham': -1}
+    Y = np.fromiter(map(lambda l: d[l], labels), dtype=np.int8)
+    Y = Y.reshape(len(Y), 1)
 
     if verbose: print('Getting email contents')
     ## Get email contents to later extract features from
