@@ -29,6 +29,7 @@ def apply(features, labels,
     - Y: poisoned labels
     '''
     ## notations
+    spam_label = 1
     X, Y = features, labels
     N, D = X.shape ## number of N: samples, D: features
     num_poisoned = int(N * percentage_samples_poisoned)
@@ -39,7 +40,7 @@ def apply(features, labels,
     X[poisoned_indices] = 0
 
     ## the contamination assumption
-    Y[poisoned_indices] = 1
+    Y[poisoned_indices] = spam_label
 
     return X, Y
 
