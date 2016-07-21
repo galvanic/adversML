@@ -83,7 +83,6 @@ def perform_experiment(experiment):
     attack = experiment['attack']
     attack_params = experiment['attack_parameters']
     X_train, Y_train = attack.apply(features=X_train, labels=Y_train, **attack_params)
-    X_test,  Y_test  = attack.apply(features=X_test,  labels=Y_test,  **attack_params)
 
     ## prepare dataset
     add_bias = lambda x: np.insert(x, 0, values=1, axis=1) # add bias term
