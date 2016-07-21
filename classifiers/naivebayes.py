@@ -7,9 +7,7 @@ Inspired by Luis Munoz's MATLAB code for the Naive Bayes classifier model.
 
 /!\ run with python3
 '''
-import sys
 import numpy as np
-from performance import get_error, get_FPR, get_FNR
 
 
 def process_parameters(p, tolerance=1e-10):
@@ -116,79 +114,3 @@ def test(parameters, features,
 
     return predicted
 
-
-def main():
-    '''
-    test my implementation
-    '''
-    ## dummy data
-    ## 10 training samples and 3 features
-    ## so a 10 * 3 matrix
-    x = np.array([[1, 0, 1],
-                  [0, 0, 0],
-                  [1, 0, 1],
-                  [1, 1, 1],
-                  [1, 1, 0],
-                  [1, 1, 0],
-                  [1, 1, 0],
-                  [1, 1, 0],
-                  [1, 1, 0],
-                  [0, 1, 0]],
-                  dtype=np.int8)
-    y = np.array([[1],
-                  [1],
-                  [1],
-                  [0],
-                  [0],
-                  [0],
-                  [0],
-                  [0],
-                  [0],
-                  [1]],
-                  dtype=np.int8) #* 2 - 1
-
-    label_types = {'ham_label': 0, 'spam_label': 1}
-
-    p = train(features=x, labels=y, **label_types)
-    o = test(parameters=p, features=x, **label_types)
-
-    print('error set:\t%.3f' % get_error(y, o))
-    print('false positive rate:\t%.3f' % get_FPR(y, o, **label_types))
-    print('false negative rate:\t%.3f' % get_FNR(y, o, **label_types))
-
-
-    import pickle
-
-    with open('../datasets/processed/trec2007-1607061515-features.dat', 'rb') as infile:
-        X = pickle.load(infile)
-
-    with open('../datasets/processed/trec2007-1607061515-labels.dat', 'rb') as infile:
-        Y = pickle.load(infile)
-
-    N, D = X.shape
-
-    permutated_indices = np.random.permutation(N)
-    X = X[permutated_indices]
-    Y = Y[permutated_indices]
-
-    N_train = int(np.round(N * 0.5))
-    X_train = X[:N_train]
-    Y_train = Y[:N_train]
-    X_test = X[N_train:]
-    Y_test = Y[N_train:]
-
-    parameters = train(features=X_train, labels=Y_train, **label_types)
-    O_train = test(parameters=parameters, features=X_train, **label_types)
-    O_test = test(parameters=parameters, features=X_test, **label_types)
-
-    print('error training set:\t%.3f' % get_error(Y_train, O_train))
-    print('error testing  set:\t%.3f' % get_error(Y_test, O_test))
-    print('false positive rate:\t%.3f' % get_FPR(Y_test, O_test, **label_types))
-    print('false negative rate:\t%.3f' % get_FNR(Y_test, O_test, **label_types))
-
-    return
-
-
-
-if __name__ == '__main__':
-    sys.exit(main())

@@ -15,11 +15,10 @@ TODO ? cost and error could be measured outside the function
 TODO clean up the code further, especially duplicated sections (adaline model
      etc.)
 '''
-import sys
 import numpy as np
 
-from performance import get_cost, get_error
-from gradientdescent import max_iters
+from helpers.gradientdescent import max_iters
+from helpers.performance import get_cost, get_error
 
 
 def train(features, labels,
@@ -130,43 +129,4 @@ def test(parameters, features,
         T[O < 0] = -1
 
     return T
-
-
-def main():
-    '''Test Adaline training'''
-    ## dummy data
-    ## 10 training samples and 3 features
-    ## so a 10 * 3 matrix
-    x = np.array([[1, 0, 1],
-                  [0, 0, 0],
-                  [1, 0, 1],
-                  [1, 1, 1],
-                  [1, 1, 0],
-                  [1, 1, 0],
-                  [1, 1, 0],
-                  [1, 1, 0],
-                  [1, 1, 0],
-                  [0, 1, 0]],
-                  dtype=np.int8)
-    y = np.array([[1],
-                  [1],
-                  [1],
-                  [0],
-                  [0],
-                  [0],
-                  [0],
-                  [0],
-                  [0],
-                  [1]],
-                  dtype=np.int8) #* 2 - 1
-
-    ## train model
-    weights = train(features=x, labels=y,
-        learning_rate=1,
-        termination_condition=max_iters(100))
-    print('weights: %s' % ([' %.3f' % w for w in weights]))
-    return
-
-if __name__ == '__main__':
-    sys.exit(main())
 

@@ -3,23 +3,33 @@
 from __future__ import division
 
 '''
-'''
 
 import sys
-import numpy as np
 import pickle
+import numpy as np
 
-## helper functions
-from gradientdescent import max_iters
-from performance import get_error, get_FPR, get_FNR
+from helpers.gradientdescent import max_iters
+from helpers.performance import get_error, get_FPR, get_FNR
 
-## classifier models
-import adaline
-import naivebayes
+from classifiers import adaline as AdalineClassifier
+from classifiers import naivebayes as NaivebayesClassifier
+from attacks import empty as EmptyAttack
+from attacks import ham as HamAttack
 
-## attacks
-import empty
-import hamattack
+class no_attack():
+    def apply(features, labels, **kwargs):
+        return features, labels
+
+Classifiers = {
+    'adaline':  AdalineClassifier,
+    'naivebayes': NaivebayesClassifier,
+}
+
+Attacks = {
+    'empty': EmptyAttack,
+    'ham': HamAttack,
+    'none': no_attack,
+}
 
 
 def process_experiment_declaration(experiment):
@@ -30,17 +40,21 @@ def process_experiment_declaration(experiment):
     enter them more than once (would increase chance of errors) and replaces
     None by actual objects (like a function that does nothing for the empty
     attack but would have been faff for user to write).
+
+    TODO raise exceptions if doesn't exist, or catch KeyError
     '''
     ham_label = experiment['label_type']['ham_label']
     experiment['training_parameters']['ham_label'] = ham_label
     experiment['testing_parameters' ]['ham_label'] = ham_label
 
-    attack = experiment['attack']
-    if not attack:
-        class no_attack():
-            def apply(features, labels, **kwargs):
-                return features, labels
-        experiment['attack'] = no_attack
+    normalise_key = lambda k: k.lower().replace(' ', '')
+
+    experiment['classifier'] = Classifiers[normalise_key(experiment['classifier'])]
+
+    attack = Attacks[normalise_key(experiment['attack'])]
+    attack = 'none' if not attack else attack
+    experiment['attack'] = attack
+
     return experiment
 
 
@@ -86,7 +100,7 @@ def perform_experiment(experiment):
 
     ## prepare dataset
     add_bias = lambda x: np.insert(x, 0, values=1, axis=1) # add bias term
-    if experiment['classifier'] != naivebayes:
+    if experiment['classifier'] != NaivebayesClassifier:
         X_train, X_test = map(add_bias, [X_train, X_test])
 
     ## apply model
@@ -150,7 +164,7 @@ def main():
                 'ham_label': -1,
                 'spam_label': 1,
             },
-            'attack': None,
+            'attack': 'ham',
             'attack_parameters': {
                 'percentage_samples_poisoned': 0.1,
             },
