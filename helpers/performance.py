@@ -9,7 +9,7 @@ Inputs:
 TODO could actually draw a table for TP, FP, FN, TN ? :)
 '''
 import numpy as np
-from sklearn.metrics import auc
+from sklearn.metrics import auc, roc_auc_score
 
 
 def get_cost(Y, O):
@@ -69,10 +69,6 @@ def get_AUC(Y, O, ham_label, spam_label):
     '''
     Calculates Area Under Curve of the ROC.
     '''
-    TPR = get_TPR(Y, O, ham_label, spam_label)
-    FPR = get_FPR(Y, O, ham_label, spam_label)
-    points = [(0, 0), (FPR, TPR), (1, 1)]
-    x, y = list(zip(*points))
-    AUC = auc(x, y)
+    AUC = roc_auc_score(Y, O)
     return AUC
 
