@@ -4,6 +4,8 @@ from __future__ import division
 
 '''
 
+TODO how to implement repetitions of experiments ?
+'''
 import sys
 import pickle
 import numpy as np
@@ -129,32 +131,23 @@ def perform_experiment(experiment):
 def main():
     '''
     Test the pipeline
-    '''
-    experiments = [
-        {
-            'dataset': 'trec2007',
-            'dataset_filename': 'trec2007-1607201347',
-            'feature_extraction_parameters': {
-            },
-            'label_type': {
-                'ham_label': -1,
-                'spam_label': 1,
-            },
-            'attack': None,
-            'attack_parameters': {
-                'percentage_samples_poisoned': 0.1,
-            },
-            'classifier': adaline,
-            'training_parameters': {
-                'learning_rate': 0.06,
-                'initial_weights': None,
-                'termination_condition': max_iters(40),
-                'verbose': False,
-            },
-            'testing_parameters': {
-            },
-        },
 
+    TODO what parts of the experiment specs are tied together ? and can
+         therefore be simplified ?
+    '''
+    models_to_test = [
+        ('adaline', {
+            'learning_rate': 0.16,
+            'initial_weights': None,
+            'termination_condition': max_iters(20),
+            'verbose': False,
+        }),
+        ('naive bayes', {}),
+    ]
+
+    experiments = []
+    for classifier_name, classifier_params in models_to_test:
+        experiments.append(
         {
             'dataset': 'trec2007',
             'dataset_filename': 'trec2007-1607201347',
@@ -168,13 +161,11 @@ def main():
             'attack_parameters': {
                 'percentage_samples_poisoned': 0.1,
             },
-            'classifier': naivebayes,
-            'training_parameters': {
-            },
+            'classifier': classifier_name,
+            'training_parameters': classifier_params,
             'testing_parameters': {
             },
-        },
-    ]
+        })
 
     experiments = map(process_experiment_declaration, experiments)
     results = map(perform_experiment, experiments)
