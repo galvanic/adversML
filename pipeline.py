@@ -11,7 +11,7 @@ import pickle
 import numpy as np
 
 from helpers.gradientdescent import max_iters
-from helpers.performance import get_error, get_FPR, get_FNR
+from helpers.performance import get_error, get_FPR, get_FNR, get_AUC
 
 from classifiers import adaline as AdalineClassifier
 from classifiers import naivebayes as NaivebayesClassifier
@@ -120,9 +120,10 @@ def perform_experiment(experiment):
     ## measure performance
     performance = {
         'error_train': get_error(Y_train, O_train),
-        'error_test':  get_error(Y_test,  O_test),
-        'FPR':         get_FPR(Y_test, O_test, **experiment['label_type']),
-        'FNR':         get_FNR(Y_test, O_test, **experiment['label_type']),
+        'error_test': get_error(Y_test,  O_test),
+        'FPR': get_FPR(Y_test, O_test, **experiment['label_type']),
+        'FNR': get_FNR(Y_test, O_test, **experiment['label_type']),
+        'AUC': get_AUC(Y_test, O_test, **experiment['label_type']),
     }
 
     return performance

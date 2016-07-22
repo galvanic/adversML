@@ -9,6 +9,7 @@ Inputs:
 TODO could actually draw a table for TP, FP, FN, TN ? :)
 '''
 import numpy as np
+from sklearn.metrics import auc
 
 
 def get_cost(Y, O):
@@ -52,4 +53,26 @@ def get_FNR(Y, O, ham_label, spam_label):
     FNR = FN / P
     return FNR
 
+
+def get_TPR(Y, O, ham_label, spam_label):
+    '''
+    Calculates True Positive Rate
+    '''
+    Y, O = map(np.ravel, [Y, O]) ## make sure shape is (len,) for both
+    TP = np.sum((O == spam_label) & (Y == spam_label))
+    P =  np.sum(Y == spam_label) ## TP + FN
+    TNR = TP / P
+    return TNR
+
+
+def get_AUC(Y, O, ham_label, spam_label):
+    '''
+    Calculates Area Under Curve of the ROC.
+    '''
+    TPR = get_TPR(Y, O, ham_label, spam_label)
+    FPR = get_FPR(Y, O, ham_label, spam_label)
+    points = [(0, 0), (FPR, TPR), (1, 1)]
+    x, y = list(zip(*points))
+    AUC = auc(x, y)
+    return AUC
 
