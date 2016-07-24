@@ -3,61 +3,15 @@
 from __future__ import division
 
 '''
-
-TODO how to implement repetitions of experiments ?
 '''
 import sys
 import pickle
 import numpy as np
+from pprint import pprint
 
 from helpers.gradientdescent import max_iters
 from helpers.performance import get_error, get_FPR, get_FNR, get_AUC
-
-from classifiers import adaline as AdalineClassifier
-from classifiers import naivebayes as NaivebayesClassifier
-from attacks import empty as EmptyAttack
-from attacks import ham as HamAttack
-
-class no_attack():
-    def apply(features, labels, **kwargs):
-        return features, labels
-
-Classifiers = {
-    'adaline':  AdalineClassifier,
-    'naivebayes': NaivebayesClassifier,
-}
-
-Attacks = {
-    'empty': EmptyAttack,
-    'ham': HamAttack,
-    'none': no_attack,
-}
-
-
-def process_experiment_declaration(experiment):
-    '''
-    Returns the experiment dictionary specification ready to carry out the
-    experiment.
-    For example, it duplicates certain keys so that the user doesn't have to
-    enter them more than once (would increase chance of errors) and replaces
-    None by actual objects (like a function that does nothing for the empty
-    attack but would have been faff for user to write).
-
-    TODO raise exceptions if doesn't exist, or catch KeyError
-    '''
-    ham_label = experiment['label_type']['ham_label']
-    experiment['training_parameters']['ham_label'] = ham_label
-    experiment['testing_parameters' ]['ham_label'] = ham_label
-
-    normalise_key = lambda k: k.lower().replace(' ', '')
-
-    experiment['classifier'] = Classifiers[normalise_key(experiment['classifier'])]
-
-    attack = Attacks[normalise_key(experiment['attack'])]
-    attack = 'none' if not attack else attack
-    experiment['attack'] = attack
-
-    return experiment
+from helpers.specs import generate_specs
 
 
 def perform_experiment(experiment):
@@ -102,7 +56,7 @@ def perform_experiment(experiment):
 
     ## prepare dataset
     add_bias = lambda x: np.insert(x, 0, values=1, axis=1) # add bias term
-    if experiment['classifier'] != NaivebayesClassifier:
+    if experiment['add_bias']:
         X_train, X_test = map(add_bias, [X_train, X_test])
 
     ## apply model
@@ -133,49 +87,21 @@ def main():
     '''
     Test the pipeline
 
+    - specifications: details for how to carry out experiments, what
+        parameters to use etc.
+
     TODO what parts of the experiment specs are tied together ? and can
          therefore be simplified ?
+    TODO decide how to implement repetitions of experiments ?
     '''
-    models_to_test = [
-        ('adaline', {
-            'learning_rate': 0.16,
-            'initial_weights': None,
-            'termination_condition': max_iters(20),
-            'verbose': False,
-        }),
-        ('naive bayes', {}),
-    ]
+    specifications = generate_specs()
+    results = map(perform_experiment, specifications)
 
-    experiments = []
-    for classifier_name, classifier_params in models_to_test:
-        experiments.append(
-        {
-            'dataset': 'trec2007',
-            'dataset_filename': 'trec2007-1607201347',
-            'feature_extraction_parameters': {
-            },
-            'label_type': {
-                'ham_label': -1,
-                'spam_label': 1,
-            },
-            'attack': 'ham',
-            'attack_parameters': {
-                'percentage_samples_poisoned': 0.1,
-            },
-            'classifier': classifier_name,
-            'training_parameters': classifier_params,
-            'testing_parameters': {
-            },
-        })
+    #TODO zip specifications and results together
 
-    experiments = map(process_experiment_declaration, experiments)
-    results = map(perform_experiment, experiments)
-
-    from pprint import pprint
-    pprint(list(results))
-
-    return
+    return list(results)
 
 
 if __name__ == '__main__':
     sys.exit(main())
+
