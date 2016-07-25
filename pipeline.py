@@ -149,7 +149,7 @@ def main():
     '''
 
     experiment_dimensions = {
-        ('attack_parameters', 'percentage_samples_poisoned'): [.1,],
+        ('attack_parameters', 'percentage_samples_poisoned'): [0, .1, .2, .3, .4, .5],
         'classifier': ['adaline', 'naive bayes'],
         'attack': ['ham', 'empty'],
         'iteration': range(1, 10+1),
