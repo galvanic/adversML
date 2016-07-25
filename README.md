@@ -125,5 +125,5 @@ optimisations:
 - profile code
 - ? [bit arrays](https://stackoverflow.com/questions/5602155/numpy-boolean-array-with-1-bit-entries)
 - ? [explicitly free memory](https://stackoverflow.com/questions/1316767/how-can-i-explicitly-free-memory-in-python)
-
 - ? worth making an ipython notebook on MI and feature selection for ham
+- implement logging

@@ -3,6 +3,7 @@
 from __future__ import division
 
 '''
+TODO ? give each experiment a UID
 '''
 import sys
 import pickle
@@ -130,7 +131,7 @@ def perform_experiment(experiment, verbose=True):
         'error_test': get_error(Y_test,  O_test),
         'FPR': get_FPR(Y_test, O_test, **experiment['label_type']),
         'FNR': get_FNR(Y_test, O_test, **experiment['label_type']),
-        'ROC_AUC': get_ROC_AUC(Y_test, O_test, **experiment['label_type']),
+        'AUC': get_ROC_AUC(Y_test, O_test, **experiment['label_type']),
     }
 
     return performance
@@ -138,14 +139,11 @@ def perform_experiment(experiment, verbose=True):
 
 def main():
     '''
-    Test the pipeline
-
     - specifications: details for how to carry out experiments, what
         parameters to use etc.
 
     TODO what parts of the experiment specs are tied together ? and can
          therefore be simplified ?
-    TODO decide how to implement repetitions of experiments ?
     '''
 
     experiment_dimensions = {
