@@ -15,7 +15,7 @@ from pprint import pprint
 from copy import deepcopy
 
 from helpers.gradientdescent import max_iters
-from helpers.performance import get_error, get_FPR, get_FNR, get_AUC
+from helpers.performance import get_error, get_FPR, get_FNR, get_ROC_AUC
 from helpers.specs import generate_specs
 
 from classifiers import adaline as AdalineClassifier
@@ -68,7 +68,7 @@ def prepare_specs(spec):
     return spec
 
 
-def perform_experiment(experiment, verbose=True):
+def perform_experiment(experiment, verbose=False):
     '''
     Returns the performance of the experiment.
 
