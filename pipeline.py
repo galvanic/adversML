@@ -7,7 +7,9 @@ from __future__ import division
 import sys
 import pickle
 import numpy as np
+import pandas as pd
 from itertools import product
+from collections import OrderedDict
 from pprint import pprint
 from copy import deepcopy
 
@@ -152,13 +154,19 @@ def main():
         'attack': ['ham', 'empty'],
         'iteration': range(1, 10+1),
     }
+    experiment_dimensions = OrderedDict(sorted(experiment_dimensions.items(), key=lambda t: len(t[1])))
 
     specifications = generate_specs(experiment_dimensions)
     specs = map(prepare_specs, specifications)
     results = list(map(perform_experiment, specs))
 
+    ## put into DataFrame for analysis
+    dimensions, variations = zip(*experiment_dimensions.items())
+    dimension_names = [name[-1] if type(name) == tuple else name for name in dimensions]
+    idx = pd.MultiIndex.from_product(variations, names=dimension_names)
+    df = pd.DataFrame.from_records(data=results, index=idx)
 
-    return results
+    return df
 
 
 if __name__ == '__main__':
