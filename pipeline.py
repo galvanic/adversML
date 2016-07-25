@@ -36,7 +36,7 @@ Attacks = {
 }
 
 
-def process_experiment_declaration(experiment):
+def prepare_specs(spec):
     '''
     Returns the experiment dictionary specification ready to carry out the
     experiment.
@@ -47,22 +47,22 @@ def process_experiment_declaration(experiment):
 
     TODO raise exceptions if doesn't exist, or catch KeyError
     '''
-    experiment = deepcopy(experiment)
+    spec = deepcopy(spec)
 
-    ham_label = experiment['label_type']['ham_label']
-    experiment['training_parameters']['ham_label'] = ham_label
-    experiment['testing_parameters' ]['ham_label'] = ham_label
+    ham_label = spec['label_type']['ham_label']
+    spec['training_parameters']['ham_label'] = ham_label
+    spec['testing_parameters' ]['ham_label'] = ham_label
 
     normalise_key = lambda k: k.lower().replace(' ', '')
 
-    experiment['classifier'] = Classifiers[normalise_key(experiment['classifier'])]
-    experiment['add_bias'] = True if experiment['classifier'] != NaivebayesClassifier else False
+    spec['classifier'] = Classifiers[normalise_key(spec['classifier'])]
+    spec['add_bias'] = True if spec['classifier'] != NaivebayesClassifier else False
 
-    attack = Attacks[normalise_key(experiment['attack'])]
+    attack = Attacks[normalise_key(spec['attack'])]
     attack = 'none' if not attack else attack
-    experiment['attack'] = attack
+    spec['attack'] = attack
 
-    return experiment
+    return spec
 
 
 def perform_experiment(experiment, verbose=True):
@@ -146,15 +146,15 @@ def main():
     TODO decide how to implement repetitions of experiments ?
     '''
 
-    experimental_dimensions = {
+    experiment_dimensions = {
         ('attack_parameters', 'percentage_samples_poisoned'): [.1,],
         'classifier': ['adaline', 'naive bayes'],
         'attack': ['ham', 'empty'],
         'iteration': range(1, 10+1),
     }
 
-    specifications = generate_specs(experimental_dimensions)
-    specs = map(process_experiment_declaration, specifications)
+    specifications = generate_specs(experiment_dimensions)
+    specs = map(prepare_specs, specifications)
     results = list(map(perform_experiment, specs))
 
 

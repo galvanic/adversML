@@ -8,7 +8,7 @@ from itertools import product
 from collections import defaultdict
 
 
-def generate_specs(experimental_dimensions):
+def generate_specs(experiment_dimensions):
     '''
     - specifications: details for how to carry out experiments, what
         parameters to use etc.
@@ -27,7 +27,7 @@ def generate_specs(experimental_dimensions):
         'testing_parameters': {},
     }
 
-    dimensions, variations = zip(*experimental_dimensions.items())
+    dimensions, variations = zip(*experiment_dimensions.items())
     specs = [dict(zip(dimensions, values)) for values in product(*variations)]
 
     ## TODO refactor
