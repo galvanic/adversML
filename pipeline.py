@@ -137,7 +137,7 @@ def perform_experiment(experiment, verbose=False):
     return performance
 
 
-def perform_experiment_batch(experiment_dimensions):
+def perform_experiment_batch(parameter_dimensions, fixed_parameters):
     '''
     - specifications: details for how to carry out experiments, what
         parameters to use etc.
@@ -152,15 +152,15 @@ def perform_experiment_batch(experiment_dimensions):
          experiment_dimensions dictionary should already be an instance of
          OrderedDict
     '''
-    experiment_dimensions = OrderedDict(sorted(experiment_dimensions.items(), key=lambda t: len(t[1])))
+    parameter_dimensions = OrderedDict(sorted(parameter_dimensions.items(), key=lambda t: len(t[1])))
 
     ## get all possible variations for specs
-    specifications = generate_specs(experiment_dimensions)
+    specifications = generate_specs(parameter_dimensions, fixed_parameters)
     specs = map(prepare_specs, specifications)
     results = list(map(perform_experiment, specs))
 
     ## put into DataFrame for analysis
-    dimensions, variations = zip(*experiment_dimensions.items())
+    dimensions, variations = zip(*parameter_dimensions.items())
     dimension_names = [name[-1] if type(name) == tuple else name for name in dimensions]
     idx = pd.MultiIndex.from_product(variations, names=dimension_names)
     df = pd.DataFrame.from_records(data=results, index=idx)
@@ -175,14 +175,25 @@ def perform_experiment_batch(experiment_dimensions):
 def main():
 
     ## put iteration last, but other dimensions is preference only
-    experiment_dimensions = {
+    parameter_ranges = {
         'classifier': ['adaline', 'naive bayes'],
         'attack': ['ham', 'empty'],
         ('attack_parameters', 'percentage_samples_poisoned'): [0, .1, .2, .3, .4, .5],
         'iteration': range(1, 10+1),
     }
 
-    df = perform_experiment_batch(experiment_dimensions)
+    fixed_parameters = {
+        'dataset': 'trec2007',
+        'dataset_filename': 'trec2007-1607201347',
+        'label_type': {
+            'ham_label': -1,
+            'spam_label': 1,
+        },
+        'training_parameters': {},
+        'testing_parameters': {},
+    }
+
+    df = perform_experiment_batch(parameter_ranges, fixed_parameters)
 
     return df
 
