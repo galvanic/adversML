@@ -25,7 +25,7 @@ def train(features, labels,
         ## params:
         initial_weights=None,
         learning_rate=0.01,
-        termination_condition=max_iters(100),
+        termination_condition=None,
         ham_label=0,
         spam_label=1,
         verbose=False,
@@ -55,6 +55,9 @@ def train(features, labels,
          training
     TODO implement an autostop if cost is rising instead of falling ?
     '''
+    if not termination_condition:
+        termination_condition = max_iters(20)
+
     ## 0. Prepare notations
     X, Y = features, labels
     N, D = features.shape   # N #training samples; D #features
