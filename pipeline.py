@@ -137,23 +137,24 @@ def perform_experiment(experiment, verbose=False):
     return performance
 
 
-def main():
+def perform_experiment_batch(experiment_dimensions):
     '''
     - specifications: details for how to carry out experiments, what
         parameters to use etc.
 
     TODO what parts of the experiment specs are tied together ? and can
          therefore be simplified ?
+    TODO make sure iteration is last ? or take it as seperate argument and put
+         put it last ? OrderedDict should take in order of experiments, or the
+         experiment_dimensions dictionary should already be an instance of
+         Orditeration is last ? or take it as seperate argument and put
+         put it last ? OrderedDict should take in order of experiments, or the
+         experiment_dimensions dictionary should already be an instance of
+         OrderedDict
     '''
-
-    experiment_dimensions = {
-        ('attack_parameters', 'percentage_samples_poisoned'): [0, .1, .2, .3, .4, .5],
-        'classifier': ['adaline', 'naive bayes'],
-        'attack': ['ham', 'empty'],
-        'iteration': range(1, 10+1),
-    }
     experiment_dimensions = OrderedDict(sorted(experiment_dimensions.items(), key=lambda t: len(t[1])))
 
+    ## get all possible variations for specs
     specifications = generate_specs(experiment_dimensions)
     specs = map(prepare_specs, specifications)
     results = list(map(perform_experiment, specs))
@@ -163,8 +164,28 @@ def main():
     dimension_names = [name[-1] if type(name) == tuple else name for name in dimensions]
     idx = pd.MultiIndex.from_product(variations, names=dimension_names)
     df = pd.DataFrame.from_records(data=results, index=idx)
+    df.columns.names = ['metrics']
+
+    ## mean over all iterations
+    df_mean = df.mean(level=df.index.names[:-1])
 
     return df
+
+
+def main():
+
+    ## put iteration last, but other dimensions is preference only
+    experiment_dimensions = {
+        'classifier': ['adaline', 'naive bayes'],
+        'attack': ['ham', 'empty'],
+        ('attack_parameters', 'percentage_samples_poisoned'): [0, .1, .2, .3, .4, .5],
+        'iteration': range(1, 10+1),
+    }
+
+    df = perform_experiment_batch(experiment_dimensions)
+
+    return df
+
 
 
 if __name__ == '__main__':
