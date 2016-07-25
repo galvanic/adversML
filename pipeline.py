@@ -7,14 +7,65 @@ from __future__ import division
 import sys
 import pickle
 import numpy as np
+from itertools import product
 from pprint import pprint
+from copy import deepcopy
 
 from helpers.gradientdescent import max_iters
 from helpers.performance import get_error, get_FPR, get_FNR, get_AUC
 from helpers.specs import generate_specs
 
+from classifiers import adaline as AdalineClassifier
+from classifiers import naivebayes as NaivebayesClassifier
+from attacks import empty as EmptyAttack
+from attacks import ham as HamAttack
 
-def perform_experiment(experiment):
+class no_attack():
+    def apply(features, labels, **kwargs):
+        return features, labels
+
+Classifiers = {
+    'adaline':  AdalineClassifier,
+    'naivebayes': NaivebayesClassifier,
+}
+
+Attacks = {
+    'empty': EmptyAttack,
+    'ham': HamAttack,
+    'none': no_attack,
+}
+
+
+def process_experiment_declaration(experiment):
+    '''
+    Returns the experiment dictionary specification ready to carry out the
+    experiment.
+    For example, it duplicates certain keys so that the user doesn't have to
+    enter them more than once (would increase chance of errors) and replaces
+    None by actual objects (like a function that does nothing for the empty
+    attack but would have been faff for user to write).
+
+    TODO raise exceptions if doesn't exist, or catch KeyError
+    '''
+    experiment = deepcopy(experiment)
+
+    ham_label = experiment['label_type']['ham_label']
+    experiment['training_parameters']['ham_label'] = ham_label
+    experiment['testing_parameters' ]['ham_label'] = ham_label
+
+    normalise_key = lambda k: k.lower().replace(' ', '')
+
+    experiment['classifier'] = Classifiers[normalise_key(experiment['classifier'])]
+    experiment['add_bias'] = True if experiment['classifier'] != NaivebayesClassifier else False
+
+    attack = Attacks[normalise_key(experiment['attack'])]
+    attack = 'none' if not attack else attack
+    experiment['attack'] = attack
+
+    return experiment
+
+
+def perform_experiment(experiment, verbose=True):
     '''
     Returns the performance of the experiment.
 
@@ -94,12 +145,20 @@ def main():
          therefore be simplified ?
     TODO decide how to implement repetitions of experiments ?
     '''
-    specifications = generate_specs()
-    results = map(perform_experiment, specifications)
 
-    #TODO zip specifications and results together
+    experimental_dimensions = {
+        ('attack_parameters', 'percentage_samples_poisoned'): [.1,],
+        'classifier': ['adaline', 'naive bayes'],
+        'attack': ['ham', 'empty'],
+        'iteration': range(1, 10+1),
+    }
 
-    return list(results)
+    specifications = generate_specs(experimental_dimensions)
+    specs = map(process_experiment_declaration, specifications)
+    results = list(map(perform_experiment, specs))
+
+
+    return results
 
 
 if __name__ == '__main__':

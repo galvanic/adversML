@@ -7,55 +7,8 @@ from __future__ import division
 from itertools import product
 from collections import defaultdict
 
-from classifiers import adaline as AdalineClassifier
-from classifiers import naivebayes as NaivebayesClassifier
-from attacks import empty as EmptyAttack
-from attacks import ham as HamAttack
 
-class no_attack():
-    def apply(features, labels, **kwargs):
-        return features, labels
-
-Classifiers = {
-    'adaline':  AdalineClassifier,
-    'naivebayes': NaivebayesClassifier,
-}
-
-Attacks = {
-    'empty': EmptyAttack,
-    'ham': HamAttack,
-    'none': no_attack,
-}
-
-
-def process_experiment_declaration(experiment):
-    '''
-    Returns the experiment dictionary specification ready to carry out the
-    experiment.
-    For example, it duplicates certain keys so that the user doesn't have to
-    enter them more than once (would increase chance of errors) and replaces
-    None by actual objects (like a function that does nothing for the empty
-    attack but would have been faff for user to write).
-
-    TODO raise exceptions if doesn't exist, or catch KeyError
-    '''
-    ham_label = experiment['label_type']['ham_label']
-    experiment['training_parameters']['ham_label'] = ham_label
-    experiment['testing_parameters' ]['ham_label'] = ham_label
-
-    normalise_key = lambda k: k.lower().replace(' ', '')
-
-    experiment['classifier'] = Classifiers[normalise_key(experiment['classifier'])]
-    experiment['add_bias'] = True if experiment['classifier'] != NaivebayesClassifier else False
-
-    attack = Attacks[normalise_key(experiment['attack'])]
-    attack = 'none' if not attack else attack
-    experiment['attack'] = attack
-
-    return experiment
-
-
-def generate_specs():
+def generate_specs(experimental_dimensions):
     '''
     - specifications: details for how to carry out experiments, what
         parameters to use etc.
@@ -72,12 +25,6 @@ def generate_specs():
         },
         'training_parameters': {},
         'testing_parameters': {},
-    }
-
-    experimental_dimensions = {
-        'classifier': ['adaline', 'naive bayes'],
-        'attack': ['ham', 'empty'],
-        ('attack_parameters', 'percentage_samples_poisoned'): [.1, .5],
     }
 
     dimensions, variations = zip(*experimental_dimensions.items())
@@ -99,8 +46,6 @@ def generate_specs():
         for key, value in spec.items():
             add_recursive_key(key, specification, value)
         specifications.append(dict(specification))
-
-    specifications = map(process_experiment_declaration, specifications)
 
     return specifications
 
