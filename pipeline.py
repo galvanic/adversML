@@ -130,7 +130,7 @@ def perform_experiment(experiment, verbose=True):
         'error_test': get_error(Y_test,  O_test),
         'FPR': get_FPR(Y_test, O_test, **experiment['label_type']),
         'FNR': get_FNR(Y_test, O_test, **experiment['label_type']),
-        'AUC': get_AUC(Y_test, O_test, **experiment['label_type']),
+        'ROC_AUC': get_ROC_AUC(Y_test, O_test, **experiment['label_type']),
     }
 
     return performance

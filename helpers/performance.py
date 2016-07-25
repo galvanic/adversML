@@ -65,10 +65,9 @@ def get_TPR(Y, O, ham_label, spam_label):
     return TNR
 
 
-def get_AUC(Y, O, ham_label, spam_label):
+def get_ROC_AUC(Y, O, ham_label, spam_label):
     '''
     Calculates Area Under Curve of the ROC.
     '''
-    AUC = roc_auc_score(Y, O)
-    return AUC
+    return roc_auc_score(Y, O)
 
