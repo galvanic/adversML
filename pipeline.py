@@ -25,7 +25,7 @@ def perform_experiment(experiment):
     - performance: dictionary
     '''
 
-    ifilepath = '../datasets/processed/%s' % experiment['dataset_filename']
+    ifilepath = '/home/justine/Dropbox/imperial/computing/thesis/datasets/processed/%s' % experiment['dataset_filename']
     with open('%s-features.dat' % ifilepath, 'rb') as infile:
         X = pickle.load(infile)
 
