@@ -106,24 +106,27 @@ A few [ipython notebooks](https://ipython.org/notebook.html) try the implementat
 TODO
 ----
 
-- implement mutual information
 - add other dataset extraction, classifier models, and attacks
-- assert all matrix shapes and types
-- decide on what to do for the different ham labels
-- decide on appropriate format/type for experiment and how to post-process it
-- seek feedback to refine pipeline
-- implement data loading from different filetypes
-- implement only part of features are ham in ham attack (does this make sense since
-  we are in a poisoning and not an evasion attack?)
-- organise code into folders
 
-optimisations:
+  - logistic regression
+  - dictionary attack
+  - focussed attack
 
 - implement stochastic and batch training
+
+### software eng (ie. not directly important for this project) stuff:
+
+- decide and implement how to store experiment spec and results (+logging), prob grouped in batches
+- assert all matrix shapes and types
+- seek feedback to refine pipeline
+- implement logging
+- implement data loading from different filetypes
+
+### optimisations:
+
 - ? optimise pipeline for experiments where the same dataset, same attacks, etc. are used
     or not worth the time ?
 - profile code
 - ? [bit arrays](https://stackoverflow.com/questions/5602155/numpy-boolean-array-with-1-bit-entries)
 - ? [explicitly free memory](https://stackoverflow.com/questions/1316767/how-can-i-explicitly-free-memory-in-python)
-- ? worth making an ipython notebook on MI and feature selection for ham
-- implement logging
+- ? make ipython notebook on MI and feature selection for ham
