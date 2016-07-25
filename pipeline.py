@@ -1,11 +1,9 @@
-#!/usr/bin/env python3
 # coding: utf-8
 from __future__ import division
 
 '''
 TODO ? give each experiment a UID
 '''
-import sys
 import pickle
 import numpy as np
 import pandas as pd
@@ -166,39 +164,5 @@ def perform_experiment_batch(parameter_dimensions, fixed_parameters):
     df = pd.DataFrame.from_records(data=results, index=idx)
     df.columns.names = ['metrics']
 
-    ## mean over all iterations
-    df_mean = df.mean(level=df.index.names[:-1])
-
     return df
-
-
-def main():
-
-    ## put iteration last, but other dimensions is preference only
-    parameter_ranges = {
-        'classifier': ['adaline', 'naive bayes'],
-        'attack': ['ham', 'empty'],
-        ('attack_parameters', 'percentage_samples_poisoned'): [0, .1, .2, .3, .4, .5],
-        'iteration': range(1, 10+1),
-    }
-
-    fixed_parameters = {
-        'dataset': 'trec2007',
-        'dataset_filename': 'trec2007-1607201347',
-        'label_type': {
-            'ham_label': -1,
-            'spam_label': 1,
-        },
-        'training_parameters': {},
-        'testing_parameters': {},
-    }
-
-    df = perform_experiment_batch(parameter_ranges, fixed_parameters)
-
-    return df
-
-
-
-if __name__ == '__main__':
-    sys.exit(main())
 
