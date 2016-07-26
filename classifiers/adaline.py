@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # coding: utf-8
 from __future__ import division
 
@@ -56,9 +55,9 @@ def train(features, labels,
     TODO implement an autostop if cost is rising instead of falling ?
     '''
     if not termination_condition:
-        termination_condition = max_iters(20)
+        termination_condition = max_iters(50)
 
-    ## 0. Prepare notations
+    ## notation
     X, Y = features, labels
     N, D = features.shape   # N #training samples; D #features
     cost = []               # keep track of cost
@@ -68,7 +67,7 @@ def train(features, labels,
     W = np.zeros((D, 1)) if initial_weights is None else initial_weights.reshape((D, 1))
 
     ## 2. Evaluate the termination condition
-    i = 1
+    epoch = 1
     while not termination_condition():
 
         ## current iteration classifier output
@@ -98,8 +97,8 @@ def train(features, labels,
         current_cost = get_cost(Y, O)
         cost.append(current_cost)
 
-        if verbose: print('iteration %d:\tcost = %.3f' % (i, cost[-1]))
-        i += 1
+        if verbose: print('iteration %d:\tcost = %.3f' % (epoch, cost[-1]))
+        epoch += 1
 
     return W#, cost, error
 
@@ -111,9 +110,6 @@ def test(parameters, features,
         ):
     '''
     TEST PHASE
-
-    TODO not sure what makes sense to measure here ?
-         => performance can be calculated outside the function
     '''
     ## notation
     X, W = features, parameters
