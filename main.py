@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # coding: utf-8
 from __future__ import division
-
 '''
 '''
 import sys
 
-from pipeline import perform_experiment_batch
+from helpers.pipeline import perform_experiment_batch
+
 
 
 def main():
