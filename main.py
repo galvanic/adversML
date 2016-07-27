@@ -19,9 +19,9 @@ def main(infolder, outfolder):
     ## put iteration last, but other dimensions is preference only
     ## TODO use OrderedDict
     parameter_ranges = {
-        'classifier': ['adaline', 'naive bayes'],
-        'attack': ['ham', 'empty'],
-        ('attack_parameters', 'percentage_samples_poisoned'): [0, .1, .2, .3, .4, .5],
+        'classifier': ['adaline', 'logistic regression', 'naive bayes'],
+        'attack': ['empty', 'dictionary', 'none'],
+        ('attack_parameters', 'percentage_samples_poisoned'): [0, .2, .5],
         'repetition': range(1, 20+1),
     }
 

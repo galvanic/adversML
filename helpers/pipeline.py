@@ -23,6 +23,7 @@ from classifiers import naivebayes as NaivebayesClassifier
 from classifiers import logistic_regression as LogisticRegressionClassifier
 from attacks import empty as EmptyAttack
 from attacks import ham as HamAttack
+from attacks import dictionary as DictionaryAttack
 
 class no_attack():
     def apply(features, labels, **kwargs):
@@ -37,6 +38,7 @@ Classifiers = {
 Attacks = {
     'empty': EmptyAttack,
     'ham': HamAttack,
+    'dictionary': DictionaryAttack,
     'none': no_attack,
 }
 
@@ -60,11 +62,14 @@ def prepare_specs(spec):
 
     normalise_key = lambda k: k.lower().replace(' ', '')
 
+    ## classifier
     spec['classifier'] = Classifiers[normalise_key(spec['classifier'])]
     spec['add_bias'] = True if spec['classifier'] != NaivebayesClassifier else False
 
-    attack = Attacks[normalise_key(spec['attack'])]
+    ## attack
+    attack = spec['attack']
     attack = 'none' if not attack else attack
+    attack = Attacks[normalise_key(attack)]
     spec['attack'] = attack
 
     return spec

@@ -2,7 +2,7 @@
 from __future__ import division
 
 '''
-Implementation of an empty attack.
+Implementation of a dictionary attack.
 
 Assumes no bias has been added yet.
 '''
@@ -14,7 +14,7 @@ def apply(features, labels,
         ):
     '''
     Returns the input data with *replaced* data that is crafted specifically to
-    cause a poisoning empty attack, where all features are set to zero.
+    cause a poisoning dictionary attack, where all features are set to one.
 
     Inputs:
     - features: N * D Numpy matrix of binary values (0 and 1)
@@ -39,7 +39,7 @@ def apply(features, labels,
     ## randomly replace some samples with the poisoned ones
     ## so that total number of samples doesn't change
     poisoned_indices = np.random.choice(N, num_poisoned)
-    X[poisoned_indices] = 0
+    X[poisoned_indices] = 1
 
     ## the contamination assumption
     Y[poisoned_indices] = spam_label
