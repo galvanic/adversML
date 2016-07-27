@@ -59,7 +59,7 @@ def main(infolder, outfolder):
     df.index = df.index.set_names(new_names)
 
     with open('%s-df.txt' % outfilepath, 'w') as outfile:
-        outfile.write(df.to_string(col_space=8, float_format='%.3f'))
+        outfile.write(df.to_string(col_space=8, float_format='%.2f'))
 
     return df
 
