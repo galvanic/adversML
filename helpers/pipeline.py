@@ -4,6 +4,7 @@ from __future__ import division
 '''
 TODO ? give each experiment a UID
 '''
+import os
 import pickle
 import numpy as np
 import pandas as pd
@@ -11,6 +12,7 @@ from itertools import product
 from collections import OrderedDict
 from pprint import pprint
 from copy import deepcopy
+from functools import partial
 
 from helpers.gradientdescent import max_iters
 from helpers.performance import get_error, get_FPR, get_FNR, get_ROC_AUC
@@ -68,7 +70,7 @@ def prepare_specs(spec):
     return spec
 
 
-def perform_experiment(experiment, verbose=False):
+def perform_experiment(experiment, infolder, verbose=False):
     '''
     Returns the performance of the experiment.
 
@@ -79,7 +81,7 @@ def perform_experiment(experiment, verbose=False):
     - performance: dictionary
     '''
 
-    ifilepath = '../datasets/processed/%s' % experiment['dataset_filename']
+    ifilepath = os.path.join(infolder, '%s' % experiment['dataset_filename'])
     with open('%s-features.dat' % ifilepath, 'rb') as infile:
         X = pickle.load(infile)
 
@@ -137,10 +139,13 @@ def perform_experiment(experiment, verbose=False):
     return performance
 
 
-def perform_experiment_batch(parameter_dimensions, fixed_parameters):
+def perform_experiment_batch(infolder, parameter_ranges, fixed_parameters):
     '''
-    - specifications: details for how to carry out experiments, what
-        parameters to use etc.
+
+    Inputs:
+    - infolder: path of directory where processed datasets are
+    - parameter_ranges
+    - fixed_parameters
 
     TODO what parts of the experiment specs are tied together ? and can
          therefore be simplified ?
@@ -152,15 +157,18 @@ def perform_experiment_batch(parameter_dimensions, fixed_parameters):
          experiment_dimensions dictionary should already be an instance of
          OrderedDict
     '''
-    parameter_dimensions = OrderedDict(sorted(parameter_dimensions.items(), key=lambda t: len(t[1])))
+    parameter_ranges = OrderedDict(sorted(parameter_ranges.items(), key=lambda t: len(t[1])))
 
     ## get all possible variations for specs
-    specifications = generate_specs(parameter_dimensions, fixed_parameters)
+    specifications = generate_specs(parameter_ranges, fixed_parameters)
     specs = map(prepare_specs, specifications)
-    results = list(map(perform_experiment, specs))
+
+    ## perform each experiment
+    perform_exp = partial(perform_experiment, infolder=infolder)
+    results = list(map(perform_exp, specs))
 
     ## put into DataFrame for analysis
-    dimensions, variations = zip(*parameter_dimensions.items())
+    dimensions, variations = zip(*parameter_ranges.items())
     dimension_names = [name[-1] if type(name) == tuple else name for name in dimensions]
     idx = pd.MultiIndex.from_product(variations, names=dimension_names)
     df = pd.DataFrame.from_records(data=results, index=idx)
