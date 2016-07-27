@@ -6,23 +6,23 @@ Adapted from: https://github.com/kaylashapiro/SpamFilter/blob/master/Code/logist
 '''
 import numpy as np
 
-from helpers.gradientdescent import max_iters
+from helpers.gradientdescent import max_iters, get_cost
 from helpers.performance import get_error
 
 ## helpers
-sigmoid = lambda z: 1 / 1 + np.exp(-z)
+sigmoid = lambda z: 1 / (1 + np.exp(-z))
+tanh = lambda z: np.tanh(z)
 
 
 def train(features, labels,
         ## params:
         initial_weights=None,
-        learning_rate=0.01,
-        epochs=100,
+        learning_rate=0.1,
+        num_epochs=5,
         termination_condition=None,
-        threshold=1e-5,
         ham_label=-1,
         spam_label=1,
-        verbose=False,
+        verbose=True,
         ):
     '''
     Returns
@@ -42,22 +42,19 @@ def train(features, labels,
     - W: D * 1 Numpy vector of real values
     '''
     if not termination_condition:
-        termination_condition = max_iters(100)
-    num_epochs = 100
+        termination_condition = max_iters(num_epochs)
 
     ## notation
     X, Y = features, labels
     N, D = X.shape           # N #training samples; D #features
 
-    epoch_errors = np.zeros((epochs, 1))
-    last_epoch_error = 1e6
-
     ## initialise weights
     W = np.zeros((D, 1)) if initial_weights is None else initial_weights.reshape((D, 1))
 
-    permutated_indices = np.random.permutation(N)
 
     for epoch in range(num_epochs):
+
+        permutated_indices = np.random.permutation(N)
         X = X[permutated_indices]
         Y = Y[permutated_indices]
 
@@ -66,7 +63,7 @@ def train(features, labels,
             x, y = X[sample], Y[sample]
 
             ## classifier output of current epoch
-            O = sigmoid(np.dot(x, W))
+            O = tanh(np.dot(x, W))
 
             ## gradient descent: calculate gradient
             gradient = np.multiply((O - y), x)
@@ -74,12 +71,10 @@ def train(features, labels,
             ## update weights
             W = W - learning_rate * gradient.reshape(W.shape)
 
-            O = test(W, X)
-            epoch_errors[epoch] = get_error(Y, O)
-
-            if np.abs(last_epoch_error - epoch_errors[epoch]) < threshold:
-                break
-            last_epoch_error = epoch_errors[epoch]
+        P = test(W, X)
+        error = get_error(Y, P)
+        cost = get_cost(Y, P)
+        if verbose: print('epoch %d:\tcost = %.3f\terror = %.3f' % (epoch, cost, error))
 
     return W
 
@@ -96,8 +91,11 @@ def test(parameters, features,
     W, X = parameters, features
     N, D = X.shape
 
-    probs = sigmoid(np.dot(X, W))
-    predictions = np.ones((N, 1))
-    predictions[probs < 0] = -1
+    ## apply model to calculate output
+    O = tanh(np.dot(X, W))
 
-    return predictions
+    ## predict label using a threshold
+    T = np.ones(O.shape)
+    T[O < 0] = -1
+
+    return T

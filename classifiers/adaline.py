@@ -16,18 +16,18 @@ TODO clean up the code further, especially duplicated sections (adaline model
 '''
 import numpy as np
 
-from helpers.gradientdescent import max_iters
-from helpers.performance import get_cost, get_error
+from helpers.gradientdescent import max_iters, get_cost
+from helpers.performance import get_error
 
 
 def train(features, labels,
         ## params:
         initial_weights=None,
-        learning_rate=0.01,
+        learning_rate=0.05,
         termination_condition=None,
-        ham_label=0,
+        ham_label=-1,
         spam_label=1,
-        verbose=False,
+        verbose=True,
         ):
     '''
     Returns the optimal weights for a given training set (features
@@ -77,10 +77,9 @@ def train(features, labels,
         ## _before_ the activation function
         ## batch gradient descent
         gradient = -np.mean(np.multiply((Y - O), X), axis=0)
-        gradient = gradient.reshape(W.shape)
 
         ## 3. Update weights
-        W = W - learning_rate * gradient
+        W = W - learning_rate * gradient.reshape(W.shape)
 
         ## Keep track of error and cost (weights from previous iteration)
         ## T is equivalent to threshold/step activation function
@@ -97,15 +96,15 @@ def train(features, labels,
         current_cost = get_cost(Y, O)
         cost.append(current_cost)
 
-        if verbose: print('iteration %d:\tcost = %.3f' % (epoch, cost[-1]))
+        if verbose: print('epoch %d:\tcost = %.3f\terror = %.3f' % (epoch, cost[-1], error[-1]))
         epoch += 1
 
-    return W#, cost, error
+    return W
 
 
 def test(parameters, features,
         ## params
-        ham_label=0,
+        ham_label=-1,
         spam_label=1,
         ):
     '''

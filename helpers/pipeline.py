@@ -75,7 +75,7 @@ def prepare_specs(spec):
     return spec
 
 
-def perform_experiment(experiment, infolder, verbose=False):
+def perform_experiment(experiment, infolder, verbose=True):
     '''
     Returns the performance of the experiment.
 
@@ -85,6 +85,7 @@ def perform_experiment(experiment, infolder, verbose=False):
     Outputs:
     - performance: dictionary
     '''
+    if verbose: pprint(experiment)
 
     ifilepath = os.path.join(infolder, '%s' % experiment['dataset_filename'])
     with open('%s-features.dat' % ifilepath, 'rb') as infile:
@@ -140,6 +141,9 @@ def perform_experiment(experiment, infolder, verbose=False):
         'FNR': get_FNR(Y_test, O_test, **experiment['label_type']),
         'AUC': get_ROC_AUC(Y_test, O_test, **experiment['label_type']),
     }
+
+    if verbose: pprint(performance)
+    if verbose: print()
 
     return performance
 

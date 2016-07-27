@@ -12,17 +12,6 @@ import numpy as np
 from sklearn.metrics import auc, roc_auc_score
 
 
-def get_cost(Y, O):
-    '''
-    Calculate cost using Means Squared
-
-    TODO ask does this make sense in here or grouped with gradient descent ?
-    '''
-    Y, O = map(np.ravel, [Y, O]) ## make sure shape is (len,) for both
-    cost = np.mean(np.square(Y - O))
-    return cost
-
-
 def get_error(Y, O):
     '''
     Calculates mean error over samples
