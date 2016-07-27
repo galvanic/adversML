@@ -18,6 +18,7 @@ from helpers.specs import generate_specs
 
 from classifiers import adaline as AdalineClassifier
 from classifiers import naivebayes as NaivebayesClassifier
+from classifiers import logistic_regression as LogisticRegressionClassifier
 from attacks import empty as EmptyAttack
 from attacks import ham as HamAttack
 
@@ -28,6 +29,7 @@ class no_attack():
 Classifiers = {
     'adaline':  AdalineClassifier,
     'naivebayes': NaivebayesClassifier,
+    'logisticregression': LogisticRegressionClassifier,
 }
 
 Attacks = {
