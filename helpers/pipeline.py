@@ -127,11 +127,11 @@ def perform_experiment(experiment, infolder, verbose=True):
     test_params  = experiment['testing_parameters' ]
 
     ## training phase
-    model_parameters = classifier.train(features=X_train, labels=Y_train, **train_params)
-    O_train = classifier.test(parameters=model_parameters, features=X_train, **test_params)
+    model_parameters = classifier.fit(features=X_train, labels=Y_train, **train_params)
+    O_train = classifier.predict(parameters=model_parameters, features=X_train, **test_params)
 
     ## testing phase
-    O_test = classifier.test(parameters=model_parameters, features=X_test, **test_params)
+    O_test = classifier.predict(parameters=model_parameters, features=X_test, **test_params)
 
     ## measure performance
     performance = {

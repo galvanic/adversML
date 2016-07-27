@@ -14,7 +14,7 @@ sigmoid = lambda z: 1 / (1 + np.exp(-z))
 tanh = lambda z: np.tanh(z)
 
 
-def train(features, labels,
+def fit(features, labels,
         ## params:
         initial_weights=None,
         learning_rate=0.1,
@@ -71,7 +71,7 @@ def train(features, labels,
             ## update weights
             W = W - learning_rate * gradient.reshape(W.shape)
 
-        P = test(W, X)
+        P = predict(W, X)
         error = get_error(Y, P)
         cost = get_cost(Y, P)
         if verbose: print('epoch %d:\tcost = %.3f\terror = %.3f' % (epoch, cost, error))
@@ -79,7 +79,7 @@ def train(features, labels,
     return W
 
 
-def test(parameters, features,
+def predict(parameters, features,
         ## params
         ham_label=-1,
         spam_label=1,

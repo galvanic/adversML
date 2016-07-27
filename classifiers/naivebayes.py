@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # coding: utf-8
 from __future__ import division
 
@@ -25,7 +24,7 @@ def process_parameters(p, tolerance=1e-10):
     return p
 
 
-def train(features, labels,
+def fit(features, labels,
         ## params
         ham_label,
         spam_label=1,
@@ -72,7 +71,7 @@ def train(features, labels,
     return prior_ham, prior_spam, likeli_ham, likeli_spam
 
 
-def test(parameters, features,
+def predict(parameters, features,
         ## params
         ham_label,
         spam_label=1,

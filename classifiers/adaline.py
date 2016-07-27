@@ -20,7 +20,7 @@ from helpers.gradientdescent import max_iters, get_cost
 from helpers.performance import get_error
 
 
-def train(features, labels,
+def fit(features, labels,
         ## params:
         initial_weights=None,
         learning_rate=0.05,
@@ -102,7 +102,7 @@ def train(features, labels,
     return W
 
 
-def test(parameters, features,
+def predict(parameters, features,
         ## params
         ham_label=-1,
         spam_label=1,
