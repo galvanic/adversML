@@ -168,7 +168,7 @@ def perform_experiment_batch(infolder, parameter_ranges, fixed_parameters):
          experiment_dimensions dictionary should already be an instance of
          OrderedDict
     '''
-    parameter_ranges = OrderedDict(sorted(parameter_ranges.items(), key=lambda t: len(t[1])))
+    parameter_ranges = OrderedDict(parameter_ranges)
 
     ## get all possible variations for specs
     specifications = generate_specs(parameter_ranges, fixed_parameters)
