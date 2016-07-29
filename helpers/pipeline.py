@@ -24,6 +24,7 @@ from classifiers import logistic_regression as LogisticRegressionClassifier
 from attacks import empty as EmptyAttack
 from attacks import ham as HamAttack
 from attacks import dictionary as DictionaryAttack
+from attacks import focussed as FocussedAttack
 
 class no_attack():
     def apply(features, labels, **kwargs):
@@ -39,6 +40,7 @@ Attacks = {
     'empty': EmptyAttack,
     'ham': HamAttack,
     'dictionary': DictionaryAttack,
+    'focussed': FocussedAttack,
     'none': no_attack,
 }
 
