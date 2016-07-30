@@ -6,6 +6,16 @@ from __future__ import division
 '''
 from itertools import product
 from collections import defaultdict
+from copy import deepcopy
+
+
+def add_nested_key(dic, key, value):
+    if type(key) == str:
+        dic[key] = value
+    elif len(key) == 1:
+        add_nested_key(dic, key[0], value)
+    else:
+        add_nested_key(dic[key[0]], key[1:], value)
 
 
 def generate_specs(parameter_ranges, fixed_parameters):
@@ -35,24 +45,21 @@ def generate_specs(parameter_ranges, fixed_parameters):
          therefore be simplified ?
     '''
     dimensions, ranges = zip(*parameter_ranges.items())
-    specs = [dict(zip(dimensions, values)) for values in product(*ranges)]
+    specs = (dict(zip(dimensions, values)) for values in product(*ranges))
 
-    ## TODO refactor
-    def add_recursive_key(key, dic, value):
-        if type(key) == str:
-            dic[key] = value
-        elif len(key) == 1:
-            add_recursive_key(key[0], dic, value)
-        else:
-            add_recursive_key(key[1:], dic[key[0]], value)
+    ## add the fixed parameters to each spec
+    specs = ({**fixed_parameters, **spec} for spec in specs)
 
-    ## nested specs
+    ## turn tuple keys into nested dictionaries
     specifications = []
     for spec in specs:
+        #specification = defaultdict(dict)
         specification = defaultdict(dict, **fixed_parameters)
+
         for key, value in spec.items():
-            add_recursive_key(key, specification, value)
-        specifications.append(dict(specification))
+            add_nested_key(specification, key, value)
+
+        specifications.append(deepcopy(dict(specification)))
 
     return specifications
 
