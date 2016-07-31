@@ -18,9 +18,9 @@ def main(infolder, outfolder):
 
     ## put iteration last, but other dimensions is preference only
     parameter_ranges = [
-        ('classifier', ['adaline', 'logistic regression', 'naive bayes']),
-        ('attack', ['dictionary', 'focussed', 'empty', 'none']),
-        (('attack_parameters', 'percentage_samples_poisoned'), [.0, .1, .2, .5]),
+        (('classifier', 'type'), ['adaline', 'logistic regression', 'naive bayes']),
+        (('attack', 'type'), ['dictionary', 'focussed', 'empty', 'none']),
+        (('attack', 'parameters', 'percentage_samples_poisoned'), [.0, .1, .2, .5]),
         ('repetition', range(1, 20+1)),
     ]
 
@@ -31,10 +31,15 @@ def main(infolder, outfolder):
             'ham_label': -1,
             'spam_label': 1,
         },
-        'training_parameters': {},
-        'testing_parameters': {},
-        'attack_parameters': {},
-        'attack': None,
+        'classifier': {
+            'type': None,
+            'training_parameters': {},
+            'testing_parameters': {},
+        },
+        'attack': {
+            'type': None,
+            'parameters': {},
+        },
     }
 
     ###

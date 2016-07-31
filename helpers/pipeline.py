@@ -59,20 +59,22 @@ def prepare_specs(spec):
     spec = deepcopy(spec)
 
     ham_label = spec['label_type']['ham_label']
-    spec['training_parameters']['ham_label'] = ham_label
-    spec['testing_parameters' ]['ham_label'] = ham_label
+    spec['classifier']['training_parameters']['ham_label'] = ham_label
+    spec['classifier']['testing_parameters' ]['ham_label'] = ham_label
 
     normalise_key = lambda k: k.lower().replace(' ', '')
 
     ## classifier
-    spec['classifier'] = Classifiers[normalise_key(spec['classifier'])]
-    spec['add_bias'] = True if spec['classifier'] != NaivebayesClassifier else False
+    classifier = spec['classifier']['type']
+    classifier = Classifiers[normalise_key(classifier)]
+    spec['add_bias'] = True if classifier != NaivebayesClassifier else False
+    spec['classifier']['type'] = classifier
 
     ## attack
-    attack = spec['attack']
+    attack = spec['attack']['type']
     attack = 'none' if not attack else attack
     attack = Attacks[normalise_key(attack)]
-    spec['attack'] = attack
+    spec['attack']['type'] = attack
 
     return spec
 
@@ -114,8 +116,8 @@ def perform_experiment(experiment, infolder, verbose=True):
     Y_test  = Y[N_train:]
 
     ## apply attack
-    attack = experiment['attack']
-    attack_params = experiment['attack_parameters']
+    attack = experiment['attack']['type']
+    attack_params = experiment['attack']['parameters']
     X_train, Y_train = attack.apply(features=X_train, labels=Y_train, **attack_params)
 
     ## prepare dataset
@@ -124,9 +126,9 @@ def perform_experiment(experiment, infolder, verbose=True):
         X_train, X_test = map(add_bias, [X_train, X_test])
 
     ## apply model
-    classifier = experiment['classifier']
-    train_params = experiment['training_parameters']
-    test_params  = experiment['testing_parameters' ]
+    classifier = experiment['classifier']['type']
+    train_params = experiment['classifier']['training_parameters']
+    test_params  = experiment['classifier']['testing_parameters' ]
 
     ## training phase
     model_parameters = classifier.fit(features=X_train, labels=Y_train, **train_params)
