@@ -31,7 +31,6 @@ def main(infolder, outfolder):
     ###
 
     fixed_parameters = {
-        'dataset': 'trec2007',
         'dataset_filename': 'trec2007-1607201347',
         'label_type': {
             'ham_label': -1,
@@ -51,6 +50,9 @@ def main(infolder, outfolder):
     ## put iteration last, but other dimensions is preference only
     experiment_batches = [
         [
+            ('dataset',
+                'dataset_filename',
+                ['trec2007-1607201347', 'trec2007-1607252257', 'trec2007-1607252259']),
             ('classifier',
                 ('classifier', 'type'),
                 ['adaline', 'logistic regression']),
@@ -68,6 +70,9 @@ def main(infolder, outfolder):
                 range(1, 20+1)),
         ],
         [
+            ('dataset',
+                'dataset_filename',
+                ['trec2007-1607201347', 'trec2007-1607252257', 'trec2007-1607252259']),
             ('classifier',
                 ('classifier', 'type'),
                 ['adaline', 'logistic regression', 'naive bayes']),
