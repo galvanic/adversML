@@ -35,6 +35,9 @@ Getting Started
     ]
     ```
 
+    The order of the key, value 2-tuples counts, as that is the order the columns
+    will be in the DataFrame results (but the order can then be changed).
+
   - `fixed_parameters` is a dictionary with default values for the experiment.
     For example, it specifies the filename of the dataset to use.
 
