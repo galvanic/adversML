@@ -152,7 +152,7 @@ def perform_experiment(experiment, infolder, verbose=True):
     return performance
 
 
-def perform_experiment_batch(infolder, parameter_ranges, fixed_parameters):
+def perform_experiment_batch(parameter_ranges, fixed_parameters, infolder):
     '''
 
     Inputs:
@@ -170,7 +170,9 @@ def perform_experiment_batch(infolder, parameter_ranges, fixed_parameters):
          experiment_dimensions dictionary should already be an instance of
          OrderedDict
     '''
-    parameter_ranges = OrderedDict(parameter_ranges)
+    ## extract names to use later for DF
+    dimension_names, keys, values = zip(*parameter_ranges)
+    parameter_ranges = OrderedDict(zip(keys, values))
 
     ## get all possible variations for specs
     specifications = generate_specs(parameter_ranges, fixed_parameters)
@@ -182,7 +184,6 @@ def perform_experiment_batch(infolder, parameter_ranges, fixed_parameters):
 
     ## put into DataFrame for analysis
     dimensions, variations = zip(*parameter_ranges.items())
-    dimension_names = [name[-1] if type(name) == tuple else name for name in dimensions]
     idx = pd.MultiIndex.from_product(variations, names=dimension_names)
     df = pd.DataFrame.from_records(data=results, index=idx)
     df.columns.names = ['metrics']

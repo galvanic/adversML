@@ -10,19 +10,25 @@ import time
 from helpers.pipeline import perform_experiment_batch
 
 
+def save_df(df, outfilepath):
+    '''
+    '''
+    saved_at = time.strftime('%y%m%d%H%M', time.localtime(time.time()))
+    outfilepath = os.path.join(outfolder, saved_at)
+    df.to_pickle('%s-df.dat' % outfilepath)
+
+    ## save also as string for human readability
+    with open('%s-df.txt' % outfilepath, 'w') as outfile:
+        outfile.write(df.to_string(col_space=8, float_format='%.2f'))
+
+    return
+
+
 def main(infolder, outfolder):
 
     ###
     ### SETUP EXPERIMENTS
     ###
-
-    ## put iteration last, but other dimensions is preference only
-    parameter_ranges = [
-        (('classifier', 'type'), ['adaline', 'logistic regression', 'naive bayes']),
-        (('attack', 'type'), ['dictionary', 'focussed', 'empty', 'none']),
-        (('attack', 'parameters', 'percentage_samples_poisoned'), [.0, .1, .2, .5]),
-        ('repetition', range(1, 20+1)),
-    ]
 
     fixed_parameters = {
         'dataset': 'trec2007',
@@ -42,30 +48,46 @@ def main(infolder, outfolder):
         },
     }
 
-    ###
-    ### CARRY OUT EXPERIMENTS
-    ###
+    ## put iteration last, but other dimensions is preference only
+    experiment_batches = [
+        [
+            ('classifier',
+                ('classifier', 'type'),
+                ['adaline', 'logistic regression']),
+            ('attack',
+                ('attack', 'type'),
+                ['dictionary', 'focussed', 'empty', 'none']),
+            ('% poisoned',
+                ('attack', 'parameters', 'percentage_samples_poisoned'),
+                [.0, .1, .2, .5]),
+            ('learning rate',
+                ('classifier', 'training_parameters', 'learning_rate'),
+                [.005, .01, .02, .05, .1]),
+            ('repetition',
+                'repetition',
+                range(1, 20+1)),
+        ],
+        [
+            ('classifier',
+                ('classifier', 'type'),
+                ['adaline', 'logistic regression', 'naive bayes']),
+            ('attack',
+                ('attack', 'type'),
+                ['dictionary', 'focussed', 'empty', 'none']),
+            ('% poisoned',
+                ('attack', 'parameters', 'percentage_samples_poisoned'),
+                [.0, .1, .2, .5]),
+            ('repetition',
+                'repetition',
+                range(1, 20+1)),
+        ]
+    ]
 
-    df = perform_experiment_batch(infolder, parameter_ranges, fixed_parameters)
+    for parameter_ranges in experiment_batches:
+        df = perform_experiment_batch(parameter_ranges, fixed_parameters, infolder)
+        save_df(df, outfolder)
 
-    ###
-    ### SAVE EXPERIMENT RESULTS
-    ###
-
-    saved_at = time.strftime('%y%m%d%H%M', time.localtime(time.time()))
-    outfilepath = os.path.join(outfolder, saved_at)
-    df.to_pickle('%s-df.dat' % outfilepath)
-
-    ## save also as string for human readability
-    ## change column and index names for clarity
-    change_name = lambda old, new, lst: [new if (x == old) else x for x in lst]
-    new_names = change_name('percentage_samples_poisoned', '% poisoned', df.index.names)
-    df.index = df.index.set_names(new_names)
-
-    with open('%s-df.txt' % outfilepath, 'w') as outfile:
-        outfile.write(df.to_string(col_space=8, float_format='%.2f'))
-
-    return df
+    return
 
 
 if __name__ == '__main__':

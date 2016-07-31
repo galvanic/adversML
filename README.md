@@ -10,50 +10,72 @@ Getting Started
 2. modify `parameter_ranges` and check the values in `fixed_parameters`, especially
    the `dataset_filename` key, in the `main` function of **main.py**.
 
-  - `parameter_ranges` is a list of 2-tuples, where the first value is the key, a
-    dimension along which the experiment varies. For example, you can have one
-    experiment using the adaline classifier and another using the logistic
-    regression classifier. You would express that as:
+  - `parameter_ranges` is a list of 3-tuples:
+
+    - the name of the key: the name of the index column in the dataframe, a shorter
+      value will make it easier to manipulate
+    - the key, a dimension along which the experiment varies
+    - the values varied for the experiment
+
+    For example, you can have one experiment using the adaline classifier and
+    another using the logistic regression classifier. You would express that as:
 
     ```python
     parameter_ranges = [
-        ('classifier', ['adaline', 'logistic regression']),
+        ('classifier',                            ## the name
+            ('classifier', 'type'),               ## the key
+            ['adaline', 'logistic regression']),  ## the values
     ]
     ```
 
-    Where `['adaline', 'logistic regression']` is a list of the values that
-    `'classifier'` can take.
+    Where `['adaline', 'logistic regression']` is a list of the
+    values that `classifier` can take.
 
     A more general example:
 
     ```python
     parameter_ranges = [
-        ('classifier', ['adaline', 'logistic regression', 'naive bayes']),
-        ('attack', ['dictionary', 'focussed', 'empty', 'none']),
-        (('attack_parameters', 'percentage_samples_poisoned'), [.0, .1, .2, .5]),
-        ('repetition', range(1, 20+1)),
+        ('classifier',
+            ('classifier', 'type'),
+            ['adaline', 'logistic regression', 'naive bayes']),
+        ('attack',
+            ('attack', 'type'),
+            ['dictionary', 'focussed', 'empty', 'none']),
+        ('% poisoned',
+            ('attack', 'parameters', 'percentage_samples_poisoned'),
+            [.0, .1, .2, .5]),
+        ('repetition',
+            'repetition',
+            range(1, 20+1)),
     ]
     ```
 
-    The order of the key, value 2-tuples counts, as that is the order the columns
-    will be in the DataFrame results (but the order can then be changed).
+    The order of the (name, key, values) 3-tuples counts, as that
+    is the order the columns will be in the DataFrame results (but
+    the order can then be changed).
 
   - `fixed_parameters` is a dictionary with default values for the experiment.
     For example, it specifies the filename of the dataset to use.
 
-    Here's a full example:
+    Here is a full example:
 
     ```python
     fixed_parameters = {
+        'dataset': 'trec2007',
         'dataset_filename': 'trec2007-1607201347',
         'label_type': {
             'ham_label': -1,
             'spam_label': 1,
         },
-        'training_parameters': {},
-        'testing_parameters': {},
-        'attack_parameters': {},
-        'attack': None,
+        'classifier': {
+            'type': None,
+            'training_parameters': {},
+            'testing_parameters': {},
+        },
+        'attack': {
+            'type': None,
+            'parameters': {},
+        },
     }
     ```
 
@@ -109,7 +131,8 @@ A few [ipython notebooks](https://ipython.org/notebook.html) try the implementat
 TODO
 ----
 
-- implement stochastic and batch training
+- implement stochastic and batch training: refactor out gradient descent from training functions
+  and take stochastic or batch as argument
 
 ### software eng (ie. not directly important for this project) stuff:
 
@@ -117,6 +140,7 @@ TODO
 - assert all matrix shapes and types
 - seek feedback to refine pipeline
 - implement logging
+- implement other termination conditions: detect convergence
 - implement data loading from different filetypes
 
 ### optimisations:
