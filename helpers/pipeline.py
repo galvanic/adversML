@@ -110,7 +110,7 @@ def perform_experiment_batch(parameter_ranges, fixed_parameters, infolder):
          OrderedDict
     '''
     ## extract names to use later for DF
-    dimension_names, keys, values = zip(*parameter_ranges)
+    dimension_names, keys, values = zip(*((p['name'], tuple(p['key']), p['values']) for p in parameter_ranges))
     parameter_ranges = OrderedDict(zip(keys, values))
 
     ## get all possible variations for specs

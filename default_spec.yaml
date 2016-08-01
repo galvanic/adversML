@@ -1,0 +1,15 @@
+
+dataset_filename: trec2007-1607252257
+label_type:
+  ham_label: -1
+  spam_label: 1
+
+classifier:
+  type: none
+  training_parameters: {}
+  testing_parameters: {}
+
+attack:
+  type: none
+  parameters: {}
+

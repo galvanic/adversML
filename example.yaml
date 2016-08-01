@@ -1,0 +1,21 @@
+
+- name: dataset
+  key: [dataset_filename]
+  values: [trec2007-1607201347, trec2007-1607252257, trec2007-1607252259]
+
+- name: classifier
+  key: [classifier, type]
+  values: [adaline, logistic regression, naive bayes]
+
+- name: attack
+  key: [attack, type]
+  values: [dictionary, empty, ham, focussed]
+
+- name: '% poisoned'
+  key: [attack, parameters, percentage_samples_poisoned]
+  values: [.0, .1, .2, .5]
+
+- name: repetition
+  key: [repetition]
+  values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+
