@@ -14,69 +14,8 @@ from pprint import pprint
 from copy import deepcopy
 from functools import partial
 
-from helpers.gradientdescent import max_iters
 from helpers.performance import get_error, get_FPR, get_FNR, get_ROC_AUC
-from helpers.specs import generate_specs
-
-from classifiers import adaline as AdalineClassifier
-from classifiers import naivebayes as NaivebayesClassifier
-from classifiers import logistic_regression as LogisticRegressionClassifier
-from attacks import empty as EmptyAttack
-from attacks import ham as HamAttack
-from attacks import dictionary as DictionaryAttack
-from attacks import focussed as FocussedAttack
-
-class no_attack():
-    def apply(features, labels, **kwargs):
-        return features, labels
-
-Classifiers = {
-    'adaline':  AdalineClassifier,
-    'naivebayes': NaivebayesClassifier,
-    'logisticregression': LogisticRegressionClassifier,
-}
-
-Attacks = {
-    'empty': EmptyAttack,
-    'ham': HamAttack,
-    'dictionary': DictionaryAttack,
-    'focussed': FocussedAttack,
-    'none': no_attack,
-}
-
-
-def prepare_specs(spec):
-    '''
-    Returns the experiment dictionary specification ready to carry out the
-    experiment.
-    For example, it duplicates certain keys so that the user doesn't have to
-    enter them more than once (would increase chance of errors) and replaces
-    None by actual objects (like a function that does nothing for the empty
-    attack but would have been faff for user to write).
-
-    TODO raise exceptions if doesn't exist, or catch KeyError
-    '''
-    spec = deepcopy(spec)
-
-    ham_label = spec['label_type']['ham_label']
-    spec['classifier']['training_parameters']['ham_label'] = ham_label
-    spec['classifier']['testing_parameters' ]['ham_label'] = ham_label
-
-    normalise_key = lambda k: k.lower().replace(' ', '')
-
-    ## classifier
-    classifier = spec['classifier']['type']
-    classifier = Classifiers[normalise_key(classifier)]
-    spec['add_bias'] = True if classifier != NaivebayesClassifier else False
-    spec['classifier']['type'] = classifier
-
-    ## attack
-    attack = spec['attack']['type']
-    attack = 'none' if not attack else attack
-    attack = Attacks[normalise_key(attack)]
-    spec['attack']['type'] = attack
-
-    return spec
+from helpers.specs import generate_specs, prepare_spec
 
 
 def perform_experiment(experiment, infolder, verbose=True):
@@ -176,7 +115,7 @@ def perform_experiment_batch(parameter_ranges, fixed_parameters, infolder):
 
     ## get all possible variations for specs
     specifications = generate_specs(parameter_ranges, fixed_parameters)
-    specs = map(prepare_specs, specifications)
+    specs = map(prepare_spec, specifications)
 
     ## perform each experiment
     perform_exp = partial(perform_experiment, infolder=infolder)
