@@ -19,7 +19,9 @@ def save_df(df, outfilepath):
 
     ## save also as string for human readability
     with open('%s-df.txt' % outfilepath, 'w') as outfile:
-        outfile.write(df.to_string(col_space=8, float_format='%.2f'))
+        ## https://stackoverflow.com/questions/34097038/issue-calling-to-string-with-float-format-on-pandas-dataframe/34097171#34097171
+        string = df.to_string(col_space=8, float_format=lambda x: '%.2f' % x)
+        outfile.write(string)
 
     return
 
@@ -69,6 +71,7 @@ def main(infolder, outfolder):
                 'repetition',
                 range(1, 20+1)),
         ],
+
         [
             ('dataset',
                 'dataset_filename',
