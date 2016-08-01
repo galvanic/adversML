@@ -108,7 +108,7 @@ def apply(features, labels,
     X[poisoned_indices] = 0
 
     ## "turn on" features whose presence is indicative of ham
-    X[poisoned_indices][:, salient_indices] = 1
+    X[np.ix_(poisoned_indices, salient_indices)] = 1
 
     ## the contamination assumption
     Y[poisoned_indices] = spam_label
