@@ -87,7 +87,8 @@ def predict(parameters, features,
     - predicted: labels
     '''
     ## notation
-    X, prior_ham, prior_spam, likeli_ham, likeli_spam = features, *parameters
+    prior_ham, prior_spam, likeli_ham, likeli_spam = parameters
+    X = features
     N, D = X.shape
 
     ## apply model

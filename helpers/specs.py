@@ -47,14 +47,12 @@ def generate_specs(parameter_ranges, fixed_parameters):
     dimensions, ranges = zip(*parameter_ranges.items())
     specs = (dict(zip(dimensions, values)) for values in product(*ranges))
 
-    ## add the fixed parameters to each spec
-    specs = ({**fixed_parameters, **spec} for spec in specs)
-
     ## turn tuple keys into nested dictionaries
     specifications = []
     for spec in specs:
-        #specification = defaultdict(dict)
-        specification = defaultdict(dict, **fixed_parameters)
+
+        specification = defaultdict(dict)
+        specification.update(fixed_parameters)
 
         for key, value in spec.items():
             add_nested_key(specification, key, value)
