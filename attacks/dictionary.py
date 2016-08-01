@@ -38,7 +38,7 @@ def apply(features, labels,
 
     ## randomly replace some samples with the poisoned ones
     ## so that total number of samples doesn't change
-    poisoned_indices = np.random.choice(N, num_poisoned)
+    poisoned_indices = np.random.choice(N, num_poisoned, replace=False)
     X[poisoned_indices] = 1
 
     ## the contamination assumption
