@@ -8,8 +8,6 @@ import os
 import pickle
 import numpy as np
 import pandas as pd
-from itertools import product
-from collections import OrderedDict
 from pprint import pprint
 from copy import deepcopy
 from functools import partial
@@ -118,19 +116,17 @@ def perform_experiment_batch(parameter_ranges, fixed_parameters, infolder):
          OrderedDict
     '''
     ## extract names to use later for DF
-    dimension_names, keys, values = zip(*((p['name'], tuple(p['key']), p['values']) for p in parameter_ranges))
-    parameter_ranges = OrderedDict(zip(keys, values))
+    dimension_names, keys, variations= zip(*((p['name'], tuple(p['key']), p['values']) for p in parameter_ranges))
 
     ## get all possible variations for specs
-    specifications = generate_specs(parameter_ranges, fixed_parameters)
-    specs = map(prepare_spec, specifications)
+    specifications = generate_specs(zip(keys, variations), fixed_parameters)
 
     ## perform each experiment
+    ## TODO incorporate infolder directly by changing the specs
     perform_exp = partial(perform_experiment, infolder=infolder)
     results = list(map(perform_exp, specs))
 
     ## put into DataFrame for analysis
-    dimensions, variations = zip(*parameter_ranges.items())
     idx = pd.MultiIndex.from_product(variations, names=dimension_names)
     df = pd.DataFrame.from_records(data=results, index=idx)
     df.columns.names = ['metrics']

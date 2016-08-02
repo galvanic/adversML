@@ -26,7 +26,7 @@ def generate_specs(parameter_ranges, fixed_parameters):
     Inputs:
     - parameter_ranges: parameters along which the experiments vary (called
       `dimensions` here) (eg. we vary the percentage of poisoned samples)
-      A dictionary or OrderedDict with:
+      A list of 2-tuples (keys, values):
       - keys: string or tuple, with tuples as keys for nested dictionaries to
               represent the final spec key
               eg.: ('attack_params', 'percentage_samples_poisoned') corresponds
@@ -44,7 +44,7 @@ def generate_specs(parameter_ranges, fixed_parameters):
     TODO what parts of the experiment specs are tied together ? and can
          therefore be simplified ?
     '''
-    dimensions, ranges = zip(*parameter_ranges.items())
+    dimensions, ranges = zip(*parameter_ranges)
     specs = (dict(zip(dimensions, values)) for values in product(*ranges))
 
     ## turn tuple keys into nested dictionaries
