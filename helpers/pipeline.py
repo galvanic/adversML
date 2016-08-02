@@ -95,6 +95,14 @@ def perform_experiment(spec, infolder, verbose=True):
     if verbose: pprint(performance)
     if verbose: print()
 
+    ## release memory
+    del X
+    del Y
+    del X_train
+    del Y_train
+    del X_test
+    del Y_test
+
     return performance
 
 
@@ -125,7 +133,7 @@ def perform_experiment_batch(parameter_ranges, fixed_parameters, infolder,
 
     ## perform each experiment
     ## TODO incorporate infolder directly by changing the specs
-    perform_exp = partial(perform_experiment, infolder=infolder)
+    perform_exp = partial(perform_experiment, infolder=infolder, verbose=False)
 
     ## use threads
     if use_threads:
