@@ -57,8 +57,8 @@ def select_using_MI(features, labels, threshold=0.01, ham_label=-1):
     MI_per_feature = np.fromiter(MI_per_feature, dtype=np.float16)
 
     ## keep only salient features for ham (according to relative presence in that class)
-    MIs = MI_per_feature[ham_freq > spam_freq]
-    salient_indices = np.argpartition(MIs, -d)[-d:]
+    MI_per_feature[ham_freq < spam_freq] = 0
+    salient_indices = np.argpartition(MI_per_feature, -d)[-d:]
     ## ^ https://stackoverflow.com/questions/10337533/a-fast-way-to-find-the-largest-n-elements-in-an-numpy-array/20177786#20177786
 
     return salient_indices
@@ -87,7 +87,7 @@ def apply(features, labels,
     - percentage_features_poisoned: float between 0 and 1
         percentage of the features under the attacker's control
     - feature_selection_method: string
-    - threshold: percentile of features to keep
+    - threshold: percentile of ham features to keep
 
     Outputs:
     - X: N * D poisoned features
