@@ -18,19 +18,27 @@ from helpers.performance import get_error, get_FPR, get_FNR, get_ROC_AUC
 from helpers.specs import generate_specs, prepare_spec
 
 
-def perform_experiment(experiment, infolder, verbose=True):
+def perform_experiment(spec, infolder, verbose=True):
     '''
-    Returns the performance of the experiment.
+    Returns the performance of the experiment defined by the given specification
 
     Inputs:
-    - experiment: specifications in a dictionary
+    - spec: specifications of the experiment
+        A dictionary
+    - infolder: folderpath of directory where input data is
+    - index: pandas MultiIndex of the experiment batch context
 
     Outputs:
-    - performance: dictionary
+    - performance: metrics of the performance of the trained classifier
+        under the specified attack
+        A dictionary
     '''
-    if verbose: pprint(experiment)
+    if verbose: pprint(spec)
 
-    ifilepath = os.path.join(infolder, '%s' % experiment['dataset_filename'])
+    spec = prepare_spec(spec)
+    if verbose: pprint(spec)
+
+    ifilepath = os.path.join(infolder, '%s' % spec['dataset_filename'])
     with open('%s-features.dat' % ifilepath, 'rb') as infile:
         X = pickle.load(infile)
 
@@ -55,19 +63,19 @@ def perform_experiment(experiment, infolder, verbose=True):
     Y_test  = Y[N_train:]
 
     ## apply attack
-    attack = experiment['attack']['type']
-    attack_params = experiment['attack']['parameters']
+    attack = spec['attack']['type']
+    attack_params = spec['attack']['parameters']
     X_train, Y_train = attack.apply(features=X_train, labels=Y_train, **attack_params)
 
     ## prepare dataset
     add_bias = lambda x: np.insert(x, 0, values=1, axis=1) # add bias term
-    if experiment['add_bias']:
+    if spec['add_bias']:
         X_train, X_test = map(add_bias, [X_train, X_test])
 
     ## apply model
-    classifier = experiment['classifier']['type']
-    train_params = experiment['classifier']['training_parameters']
-    test_params  = experiment['classifier']['testing_parameters' ]
+    classifier = spec['classifier']['type']
+    train_params = spec['classifier']['training_parameters']
+    test_params  = spec['classifier']['testing_parameters' ]
 
     ## training phase
     model_parameters = classifier.fit(features=X_train, labels=Y_train, **train_params)
@@ -80,9 +88,9 @@ def perform_experiment(experiment, infolder, verbose=True):
     performance = {
         'error_train': get_error(Y_train, O_train),
         'error_test': get_error(Y_test,  O_test),
-        'FPR': get_FPR(Y_test, O_test, **experiment['label_type']),
-        'FNR': get_FNR(Y_test, O_test, **experiment['label_type']),
-        'AUC': get_ROC_AUC(Y_test, O_test, **experiment['label_type']),
+        'FPR': get_FPR(Y_test, O_test, **spec['label_type']),
+        'FNR': get_FNR(Y_test, O_test, **spec['label_type']),
+        'AUC': get_ROC_AUC(Y_test, O_test, **spec['label_type']),
     }
 
     if verbose: pprint(performance)

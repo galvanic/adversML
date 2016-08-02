@@ -131,6 +131,7 @@ A few [ipython notebooks](https://ipython.org/notebook.html) try the implementat
 TODO
 ----
 
+- implement multi-threading
 - implement stochastic and batch training: refactor out gradient descent from training functions
   and take stochastic or batch as argument
 
