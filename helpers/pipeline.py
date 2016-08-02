@@ -11,6 +11,7 @@ import pandas as pd
 from pprint import pprint
 from copy import deepcopy
 from functools import partial
+from multiprocessing.dummy import Pool as ThreadPool
 
 from helpers.performance import get_error, get_FPR, get_FNR, get_ROC_AUC
 from helpers.specs import generate_specs, prepare_spec
@@ -97,7 +98,8 @@ def perform_experiment(spec, infolder, verbose=True):
     return performance
 
 
-def perform_experiment_batch(parameter_ranges, fixed_parameters, infolder):
+def perform_experiment_batch(parameter_ranges, fixed_parameters, infolder,
+        use_threads=True, num_threads=8):
     '''
 
     Inputs:
@@ -124,7 +126,13 @@ def perform_experiment_batch(parameter_ranges, fixed_parameters, infolder):
     ## perform each experiment
     ## TODO incorporate infolder directly by changing the specs
     perform_exp = partial(perform_experiment, infolder=infolder)
-    results = list(map(perform_exp, specs))
+
+    ## use threads
+    if use_threads:
+        with ThreadPool(processes=num_threads) as pool:
+            results = pool.map(perform_exp, specifications)
+    else:
+        results = map(perform_exp, specifications)
 
     ## put into DataFrame for analysis
     idx = pd.MultiIndex.from_product(variations, names=dimension_names)
