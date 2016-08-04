@@ -7,82 +7,75 @@ Getting Started
 ---------------
 
 1. clone the repo and `cd` into the folder
-2. modify `parameter_ranges` and check the values in `fixed_parameters`, especially
-   the `dataset_filename` key, in the `main` function of **main.py**.
+2. create a [YAML](http://yaml.org/) config file for the experiment setup.
 
-  - `parameter_ranges` is a list of 3-tuples:
+  - **name**: the name of the index column in the dataframe, a shorter
+    value will make it easier to manipulate
+  - **key**: a dimension along which the experiment varies
+  - **values**: varied for the experiment
 
-    - the name of the key: the name of the index column in the dataframe, a shorter
-      value will make it easier to manipulate
-    - the key, a dimension along which the experiment varies
-    - the values varied for the experiment
+  For example, you can have one experiment using the adaline classifier and
+  another using the logistic regression classifier. You would express that as:
 
-    For example, you can have one experiment using the adaline classifier and
-    another using the logistic regression classifier. You would express that as:
+  ```yaml
+  - name: classifier
+    key: [classifier, type]
+    values: [adaline, logistic regression]
+  ```
 
-    ```python
-    parameter_ranges = [
-        ('classifier',                            ## the name
-            ('classifier', 'type'),               ## the key
-            ['adaline', 'logistic regression']),  ## the values
-    ]
-    ```
+  Where `[adaline, logistic regression]` is a list of the
+  values that `classifier` can take.
 
-    Where `['adaline', 'logistic regression']` is a list of the
-    values that `classifier` can take.
+  A more general example:
 
-    A more general example:
+  ```yaml
+  - name: classifier
+    key: [classifier, type]
+    values: [adaline, logistic regression]
 
-    ```python
-    parameter_ranges = [
-        ('classifier',
-            ('classifier', 'type'),
-            ['adaline', 'logistic regression', 'naive bayes']),
-        ('attack',
-            ('attack', 'type'),
-            ['dictionary', 'focussed', 'empty', 'none']),
-        ('% poisoned',
-            ('attack', 'parameters', 'percentage_samples_poisoned'),
-            [.0, .1, .2, .5]),
-        ('repetition',
-            'repetition',
-            range(1, 20+1)),
-    ]
-    ```
+  - name: attack
+    key: [attack, type]
+    values: [dictionary, focussed, empty, ham]
 
-    The order of the (name, key, values) 3-tuples counts, as that
-    is the order the columns will be in the DataFrame results (but
-    the order can then be changed).
+  - name: '% poisoned'
+    key: [attack, parameters, percentage_samples_poisoned]
+    values: [.0, .1, .2, .5]
+  ```
 
-  - `fixed_parameters` is a dictionary with default values for the experiment.
-    For example, it specifies the filename of the dataset to use.
+  The order of the (name, key, values) group counts, as that
+  is the order the columns will be in the DataFrame results (but
+  the order can then be changed).
+
+3. Check the values in [**default_spec.yaml**](https://github.com/galvanic/adversarialML/blob/master/default_spec.yaml), especially the `dataset_filename` key (although this can also
+  be a key that is varied.
 
     Here is a full example:
 
-    ```python
-    fixed_parameters = {
-        'dataset': 'trec2007',
-        'dataset_filename': 'trec2007-1607201347',
-        'label_type': {
-            'ham_label': -1,
-            'spam_label': 1,
-        },
-        'classifier': {
-            'type': None,
-            'training_parameters': {},
-            'testing_parameters': {},
-        },
-        'attack': {
-            'type': None,
-            'parameters': {},
-        },
-    }
+    ```yaml
+    dataset_filename: trec2007-1607252257
+    label_type:
+      ham_label: -1
+      spam_label: 1
+
+    classifier:
+      type: none
+      training_parameters: {}
+      testing_parameters: {}
+
+    attack:
+      type: none
+      parameters: {}
     ```
 
-3. Run the pipeline:
+4. decide how many threads to run your code on. Given the size of the dataset
+  in memory, allocate at least "double" the amount of RAM. For example, if
+  you run on 8 cores, make sure you have 16GB of RAM otherwise you will get a
+  `MemoryError`.
+
+3. Run the pipeline, here with 4 cores for example:
 
     ```shell
-    python3 main.py ~/folder/where/dataset/is/ ~/folder/to/save/results/to/
+    python3 main.py ~/path/to/experiment/config.yaml ~/folder/where/dataset/is/ ~/folder/to/save/results/to/ 4
     ```
 
 Details
@@ -136,12 +129,12 @@ TODO
 
 ### software eng (ie. not directly important for this project) stuff:
 
-- decide and implement how to store experiment spec and results (+logging), prob grouped in batches
+- implement how to store experiment files, prob grouped in batches
 - assert all matrix shapes and types
-- seek feedback to refine pipeline
 - implement logging
 - implement other termination conditions: detect convergence
 - implement data loading from different filetypes
+- add tests
 
 ### optimisations:
 
