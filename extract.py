@@ -144,7 +144,7 @@ def main(infolder, outfolder, sparse_X=False):
             print('MemoryError: could not save as Numpy array, saving as sparse array instead')
             pass
 
-    ## Save the data
+    ## save the data
     saved_at = time.strftime('%y%m%d%H%M', time.localtime(time.time()))
     ## TODO make folder if doesn't exist yet
     outfilepath = os.path.join(outfolder, 'trec2007-%s' % saved_at)
