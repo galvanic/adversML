@@ -131,9 +131,8 @@ TODO
 
 - implement how to store experiment files, prob grouped in batches
 - assert all matrix shapes and types
-- implement logging
 - implement other termination conditions: detect convergence
-- implement data loading from different filetypes
+- implement data loading from different filetypes (automatically detect npy, dat, csv, etc.)
 - add tests
 
 ### optimisations:

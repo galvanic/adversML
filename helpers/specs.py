@@ -43,14 +43,18 @@ def generate_specs(parameter_ranges, fixed_parameters):
     TODO what parts of the experiment specs are tied together ? and can
          therefore be simplified ?
     '''
+
+    batch_id = fixed_parameters['experiment_batch_id']
+
     dimensions, ranges = zip(*parameter_ranges)
     specs = (dict(zip(dimensions, values)) for values in product(*ranges))
 
     ## turn tuple keys into nested dictionaries
     specifications = []
-    for spec in specs:
+    for ii, spec in enumerate(specs):
 
         specification = defaultdict(dict)
+        specification.update({'experiment_id': '%s_%s' % (batch_id, ii)})
         specification.update(fixed_parameters)
 
         for key, value in spec.items():

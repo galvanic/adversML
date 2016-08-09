@@ -10,10 +10,19 @@ import time
 import pandas as pd
 
 
-def save_df(df, outfolder):
+def get_time_id(time_format='%y%m%d%H%M'):
     '''
     '''
-    saved_at = time.strftime('%y%m%d%H%M', time.localtime(time.time()))
+
+    time_id = time.strftime(time_format, time.localtime(time.time()))
+    return time_id
+
+
+def save_df(df, outfolder, experiment_id=None):
+    '''
+    '''
+
+    saved_at = str(experiment_id) or get_time_id()
     outfilepath = os.path.join(outfolder, saved_at)
     df.to_pickle('%s-df.dat' % outfilepath)
     LOGGER.info('Saved to %s\n' % outfilepath)
@@ -28,6 +37,7 @@ def save_df(df, outfolder):
 def join_repetitions(ifilepaths):
     '''
     '''
+
     dfs = [pd.read_pickle(filepath) for filepath in ifilepaths]
     from code import interact; interact(local=dict(locals(), **globals()))
     return df

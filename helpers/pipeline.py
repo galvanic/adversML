@@ -135,7 +135,7 @@ def perform_experiment_batch(parameter_ranges, fixed_parameters, infolder,
     specifications = generate_specs(zip(keys, variations), fixed_parameters)
     LOGGER.info('Amount of specifications: %d' % len(specifications))
 
-    ## perform each experiment
+    ## perform each experiment (prepare function first)
     ## TODO incorporate infolder directly by changing the specs
     perform_exp = partial(perform_experiment, infolder=infolder, verbose=False)
 
