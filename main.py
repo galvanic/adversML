@@ -3,11 +3,15 @@
 from __future__ import division
 '''
 '''
+import logging
 import sys
 import yaml
+from pprint import pformat
 
 from helpers.pipeline import perform_experiment_batch
 from helpers.i_o import save_df
+
+
 
 
 def main(parameter_ranges_filepath, infolder, outfolder,
@@ -23,6 +27,10 @@ def main(parameter_ranges_filepath, infolder, outfolder,
     with open(parameter_ranges_filepath, 'r') as infile:
         parameter_ranges = yaml.load(infile)
 
+    logging.info('Loaded experiment specs:')
+    logging.info('Default parameters:\n%s' % pformat(fixed_parameters))
+    logging.info('Experiment ranges:\n%s' % pformat(parameter_ranges))
+
     ## carry out experiments
     df = perform_experiment_batch(parameter_ranges, fixed_parameters, infolder,
         use_threads=True, num_threads=num_threads)
@@ -34,6 +42,10 @@ def main(parameter_ranges_filepath, infolder, outfolder,
 
 
 if __name__ == '__main__':
+
+    ## implement logging
+    logging.basicConfig(level=logging.DEBUG,
+        format='%(asctime)s.%(msecs)03d %(levelname)s: %(message)s', datefmt='%m/%d %H:%M:%S')
 
     parameter_ranges_filepath = sys.argv[1] if len(sys.argv) > 1 else './example.yaml'
     infolder = sys.argv[2] if len(sys.argv) > 2 else '../datasets/processed'

@@ -6,7 +6,9 @@ Implementation of a dictionary attack.
 
 Assumes no bias has been added yet.
 '''
+import logging
 import numpy as np
+
 
 def apply(features, labels,
         ## params
@@ -27,22 +29,31 @@ def apply(features, labels,
     Outputs:
     - X: poisoned features
     - Y: poisoned labels
-
-    TODO vary attacker knowledge (=influence over features)
     '''
+    logging.info('Apply dictionary attack')
+
     ## notations
     spam_label = 1
     X, Y = features, labels
     N, D = X.shape ## number of N: samples, D: features
     num_poisoned = int(N * percentage_samples_poisoned)
 
+    logging.debug('X: (%s, %s)\tY: (%s, %s)' % (N, D, *Y.shape))
+    logging.debug('Amount poisoned: %s' % num_poisoned)
+
     ## randomly replace some samples with the poisoned ones
     ## so that total number of samples doesn't change
     poisoned_indices = np.random.choice(N, num_poisoned, replace=False)
     X[poisoned_indices] = 1
 
+    logging.debug('Poisoned indices: %s' % list(poisoned_indices))
+    logging.debug('- one of the poisoned emails: %s =? %d (# features)' % (X[poisoned_indices[0]].sum(), D))
+
     ## the contamination assumption
     Y[poisoned_indices] = spam_label
+
+    logging.debug('- one of the poisoned emails\' label: %s =? 1' % Y[poisoned_indices[0]])
+    ## TODO: these logging debugs should probably be asserts
 
     return X, Y
 

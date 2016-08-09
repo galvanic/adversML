@@ -14,6 +14,7 @@ TODO ? cost and error could be measured outside the function
 TODO clean up the code further, especially duplicated sections (adaline model
      etc.)
 '''
+import logging
 import numpy as np
 
 from helpers.gradientdescent import max_iters, get_cost
@@ -24,10 +25,9 @@ def fit(features, labels,
         ## params:
         initial_weights=None,
         learning_rate=0.05,
-        termination_condition=None,
+        max_epochs=200,
         ham_label=-1,
         spam_label=1,
-        verbose=True,
         ):
     '''
     Returns the optimal weights for a given training set (features
@@ -44,7 +44,6 @@ def fit(features, labels,
     - labels:   N * 1 Numpy vector of binary values (-1 and 1)
     - initial_weights: D * 1 Numpy vector, beginning weights
     - learning_rate: learning rate, a float between 0 and 1
-    - termination_condition: returns a bool
 
     Output:
     - W: D * 1 Numpy vector of real values
@@ -54,32 +53,34 @@ def fit(features, labels,
          training
     TODO implement an autostop if cost is rising instead of falling ?
     '''
-    if not termination_condition:
-        termination_condition = max_iters(50)
+    logging.info('Training Adaline classifier')
 
     ## notation
     X, Y = features, labels
     N, D = features.shape   # N #training samples; D #features
-    cost = []               # keep track of cost
-    error = []              # keep track of error
+    logging.debug('X: (%s, %s)\tY: (%s, %s)' % (N, D, *Y.shape))
 
     ## 1. Initialise weights
     W = np.zeros((D, 1)) if initial_weights is None else initial_weights.reshape((D, 1))
+    logging.debug('W: %s' % W)
 
     ## 2. Evaluate the termination condition
-    epoch = 1
-    while not termination_condition():
+    for epoch in range(max_epochs):
+        logging.info('epoch %d:' % epoch)
 
         ## current iteration classifier output
         O = np.dot(X, W)
+        logging.debug('- output: %s' % O)
 
         ## specialty of ADALINE is that training is done on the weighted sum,
         ## _before_ the activation function
         ## batch gradient descent
         gradient = -np.mean(np.multiply((Y - O), X), axis=0)
+        logging.debug('- gradient" %s' % gradient)
 
         ## 3. Update weights
         W = W - learning_rate * gradient.reshape(W.shape)
+        logging.debug('- weights: %s' % W)
 
         ## Keep track of error and cost (weights from previous iteration)
         ## T is equivalent to threshold/step activation function
@@ -89,15 +90,11 @@ def fit(features, labels,
         else:   ## ham label is assumed -1, spam label assumed 1
             T = np.ones(O.shape)
             T[O < 0] = -1
+        logging.debug('- activated output: %s' % T)
 
-        current_error = get_error(T, Y)
-        error.append(current_error)
-
-        current_cost = get_cost(Y, O)
-        cost.append(current_cost)
-
-        if verbose: print('epoch %d:\tcost = %.3f\terror = %.3f' % (epoch, cost[-1], error[-1]))
-        epoch += 1
+        error = get_error(Y, T)
+        cost = get_cost(Y, O)
+        logging.info('- cost = %.3f\terror = %.3f' % (cost, error))
 
     return W
 
@@ -110,12 +107,17 @@ def predict(parameters, features,
     '''
     TEST PHASE
     '''
+    logging.info('Predict using ADALINE classifier')
+
     ## notation
     X, W = features, parameters
     N, D = features.shape
+    logging.debug('using weights: %s' % parameters)
+    logging.debug('on X: (%s, %s)' % (N, D))
 
     ## apply model
     O = np.dot(X, W)
+    logging.info('weighted sum O: %s' % O)
 
     ## calculate output
     ## T is equivalent to threshold/step activation function
@@ -125,6 +127,7 @@ def predict(parameters, features,
     else:   ## ham label is assumed -1, spam label assumed 1
         T = np.ones(O.shape)
         T[O < 0] = -1
+    logging.info('threshold T: %s' % T)
 
     return T
 

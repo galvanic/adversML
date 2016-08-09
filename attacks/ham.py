@@ -1,8 +1,8 @@
 # coding: utf-8
 from __future__ import division
-
 '''
 '''
+import logging
 import numpy as np
 from sklearn.metrics import mutual_info_score
 
@@ -44,17 +44,26 @@ def select_using_MI(features, labels, threshold=0.01, ham_label=-1):
          potential (although this isn't necessary since we are doing a poison,
          not evasion attack); then compare this to initialised with 0s or with 1s
     '''
+    logging.info('Use mutual information to select features')
+
     X, Y = features, np.ravel(labels)
     N, D = X.shape
     d = int(D * threshold) ## percentile of features to keep
+
+    logging.info('Keep top %s features' % d)
 
     ## calculate frequency of feature presence relative to each class
     ham_freq  = np.mean(X[np.ravel(Y == ham_label)], axis=0)
     spam_freq = np.mean(X[np.ravel(Y != ham_label)], axis=0)
 
+    logging.debug('- feature frequency in ham class: %s' % ham_freq)
+    logging.debug('- feature frequency in spam class: %s' % spam_freq)
+
     ## calculate mutual information between features and labels
     MI_per_feature = (mutual_info_score(X[:, f], Y) for f in range(D))
     MI_per_feature = np.fromiter(MI_per_feature, dtype=np.float16)
+
+    logging.debug('- mutual information scores: %s' % MI_per_feature)
 
     ## keep only salient features for ham (according to relative presence in that class)
     MI_per_feature[ham_freq < spam_freq] = 0
@@ -93,25 +102,37 @@ def apply(features, labels,
     - X: N * D poisoned features
     - Y: N * 1 poisoned labels
     '''
+    logging.info('Apply ham attack')
+
     ## notations
     spam_label = 1
     X, Y = features, labels
     N, D = X.shape ## number of N: samples, D: features
     num_poisoned = int(N * percentage_samples_poisoned)
 
+    logging.debug('X: (%s, %s)\tY: (%s, %s)' % (N, D, *Y.shape))
+    logging.debug('Amount poisoned: %s' % num_poisoned)
+
     ## find the most salient features, indicative of the ham class
     salient_indices = feature_selection_method(X, Y, threshold)
+
+    logging.info('Salient indices: %s' % salient_indices)
 
     ## randomly replace some samples with the poisoned ones
     ## so that total number of samples doesn't change
     poisoned_indices = np.random.choice(N, num_poisoned, replace=False)
     X[poisoned_indices] = 0
 
+    logging.debug('Poisoned indices: %s' % list(poisoned_indices))
+
     ## "turn on" features whose presence is indicative of ham
     X[np.ix_(poisoned_indices, salient_indices)] = 1
 
     ## the contamination assumption
     Y[poisoned_indices] = spam_label
+
+    logging.debug('- one of the poisoned emails\' label: %s =? 1' % Y[poisoned_indices[0]])
+    ## TODO: these logging debugs should probably be asserts
 
     return X, Y
 
