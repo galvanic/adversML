@@ -54,9 +54,9 @@ def perform_experiment(spec, infolder, verbose=True):
     LOGGER.debug('X: (%s, %s)\tY: (%s, %s)' % (N, D, *Y.shape))
 
     ## split dataset into training and testing sets
-    permutated_indices = np.random.permutation(N)
-    X = X[permutated_indices]
-    Y = Y[permutated_indices]
+    permuted_indices = np.random.permutation(N)
+    X = X[permuted_indices]
+    Y = Y[permuted_indices]
 
     N_train = int(np.round(N * 0.5))
     X_train = X[:N_train]

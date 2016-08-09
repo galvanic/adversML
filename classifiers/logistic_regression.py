@@ -57,13 +57,14 @@ def fit(features, labels,
     for epoch in range(max_epochs):
         LOGGER.info('epoch %d:' % epoch)
 
-        permutated_indices = np.random.permutation(N)
-        X = X[permutated_indices]
-        Y = Y[permutated_indices]
+        ## mix up samples (they will therefore be fed in different order at
+        ## each training) -> commonly accepted to improve gradient descent,
+        ## making convergence faster)
+        permuted_indices = np.random.permutation(N)
 
         ## stochastic gradient descent, sample by sample
-        for sample in range(N):
-            logging.debug('- sample %d:' % sample)
+        for sample in permuted_indices:
+            LOGGER.info('- sample %d:' % sample)
             x, y = X[sample], Y[sample]
 
             ## classifier output of current epoch
