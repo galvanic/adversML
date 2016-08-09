@@ -15,7 +15,7 @@ from helpers.i_o import save_df
 
 
 def main(parameter_ranges_filepath, infolder, outfolder,
-        fixed_parameters_filepath='./default_spec.yaml',
+        fixed_parameters_filepath='config/default_spec.yaml',
         num_threads=8):
     '''
     '''
@@ -47,7 +47,7 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG,
         format='%(asctime)s.%(msecs)03d %(levelname)s: %(message)s', datefmt='%m/%d %H:%M:%S')
 
-    parameter_ranges_filepath = sys.argv[1] if len(sys.argv) > 1 else './example.yaml'
+    parameter_ranges_filepath = sys.argv[1] if len(sys.argv) > 1 else 'config/example.yaml'
     infolder = sys.argv[2] if len(sys.argv) > 2 else '../datasets/processed'
     outfolder = sys.argv[3] if len(sys.argv) > 3 else '.'
     num_threads = int(sys.argv[4]) if len(sys.argv) > 4 else None
