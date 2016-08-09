@@ -8,6 +8,8 @@ TODO A lot of shared code with the ham attack (obviously since focussed attack
 TODO see what I said in `select_using_MI`, take into account absent features too
 '''
 import logging
+LOGGER = logging.getLogger(__name__)
+
 import numpy as np
 from sklearn.metrics import mutual_info_score
 import random
@@ -47,7 +49,7 @@ def apply(features, labels,
 
     TODO see what I said in `select_using_MI`, take into account absent features too
     '''
-    logging.info('Apply focussed attack')
+    LOGGER.info('Apply focussed attack')
 
     ## notations
     spam_label = 1
@@ -55,8 +57,8 @@ def apply(features, labels,
     N, D = X.shape                        ## number of N: samples, D: features
     num_poisoned = int(N * percentage_samples_poisoned)
 
-    logging.debug('X: (%s, %s)\tY: (%s, %s)' % (N, D, *Y.shape))
-    logging.debug('Amount poisoned: %s' % num_poisoned)
+    LOGGER.debug('X: (%s, %s)\tY: (%s, %s)' % (N, D, *Y.shape))
+    LOGGER.debug('Amount poisoned: %s' % num_poisoned)
 
     if not target:
 
@@ -73,14 +75,14 @@ def apply(features, labels,
     salient_mask = (target == 1)
     salient_indices = np.nonzero(salient_mask)[0]
 
-    logging.info('Salient indices: %s' % salient_indices)
+    LOGGER.info('Salient indices: %s' % salient_indices)
 
     ## randomly replace some samples with the poisoned ones
     ## so that total number of samples doesn't change
     poisoned_indices = np.random.choice(N, num_poisoned, replace=False)
     X[poisoned_indices] = 0
 
-    logging.debug('Poisoned indices: %s' % list(poisoned_indices))
+    LOGGER.debug('Poisoned indices: %s' % poisoned_indices)
 
     ## "turn on" features whose presence is indicative of target
     X[np.ix_(poisoned_indices, salient_indices)] = 1
@@ -88,7 +90,7 @@ def apply(features, labels,
     ## the contamination assumption
     Y[poisoned_indices] = spam_label
 
-    logging.debug('- one of the poisoned emails\' label: %s =? 1' % Y[poisoned_indices[0]])
+    LOGGER.debug('- one of the poisoned emails\' label: %s =? 1' % Y[poisoned_indices[0]])
 
     return X, Y
 

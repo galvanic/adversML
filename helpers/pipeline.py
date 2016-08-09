@@ -4,6 +4,8 @@ from __future__ import division
 TODO ? give each experiment a UID
 '''
 import logging
+LOGGER = logging.getLogger(__name__)
+
 import os
 import pickle
 import numpy as np
@@ -32,10 +34,10 @@ def perform_experiment(spec, infolder, verbose=True):
         under the specified attack
         A dictionary
     '''
-    logging.info('\nspec: %s' % pformat(spec))
+    LOGGER.info('spec:\n%s\n' % pformat(spec))
 
     spec = prepare_spec(spec)
-    logging.info('spec: %s' % pformat(spec))
+    LOGGER.info('prepared spec:\n%s\n' % pformat(spec))
 
     ifilepath = os.path.join(infolder, '%s' % spec['dataset_filename'])
     with open('%s-features.dat' % ifilepath, 'rb') as infile:
@@ -49,7 +51,7 @@ def perform_experiment(spec, infolder, verbose=True):
         Y = np.array(Y, dtype=np.int8) * 2 - 1
 
     N, D = X.shape
-    logging.debug('X: (%s, %s)\tY: (%s, %s)' % (N, D, *Y.shape))
+    LOGGER.debug('X: (%s, %s)\tY: (%s, %s)' % (N, D, *Y.shape))
 
     ## split dataset into training and testing sets
     permutated_indices = np.random.permutation(N)
@@ -71,7 +73,7 @@ def perform_experiment(spec, infolder, verbose=True):
     add_bias = lambda x: np.insert(x, 0, values=1, axis=1) # add bias term
     if spec['add_bias']:
         X_train, X_test = map(add_bias, [X_train, X_test])
-        logging.info('- added bias')
+        LOGGER.info('- added bias')
 
     ## apply model
     classifier = spec['classifier']['type']
@@ -93,7 +95,7 @@ def perform_experiment(spec, infolder, verbose=True):
         'FNR': get_FNR(Y_test, O_test, **spec['label_type']),
         'AUC': get_ROC_AUC(Y_test, O_test, **spec['label_type']),
     }
-    logging.info('performance: %s' % pformat(performance))
+    LOGGER.info('performance:\n%s' % pformat(performance))
 
     ## release memory
     del X
@@ -131,7 +133,7 @@ def perform_experiment_batch(parameter_ranges, fixed_parameters, infolder,
 
     ## get all possible variations for specs
     specifications = generate_specs(zip(keys, variations), fixed_parameters)
-    logging.info('Amount of specifications: %d' % len(specifications))
+    LOGGER.info('Amount of specifications: %d' % len(specifications))
 
     ## perform each experiment
     ## TODO incorporate infolder directly by changing the specs
@@ -139,7 +141,7 @@ def perform_experiment_batch(parameter_ranges, fixed_parameters, infolder,
 
     ## use threads
     if use_threads:
-        logging.info('Using %s threads' % num_threads)
+        LOGGER.info('Using %s threads' % num_threads)
         with ThreadPool(processes=num_threads) as pool:
             results = pool.map(perform_exp, specifications)
     else:

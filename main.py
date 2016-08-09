@@ -3,15 +3,15 @@
 from __future__ import division
 '''
 '''
-import logging
+import logging.config
 import sys
 import yaml
 from pprint import pformat
+import numpy as np
+np.set_printoptions(precision=2, threshold=10e6, linewidth=10e10)
 
 from helpers.pipeline import perform_experiment_batch
 from helpers.i_o import save_df
-
-
 
 
 def main(parameter_ranges_filepath, infolder, outfolder,
@@ -19,17 +19,20 @@ def main(parameter_ranges_filepath, infolder, outfolder,
         num_threads=8):
     '''
     '''
-    ## load data
+    ## implement logging
+    with open('config/logging.yaml', 'r') as infile:
+        logging_config = yaml.load(infile)
+    logging.config.dictConfig(logging_config)
 
+    ## load data
     with open(fixed_parameters_filepath, 'r') as infile:
         fixed_parameters = yaml.load(infile)
 
     with open(parameter_ranges_filepath, 'r') as infile:
         parameter_ranges = yaml.load(infile)
 
-    logging.info('Loaded experiment specs:')
-    logging.info('Default parameters:\n%s' % pformat(fixed_parameters))
-    logging.info('Experiment ranges:\n%s' % pformat(parameter_ranges))
+    logging.info('Default parameters:\n%s\n' % pformat(fixed_parameters))
+    logging.info('Experiment ranges:\n%s\n' % pformat(parameter_ranges))
 
     ## carry out experiments
     df = perform_experiment_batch(parameter_ranges, fixed_parameters, infolder,
@@ -42,10 +45,6 @@ def main(parameter_ranges_filepath, infolder, outfolder,
 
 
 if __name__ == '__main__':
-
-    ## implement logging
-    logging.basicConfig(level=logging.DEBUG,
-        format='%(asctime)s.%(msecs)03d %(levelname)s: %(message)s', datefmt='%m/%d %H:%M:%S')
 
     parameter_ranges_filepath = sys.argv[1] if len(sys.argv) > 1 else 'config/example.yaml'
     infolder = sys.argv[2] if len(sys.argv) > 2 else '../datasets/processed'
