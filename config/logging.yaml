@@ -1,0 +1,26 @@
+
+version: 1
+disable_existing_loggers: false
+
+formatters:
+  default:
+    format: '%(asctime)s.%(msecs)03d __%(name)s__ %(levelname)s: %(message)s'
+    datefmt: '%b %d %H:%M:%S'
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: INFO
+    formatter: default
+    stream: ext://sys.stdout
+  file:
+    class: logging.FileHandler
+    level: DEBUG
+    formatter: default
+    filename: ./debug.log
+    encoding: utf8
+
+root:
+  level: NOTSET
+  handlers: [console, file]
+
