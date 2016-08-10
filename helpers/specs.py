@@ -44,7 +44,7 @@ def generate_specs(parameter_ranges, fixed_parameters):
          therefore be simplified ?
     '''
 
-    batch_id = fixed_parameters['experiment_batch_id']
+    batch_id = fixed_parameters['batch_id']
 
     dimensions, ranges = zip(*parameter_ranges)
     specs = (dict(zip(dimensions, values)) for values in product(*ranges))

@@ -4,13 +4,14 @@ from __future__ import division
 '''
 '''
 import logging.config
+
 import sys
 import yaml
 from pprint import pformat
 import numpy as np
 np.set_printoptions(precision=2, threshold=10e6, linewidth=10e10)
 
-from helpers.pipeline import perform_experiment_batch
+from helpers.batch import perform_experiment_batch
 from helpers.i_o import get_time_id, save_df
 
 
@@ -25,7 +26,7 @@ def main(parameter_ranges_filepath, infolder, outfolder,
     with open('config/logging.yaml', 'r') as infile:
         logging_config = yaml.load(infile)
 
-    logging_config['handlers']['file']['filename'] = './%s.log' % batch_id
+    logging_config['handlers']['batch']['filename'] = './%s.log' % batch_id
     logging.config.dictConfig(logging_config)
 
 
@@ -33,7 +34,7 @@ def main(parameter_ranges_filepath, infolder, outfolder,
     with open(fixed_parameters_filepath, 'r') as infile:
         fixed_parameters = yaml.load(infile)
 
-    fixed_parameters['experiment_batch_id'] = batch_id
+    fixed_parameters['batch_id'] = batch_id
     logging.info('Default parameters:\n%s\n' % pformat(fixed_parameters))
 
     with open(parameter_ranges_filepath, 'r') as infile:
