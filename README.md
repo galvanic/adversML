@@ -20,7 +20,9 @@ Getting Started
   ```yaml
   - name: classifier
     key: [classifier, type]
-    values: [adaline, logistic regression]
+    values:
+      - adaline
+      - logistic regression
   ```
 
   Where `[adaline, logistic regression]` is a list of the
@@ -31,15 +33,26 @@ Getting Started
   ```yaml
   - name: classifier
     key: [classifier, type]
-    values: [adaline, logistic regression]
+    values:
+      - adaline
+      - logistic regression
+      - naive bayes
 
   - name: attack
     key: [attack, type]
-    values: [dictionary, focussed, empty, ham]
+    values:
+      - dictionary
+      - empty
+      - ham
+      - focussed
 
   - name: '% poisoned'
     key: [attack, parameters, percentage_samples_poisoned]
-    values: [.0, .1, .2, .5]
+    values:
+      - .0
+      - .1
+      - .2
+      - .5
   ```
 
   The order of the (name, key, values) group counts, as that
@@ -131,7 +144,7 @@ TODO
 
 - implement how to store experiment files, prob grouped in batches
 - assert all matrix shapes and types
-- implement other termination conditions: detect convergence
+- implement other termination conditions: detect convergence & divergence
 - implement data loading from different filetypes (automatically detect npy, dat, csv, etc.)
 - add tests
 

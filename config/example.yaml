@@ -5,15 +5,24 @@
 
 - name: classifier
   key: [classifier, type]
-  values: [adaline, logistic regression, naive bayes]
+  values:
+    - adaline
+    - logistic regression
+    - naive bayes
 
 - name: attack
   key: [attack, type]
-  values: [dictionary, empty, ham, focussed]
+  values:
+    - dictionary
+    - empty
+    - ham
+#   - focussed
 
 - name: '% poisoned'
   key: [attack, parameters, percentage_samples_poisoned]
-  values: [.0, .1, .2, .5]
+  values:
+    - .0
+    - .5
 
 - name: repetition
   key: [repetition]
