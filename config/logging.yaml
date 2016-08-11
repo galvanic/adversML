@@ -6,21 +6,26 @@ formatters:
   default:
     format: '%(asctime)s.%(msecs)03d __%(name)s__ %(levelname)s: %(message)s'
     datefmt: '%b %d %H:%M:%S'
+  concise:
+    format: '%(asctime)s.%(msecs)03d %(name)s: %(message)s'
+    datefmt: '%M:%S'
 
 handlers:
   console:
     class: logging.StreamHandler
     level: INFO
-    formatter: default
+    formatter: concise
     stream: ext://sys.stdout
-  file:
+  batch:
     class: logging.FileHandler
     level: DEBUG
     formatter: default
-    filename: ./debug.log
+    filename: null
     encoding: utf8
+    mode: w
 
 root:
   level: NOTSET
-  handlers: [console, file]
+  propagate: false
+  handlers: [console, batch]
 

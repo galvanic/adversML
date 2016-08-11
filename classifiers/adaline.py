@@ -86,7 +86,7 @@ def predict(parameters, features,
     ## notation
     X, W = features, parameters
     N, D = features.shape
-    LOGGER.debug('using weights: %s' % parameters)
+    LOGGER.debug('using weights: %s' % np.ravel(W))
     LOGGER.debug('on X: (%s, %s)' % (N, D))
 
     ## apply model

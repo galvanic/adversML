@@ -3,6 +3,7 @@
 from __future__ import division
 '''
 '''
+import logging
 import logging.config
 
 import sys
@@ -28,6 +29,7 @@ def main(parameter_ranges_filepath, infolder, outfolder,
 
     logging_config['handlers']['batch']['filename'] = './%s.log' % batch_id
     logging.config.dictConfig(logging_config)
+    logger = logging.getLogger(__name__)
 
 
     ## load data
@@ -35,11 +37,11 @@ def main(parameter_ranges_filepath, infolder, outfolder,
         fixed_parameters = yaml.load(infile)
 
     fixed_parameters['batch_id'] = batch_id
-    logging.info('Default parameters:\n%s\n' % pformat(fixed_parameters))
+    logger.info('Default parameters:\n%s\n' % pformat(fixed_parameters))
 
     with open(parameter_ranges_filepath, 'r') as infile:
         parameter_ranges = yaml.load(infile)
-    logging.info('Experiment ranges:\n%s\n' % pformat(parameter_ranges))
+    logger.info('Experiment ranges:\n%s\n' % pformat(parameter_ranges))
 
 
     ## carry out experiments

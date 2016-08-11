@@ -80,11 +80,11 @@ def predict(parameters, features,
 
     ## apply model to calculate output
     O = calculate_output(X, W)
-    LOGGER.info('weighted sum O: %s' % np.ravel(O))
+    LOGGER.debug('weighted sum O: %s' % np.ravel(O))
 
     ## predict label using a threshold
     T = np.ones(O.shape)
     T[O < 0] = -1
-    LOGGER.info('thresholded: %s' % np.ravel(T))
+    LOGGER.debug('thresholded: %s' % np.ravel(T))
 
     return T
