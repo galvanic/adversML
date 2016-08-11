@@ -34,13 +34,13 @@ def main(parameter_ranges_filepath, infolder, outfolder,
 
     ## load data
     with open(fixed_parameters_filepath, 'r') as infile:
-        fixed_parameters = yaml.load(infile)
+        fixed_parameters = yaml.safe_load(infile)
 
     fixed_parameters['batch_id'] = batch_id
     logger.info('Default parameters:\n%s\n' % pformat(fixed_parameters))
 
     with open(parameter_ranges_filepath, 'r') as infile:
-        parameter_ranges = yaml.load(infile)
+        parameter_ranges = yaml.safe_load(infile)
     logger.info('Experiment ranges:\n%s\n' % pformat(parameter_ranges))
 
 
