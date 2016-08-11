@@ -8,20 +8,25 @@ import logging
 LOGGER = logging.getLogger(__name__)
 
 import numpy as np
+from helpers.gradientdescent import gradient_descent
 
-from helpers.gradientdescent import max_iters, get_cost
-from helpers.performance import get_error
 
 ## helpers
 sigmoid = lambda z: 1 / (1 + np.exp(-z))
 tanh = lambda z: np.tanh(z)
 
 
+def calculate_output(X, W):
+    '''output to train on'''
+    return tanh(np.dot(X, W))
+
+
 def fit(features, labels,
         ## params:
+        gradient_descent_method='stochastic',
         initial_weights=None,
-        learning_rate=0.1,
-        max_epochs=5,
+        learning_rate=0.5,
+        max_epochs=2,
         ham_label=-1,
         spam_label=1,
         ):
@@ -44,48 +49,17 @@ def fit(features, labels,
     '''
     LOGGER.info('Training Logistic Regression classifier')
 
-    ## notation
-    X, Y = features, labels
-    N, D = X.shape           # N #training samples; D #features
-    LOGGER.debug('X: (%s, %s)\tY: (%s, %s)' % (N, D, *Y.shape))
-
-    ## initialise weights
-    W = np.zeros((D, 1)) if initial_weights is None else initial_weights.reshape((D, 1))
-    LOGGER.debug('initial weights: %s' % np.ravel(W))
-
-    ## evaluate the termination condition
-    for epoch in range(max_epochs):
-        LOGGER.info('epoch %d:' % epoch)
-
-        ## mix up samples (they will therefore be fed in different order at
-        ## each training) -> commonly accepted to improve gradient descent,
-        ## making convergence faster)
-        permuted_indices = np.random.permutation(N)
-
-        ## stochastic gradient descent, sample by sample
-        for sample in permuted_indices:
-            LOGGER.info('- sample %d:' % sample)
-            x, y = X[sample], Y[sample]
-
-            ## classifier output of current epoch
-            o = tanh(np.dot(x, W))
-            LOGGER.debug('-- output: %s' % o)
-
-            ## gradient descent: calculate gradient
-            gradient = np.multiply((o - y), x)
-            LOGGER.debug('-- gradient: %s' % gradient)
-
-            ## update weights
-            W = W - learning_rate * gradient.reshape(W.shape)
-            LOGGER.debug('-- weights: %s' % np.ravel(W))
-
-        P = predict(W, X)
-        error = get_error(Y, P)
-        cost = get_cost(Y, P)
-        LOGGER.info('- cost = %.2E' % cost)
-        LOGGER.info('- error = %.2f' % error)
+    W = gradient_descent(features, labels,
+        calculate_output,
+        predict,
+        gradient_descent_method=gradient_descent_method,
+        initial_weights=initial_weights,
+        learning_rate=learning_rate,
+        max_epochs=max_epochs,
+        )
 
     return W
+
 
 
 def predict(parameters, features,
@@ -96,7 +70,7 @@ def predict(parameters, features,
     '''
     TEST PHASE
     '''
-    LOGGER.info('Predict using ADALINE classifier')
+    LOGGER.debug('Predict using Logistic Regression classifier')
 
     ## notation
     W, X = parameters, features
@@ -105,7 +79,7 @@ def predict(parameters, features,
     LOGGER.debug('on X: (%s, %s)' % (N, D))
 
     ## apply model to calculate output
-    O = tanh(np.dot(X, W))
+    O = calculate_output(X, W)
     LOGGER.info('weighted sum O: %s' % np.ravel(O))
 
     ## predict label using a threshold

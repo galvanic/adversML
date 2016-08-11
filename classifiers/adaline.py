@@ -5,8 +5,6 @@ from __future__ import division
 Implementation of the Adaline model.
 Training is done using batch gradient descent.
 
-TODO stochastic gradient descent (for online learning)
-TODO ? make an Adaline class with train and test as methods
 TODO ? implement regularisation
 TODO ? cost and error could be measured outside the function
      or at least use a callable to calculate them, otherwise duplicated code
@@ -18,16 +16,22 @@ import logging
 LOGGER = logging.getLogger(__name__)
 
 import numpy as np
+from helpers.gradientdescent import gradient_descent
 
-from helpers.gradientdescent import max_iters, get_cost
-from helpers.performance import get_error
+
+def calculate_output(X, W):
+    '''output to train on'''
+    ## specialty of ADALINE is that training is done on the weighted sum,
+    ## _before_ the activation function
+    return np.dot(X, W)
 
 
 def fit(features, labels,
         ## params:
+        gradient_descent_method='stochastic',
         initial_weights=None,
         learning_rate=0.05,
-        max_epochs=200,
+        max_epochs=20,
         ham_label=-1,
         spam_label=1,
         ):
@@ -57,47 +61,14 @@ def fit(features, labels,
     '''
     LOGGER.info('Training Adaline classifier')
 
-    ## notation
-    X, Y = features, labels
-    N, D = features.shape   # N #training samples; D #features
-    LOGGER.debug('X: (%s, %s)\tY: (%s, %s)' % (N, D, *Y.shape))
-
-    ## 1. Initialise weights
-    W = np.zeros((D, 1)) if initial_weights is None else initial_weights.reshape((D, 1))
-    LOGGER.debug('initial weights: %s' % np.ravel(W))
-
-    ## 2. Evaluate the termination condition
-    for epoch in range(max_epochs):
-        LOGGER.info('epoch %d:' % epoch)
-
-        ## current iteration classifier output
-        O = np.dot(X, W)
-        LOGGER.debug('- output: %s' % np.ravel(O))
-
-        ## specialty of ADALINE is that training is done on the weighted sum,
-        ## _before_ the activation function
-        ## batch gradient descent
-        gradient = -np.mean(np.multiply((Y - O), X), axis=0)
-        LOGGER.debug('- gradient: %s' % gradient)
-
-        ## 3. Update weights
-        W = W - learning_rate * gradient.reshape(W.shape)
-        LOGGER.debug('- weights: %s' % np.ravel(W))
-
-        ## Keep track of error and cost (weights from previous iteration)
-        ## T is equivalent to threshold/step activation function
-        if ham_label is 0:               ## spam label assumed 1
-            T = np.zeros(O.shape)
-            T[O > 0.5] = 1
-        else:   ## ham label is assumed -1, spam label assumed 1
-            T = np.ones(O.shape)
-            T[O < 0] = -1
-        LOGGER.debug('- thresholded: %s' % np.ravel(T))
-
-        error = get_error(Y, T)
-        cost = get_cost(Y, O)
-        LOGGER.info('- cost = %.2E' % cost)
-        LOGGER.info('- error = %.2f' % error)
+    W = gradient_descent(features, labels,
+        calculate_output,
+        predict,
+        gradient_descent_method=gradient_descent_method,
+        initial_weights=initial_weights,
+        learning_rate=learning_rate,
+        max_epochs=max_epochs,
+        )
 
     return W
 
@@ -119,10 +90,10 @@ def predict(parameters, features,
     LOGGER.debug('on X: (%s, %s)' % (N, D))
 
     ## apply model
-    O = np.dot(X, W)
+    O = calculate_output(X, W)
     LOGGER.debug('weighted sum O: %s' % np.ravel(O))
 
-    ## calculate output
+    ## calculate predicted output
     ## T is equivalent to threshold/step activation function
     if ham_label is 0:               ## spam label assumed 1
         T = np.zeros(O.shape)

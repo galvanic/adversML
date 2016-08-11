@@ -24,7 +24,26 @@
     - .0
     - .5
 
-- name: repetition
-  key: [repetition]
-  values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+  #- name: learning rate
+  #  key: [classifier, training_parameters, learning_rate]
+  #  values:
+  #    - .5
+  #    - .2
+  #    - .1
+  #    - .05
+  #
+  #- name: GD method
+  #  key: [classifier, training_parameters, gradient_descent_method]
+  #  values:
+  #    - stochastic
+  #    - mini-batch
+  #    - batch
+  #
+  #- name: GD batch size
+  #  key: [classifier, training_parameters, batch_size]
+  #  values:
+  #    - 10
+  #    - 50
+  #    - 100
+  #    - 500
 
