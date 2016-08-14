@@ -94,9 +94,8 @@ def process_trec_dataset(trec_folderpath, countvectorizer_params, verbose=True):
     if verbose: print('Getting email features')
     ## Extract features from emails
     ## we are only interested in presence of a word not frequency
-    vectorizer = CountVectorizer(
-                    dtype=np.bool_,
-                    **countvectorizer_params)
+    vectorizer = CountVectorizer(dtype=np.bool_,
+                                 **countvectorizer_params)
     X = vectorizer.fit_transform(corpus) ## X: features
     ## keep X as a sparse matrix to take up less memory space
 

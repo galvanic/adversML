@@ -1,10 +1,18 @@
 # coding: utf-8
 from __future__ import division
 '''
+TODO: stochastic, mini-batch and batch should be refactored into functions
 '''
 import numpy as np
 from helpers.logging import tls, log
 from helpers.performance import get_error
+
+
+def get_cost(Y, O):
+    '''Calculate cost using Means Squared'''
+    Y, O = map(np.ravel, [Y, O]) ## make sure shape is (len,) for both
+    cost = np.mean(np.square(Y - O))
+    return cost
 
 
 @log
@@ -83,31 +91,9 @@ def gradient_descent(features, labels,
         P = predict(W, X)
         error = get_error(Y, P)
         cost = get_cost(Y, P)
-        tls.logger.info('- cost = %.2E' % cost)
+        tls.logger.info('- cost = %.2e' % cost)
         tls.logger.info('- error = %.2f' % error)
 
     return W
 
-
-
-
-### Helper functions for termination conditions
-
-def Counter(max_iterations):
-    i = max_iterations
-    while True:
-        yield i
-        i -= 1
-
-def max_iters(max_iterations):
-    '''Assumes max_iterations is a Natural Integer.'''
-    counter = Counter(max_iterations)
-    return lambda: not next(counter)
-
-
-def get_cost(Y, O):
-    '''Calculate cost using Means Squared'''
-    Y, O = map(np.ravel, [Y, O]) ## make sure shape is (len,) for both
-    cost = np.mean(np.square(Y - O))
-    return cost
 
