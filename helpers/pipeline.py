@@ -45,7 +45,7 @@ def perform_experiment(spec, infolder):
         Y = np.array(Y, dtype=np.int8) * 2 - 1
 
     N, D = X.shape
-    tls.logger.debug('X: (%s, %s)\tY: (%s, %s)' % (N, D, *Y.shape))
+    tls.logger.debug('X: (%s, %s)\tY: %s' % (N, D, str(Y.shape)))
 
     ## split dataset into training and testing sets
     permuted_indices = np.random.permutation(N)

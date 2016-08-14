@@ -53,7 +53,7 @@ def apply(features, labels,
     N, D = X.shape                        ## number of N: samples, D: features
     num_poisoned = int(N * percentage_samples_poisoned)
 
-    tls.logger.debug('X: (%s, %s)\tY: (%s, %s)' % (N, D, *Y.shape))
+    tls.logger.debug('X: (%s, %s)\tY: %s' % (N, D, str(Y.shape)))
     tls.logger.debug('Amount poisoned: %s' % num_poisoned)
 
     if not target:

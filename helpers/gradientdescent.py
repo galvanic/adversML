@@ -36,7 +36,7 @@ def gradient_descent(features, labels,
     ## notation
     X, Y = features, labels
     N, D = X.shape           # N #training samples; D #features
-    tls.logger.debug('X: (%s, %s)\tY: (%s, %s)' % (N, D, *Y.shape))
+    tls.logger.debug('X: (%s, %s)\tY: %s' % (N, D, str(Y.shape)))
 
     ## initialise weights
     W = np.zeros((D, 1)) if initial_weights is None else initial_weights.reshape((D, 1))

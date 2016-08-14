@@ -53,7 +53,7 @@ def fit(features, labels,
     N, D = X.shape    ## number of N: training samples, D: features
     tolerance = 1e-30 ## tolerance factor (to avoid under/overflows)
 
-    tls.logger.debug('X: (%s, %s)\tY: (%s, %s)' % (N, D, *Y.shape))
+    tls.logger.debug('X: (%s, %s)\tY: %s' % (N, D, str(Y.shape)))
 
     ## estimate prior probability of spam class
     prior_ham = np.sum(Y == ham_label) / N
