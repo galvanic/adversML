@@ -137,14 +137,13 @@ A few [ipython notebooks](https://ipython.org/notebook.html) try the implementat
 TODO
 ----
 
-- implement stochastic and batch training: refactor out gradient descent from training functions
-  and take stochastic or batch as argument
+- integrate w. Kayla's Enron dataset
 
 ### software eng (ie. not directly important for this project) stuff:
 
+- implement other termination conditions: detect convergence & divergence
 - implement how to store experiment files, prob grouped in batches
 - assert all matrix shapes and types
-- implement other termination conditions: detect convergence & divergence
 - implement data loading from different filetypes (automatically detect npy, dat, csv, etc.)
 - add tests
 
