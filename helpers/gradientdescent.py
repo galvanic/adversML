@@ -17,14 +17,15 @@ def get_cost(Y, O):
 
 @log
 def gradient_descent(features, labels,
+        ## functions specific to classifier:
         calculate_output,
         predict,
         ## params:
-        gradient_descent_method='stochastic',
-        batch_size=10,
-        initial_weights=None,
-        learning_rate=0.05,
-        max_epochs=1000,
+        gradient_descent_method,
+        batch_size,
+        learning_rate,
+        max_epochs,
+        initial_weights,
         ):
     '''
     '''

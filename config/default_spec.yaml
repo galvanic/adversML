@@ -5,12 +5,15 @@ label_type:
   spam_label: 1
 
 classifier:
-  type: none
+  type: null
   training_parameters:
+    gradient_descent_method: mini-batch
+    batch_size: 10
     max_epochs: 50
+    initial_weights: null
   testing_parameters: {}
 
 attack:
-  type: none
+  type: null
   parameters: {}
 

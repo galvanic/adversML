@@ -1,14 +1,17 @@
-
 - name: dataset
   key: [dataset_filename]
-  values: [trec2007-1607201347, trec2007-1607252257, trec2007-1607252259]
+  values:
+#   - trec2007-1607201347 ## 10000 features
+    - trec2007-1607252257 ## 1000  features
+#   - trec2007-1607252259 ## 100   features
+#   - enron-kayla         ## 1000  features
 
 - name: classifier
   key: [classifier, type]
   values:
     - adaline
     - logistic regression
-    - naive bayes
+#   - naive bayes
 
 - name: attack
   key: [attack, type]
@@ -22,6 +25,9 @@
   key: [attack, parameters, percentage_samples_poisoned]
   values:
     - .0
+    - .1
+    - .2
+    - .3
     - .5
 
   #- name: learning rate
@@ -31,19 +37,21 @@
   #    - .2
   #    - .1
   #    - .05
-  #
-  #- name: GD method
-  #  key: [classifier, training_parameters, gradient_descent_method]
-  #  values:
-  #    - stochastic
-  #    - mini-batch
-  #    - batch
-  #
-  #- name: GD batch size
-  #  key: [classifier, training_parameters, batch_size]
-  #  values:
-  #    - 10
-  #    - 50
-  #    - 100
-  #    - 500
+
+- name: GD method
+  key: [classifier, training_parameters, gradient_descent_method]
+  values:
+    - mini-batch
+#   - stochastic
+#   - batch
+
+- name: GD batch size
+  key: [classifier, training_parameters, batch_size]
+  values:
+    - 2
+    - 5
+    - 10
+    - 50
+    - 100
+    - 500
 

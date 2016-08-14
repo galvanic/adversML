@@ -22,10 +22,11 @@ def calculate_output(X, W):
 @log
 def fit(features, labels,
         ## params:
-        gradient_descent_method='stochastic',
-        initial_weights=None,
+        gradient_descent_method,
+        batch_size,
+        max_epochs,
         learning_rate=0.5,
-        max_epochs=2,
+        initial_weights=None,
         ham_label=-1,
         spam_label=1,
         ):
@@ -51,9 +52,10 @@ def fit(features, labels,
         calculate_output,
         predict,
         gradient_descent_method=gradient_descent_method,
-        initial_weights=initial_weights,
+        batch_size=batch_size,
         learning_rate=learning_rate,
         max_epochs=max_epochs,
+        initial_weights=initial_weights,
         )
 
     return W
