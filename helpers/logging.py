@@ -1,6 +1,9 @@
 # coding: utf-8
 '''
 '''
+import numpy as np
+np.set_printoptions(precision=2, threshold=10e6, linewidth=10e10)
+
 import threading
 tls = threading.local()
 

@@ -5,9 +5,6 @@ from __future__ import division
 '''
 import sys
 import yaml
-from pprint import pformat
-import numpy as np
-np.set_printoptions(precision=2, threshold=10e6, linewidth=10e10)
 
 import logging.config
 from helpers.logging import LOGGING_CONFIG
