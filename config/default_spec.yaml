@@ -7,7 +7,7 @@ label_type:
 classifier:
   type: none
   training_parameters:
-    max_epochs: 2000
+    max_epochs: 50
   testing_parameters: {}
 
 attack:

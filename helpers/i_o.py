@@ -2,12 +2,12 @@
 from __future__ import division
 '''
 '''
-import logging
-LOGGER = logging.getLogger(__name__)
-
 import os
 import time
 import pandas as pd
+
+import logging
+logger = logging.getLogger(__name__)
 
 
 def get_time_id(time_format='%y%m%d%H%M'):
@@ -25,11 +25,11 @@ def save_df(df, outfolder, experiment_id=None):
     saved_at = str(experiment_id) or get_time_id()
     outfilepath = os.path.join(outfolder, saved_at)
     df.to_pickle('%s-df.dat' % outfilepath)
-    LOGGER.info('Saved to %s\n' % outfilepath)
+    logger.info('Saved to %s\n' % outfilepath)
 
     ## save also as string for human readability
     string = df.to_string(col_space=8, float_format=lambda x: '%.2f' % x)
-    LOGGER.info('\n%s' % string)
+    logger.info('\n%s' % string)
 
     return
 

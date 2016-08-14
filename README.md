@@ -7,7 +7,7 @@ Getting Started
 ---------------
 
 1. clone the repo and `cd` into the folder
-2. create a [YAML](http://yaml.org/) config file for the experiment setup.
+2. create a [YAML](http://yaml.org/) configuration file for the experiment setup.
 
   - **name**: the name of the index column in the dataframe, a shorter
     value will make it easier to manipulate

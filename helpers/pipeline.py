@@ -2,18 +2,17 @@
 from __future__ import division
 '''
 '''
-import logging
-logger = logging.getLogger(__name__)
-
 import os
 import pickle
 import numpy as np
 from pprint import pformat
 
+from helpers.logging import tls, log
 from helpers.performance import get_error, get_FPR, get_FNR, get_ROC_AUC
 from helpers.specs import prepare_spec
 
 
+@log(get_experiment_id=lambda args: args[0]['experiment_id'])
 def perform_experiment(spec, infolder):
     '''
     Returns the performance of the experiment defined by the given specification
@@ -30,9 +29,9 @@ def perform_experiment(spec, infolder):
         A dictionary
     '''
 
-    logger.info('spec:\n%s\n' % pformat(spec))
+    tls.logger.info('spec:\n%s\n' % pformat(spec))
     spec = prepare_spec(spec)
-    logger.info('prepared spec:\n%s\n' % pformat(spec))
+    tls.logger.info('prepared spec:\n%s\n' % pformat(spec))
 
     ifilepath = os.path.join(infolder, '%s' % spec['dataset_filename'])
     with open('%s-features.dat' % ifilepath, 'rb') as infile:
@@ -46,7 +45,7 @@ def perform_experiment(spec, infolder):
         Y = np.array(Y, dtype=np.int8) * 2 - 1
 
     N, D = X.shape
-    logger.debug('X: (%s, %s)\tY: (%s, %s)' % (N, D, *Y.shape))
+    tls.logger.debug('X: (%s, %s)\tY: (%s, %s)' % (N, D, *Y.shape))
 
     ## split dataset into training and testing sets
     permuted_indices = np.random.permutation(N)
@@ -69,7 +68,7 @@ def perform_experiment(spec, infolder):
     add_bias = lambda x: np.insert(x, 0, values=1, axis=1) # add bias term
     if spec['add_bias']:
         X_train, X_test = map(add_bias, [X_train, X_test])
-        logger.info('- added bias')
+        tls.logger.info('- added bias')
 
     ## apply model
     classifier = spec['classifier']['type']
@@ -91,7 +90,7 @@ def perform_experiment(spec, infolder):
         'FNR': get_FNR(Y_test, O_test, **spec['label_type']),
         'AUC': get_ROC_AUC(Y_test, O_test, **spec['label_type']),
     }
-    logger.info('performance:\n%s' % pformat(performance))
+    tls.logger.info('performance:\n%s' % pformat(performance))
 
     ## release memory
     del X

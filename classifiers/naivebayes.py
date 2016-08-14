@@ -5,10 +5,8 @@ Inspired by Luis Munoz's MATLAB code for the Naive Bayes classifier model.
 
 /!\ run with python3
 '''
-import logging
-LOGGER = logging.getLogger(__name__)
-
 import numpy as np
+from helpers.logging import tls, log
 
 
 def process_parameters(p, tolerance=1e-10):
@@ -26,6 +24,7 @@ def process_parameters(p, tolerance=1e-10):
     return p
 
 
+@log
 def fit(features, labels,
         ## params
         ham_label,
@@ -48,21 +47,20 @@ def fit(features, labels,
     Outputs:
     - parameters
     '''
-    LOGGER.info('Training Naive Bayes classifier')
 
     ## setup
     X, Y = features, labels
     N, D = X.shape    ## number of N: training samples, D: features
     tolerance = 1e-30 ## tolerance factor (to avoid under/overflows)
 
-    LOGGER.debug('X: (%s, %s)\tY: (%s, %s)' % (N, D, *Y.shape))
+    tls.logger.debug('X: (%s, %s)\tY: (%s, %s)' % (N, D, *Y.shape))
 
     ## estimate prior probability of spam class
     prior_ham = np.sum(Y == ham_label) / N
     prior_spam  = 1 - prior_ham
 
-    LOGGER.info('- prior ham: %s' % prior_ham)
-    LOGGER.info('- prior spam: %s' % prior_spam)
+    tls.logger.info('- prior ham: %s' % prior_ham)
+    tls.logger.info('- prior spam: %s' % prior_spam)
 
     ## estimate likelihood parameters for each class
     ## looks at presence of features in each class
@@ -77,12 +75,13 @@ def fit(features, labels,
     likeli_ham, likeli_spam = map(lambda p: p.reshape((D, 1)), [likeli_ham, likeli_spam])
     likeli_ham, likeli_spam = map(process_parameters, [likeli_ham, likeli_spam])
 
-    LOGGER.debug('- likelihood ham: %s' % np.ravel(likeli_ham))
-    LOGGER.debug('- likelihood spam: %s' % np.ravel(likeli_spam))
+    tls.logger.debug('- likelihood ham: %s' % np.ravel(likeli_ham))
+    tls.logger.debug('- likelihood spam: %s' % np.ravel(likeli_spam))
 
     return prior_ham, prior_spam, likeli_ham, likeli_spam
 
 
+@log
 def predict(parameters, features,
         ## params
         ham_label,
@@ -98,6 +97,7 @@ def predict(parameters, features,
     Outputs:
     - predicted: labels
     '''
+
     ## notation
     prior_ham, prior_spam, likeli_ham, likeli_spam = parameters
     X = features
@@ -112,8 +112,8 @@ def predict(parameters, features,
                          np.dot(   X,  np.log(  likeli_spam)) + \
                          np.dot((1-X), np.log(1-likeli_spam))
 
-    LOGGER.debug('- log posterior for ham: %s' % np.ravel(log_posterior_ham))
-    LOGGER.debug('- log posterior for spam: %s' % np.ravel(log_posterior_spam))
+    tls.logger.debug('- log posterior for ham: %s' % np.ravel(log_posterior_ham))
+    tls.logger.debug('- log posterior for spam: %s' % np.ravel(log_posterior_spam))
 
     ## no need to normalise since we are just interested in which
     ## posterior is higher (ie. which label is most likely given the data)
@@ -127,7 +127,7 @@ def predict(parameters, features,
     if ham_label == -1:
         predicted = predicted * 2 - 1
 
-    LOGGER.debug('Predicted: %s' % predicted)
+    tls.logger.debug('Predicted: %s' % predicted)
 
     return predicted
 

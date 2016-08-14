@@ -4,10 +4,8 @@ from __future__ import division
 Implementation of logistic regression
 Adapted from: https://github.com/kaylashapiro/SpamFilter/blob/master/Code/logisticReg.py
 '''
-import logging
-LOGGER = logging.getLogger(__name__)
-
 import numpy as np
+from helpers.logging import tls, log
 from helpers.gradientdescent import gradient_descent
 
 
@@ -21,6 +19,7 @@ def calculate_output(X, W):
     return tanh(np.dot(X, W))
 
 
+@log
 def fit(features, labels,
         ## params:
         gradient_descent_method='stochastic',
@@ -47,7 +46,6 @@ def fit(features, labels,
     Output:
     - W: D * 1 Numpy vector of real values
     '''
-    LOGGER.info('Training Logistic Regression classifier')
 
     W = gradient_descent(features, labels,
         calculate_output,
@@ -61,7 +59,7 @@ def fit(features, labels,
     return W
 
 
-
+@log
 def predict(parameters, features,
         ## params
         ham_label=-1,
@@ -70,21 +68,20 @@ def predict(parameters, features,
     '''
     TEST PHASE
     '''
-    LOGGER.debug('Predict using Logistic Regression classifier')
 
     ## notation
     W, X = parameters, features
     N, D = X.shape
-    LOGGER.debug('using weights: %s' % parameters)
-    LOGGER.debug('on X: (%s, %s)' % (N, D))
+    tls.logger.debug('using weights: %s' % parameters)
+    tls.logger.debug('on X: (%s, %s)' % (N, D))
 
     ## apply model to calculate output
     O = calculate_output(X, W)
-    LOGGER.debug('weighted sum O: %s' % np.ravel(O))
+    tls.logger.debug('weighted sum O: %s' % np.ravel(O))
 
     ## predict label using a threshold
     T = np.ones(O.shape)
     T[O < 0] = -1
-    LOGGER.debug('thresholded: %s' % np.ravel(T))
+    tls.logger.debug('thresholded: %s' % np.ravel(T))
 
     return T

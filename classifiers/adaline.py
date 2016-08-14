@@ -1,6 +1,5 @@
 # coding: utf-8
 from __future__ import division
-
 '''
 Implementation of the Adaline model.
 Training is done using batch gradient descent.
@@ -12,11 +11,9 @@ TODO ? cost and error could be measured outside the function
 TODO clean up the code further, especially duplicated sections (adaline model
      etc.)
 '''
-import logging
-LOGGER = logging.getLogger(__name__)
-
 import numpy as np
 from helpers.gradientdescent import gradient_descent
+from helpers.logging import tls, log
 
 
 def calculate_output(X, W):
@@ -26,6 +23,7 @@ def calculate_output(X, W):
     return np.dot(X, W)
 
 
+@log
 def fit(features, labels,
         ## params:
         gradient_descent_method='stochastic',
@@ -59,7 +57,6 @@ def fit(features, labels,
          training
     TODO implement an autostop if cost is rising instead of falling ?
     '''
-    LOGGER.info('Training Adaline classifier')
 
     W = gradient_descent(features, labels,
         calculate_output,
@@ -73,6 +70,7 @@ def fit(features, labels,
     return W
 
 
+@log
 def predict(parameters, features,
         ## params
         ham_label=-1,
@@ -81,17 +79,16 @@ def predict(parameters, features,
     '''
     TEST PHASE
     '''
-    LOGGER.info('Predict using ADALINE classifier')
 
     ## notation
     X, W = features, parameters
     N, D = features.shape
-    LOGGER.debug('using weights: %s' % np.ravel(W))
-    LOGGER.debug('on X: (%s, %s)' % (N, D))
+    tls.logger.debug('using weights: %s' % np.ravel(W))
+    tls.logger.debug('on X: (%s, %s)' % (N, D))
 
     ## apply model
     O = calculate_output(X, W)
-    LOGGER.debug('weighted sum O: %s' % np.ravel(O))
+    tls.logger.debug('weighted sum O: %s' % np.ravel(O))
 
     ## calculate predicted output
     ## T is equivalent to threshold/step activation function
@@ -101,7 +98,7 @@ def predict(parameters, features,
     else:   ## ham label is assumed -1, spam label assumed 1
         T = np.ones(O.shape)
         T[O < 0] = -1
-    LOGGER.debug('- thresholded: %s' % np.ravel(T))
+    tls.logger.debug('- thresholded: %s' % np.ravel(T))
 
     return T
 

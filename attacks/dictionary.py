@@ -6,12 +6,11 @@ Implementation of a dictionary attack.
 
 Assumes no bias has been added yet.
 '''
-import logging
-LOGGER = logging.getLogger(__name__)
-
 import numpy as np
+from helpers.logging import tls, log
 
 
+@log
 def apply(features, labels,
         ## params
         percentage_samples_poisoned,
@@ -32,7 +31,6 @@ def apply(features, labels,
     - X: poisoned features
     - Y: poisoned labels
     '''
-    LOGGER.info('Apply dictionary attack')
 
     ## notations
     spam_label = 1
@@ -40,21 +38,21 @@ def apply(features, labels,
     N, D = X.shape ## number of N: samples, D: features
     num_poisoned = int(N * percentage_samples_poisoned)
 
-    LOGGER.debug('X: (%s, %s)\tY: (%s, %s)' % (N, D, *Y.shape))
-    LOGGER.debug('Amount poisoned: %s' % num_poisoned)
+    tls.logger.debug('X: (%s, %s)\tY: (%s, %s)' % (N, D, *Y.shape))
+    tls.logger.debug('Amount poisoned: %s' % num_poisoned)
 
     ## randomly replace some samples with the poisoned ones
     ## so that total number of samples doesn't change
     poisoned_indices = np.random.choice(N, num_poisoned, replace=False)
     X[poisoned_indices] = 1
 
-    LOGGER.debug('Poisoned indices: %s' % poisoned_indices)
-    LOGGER.debug('- one of the poisoned emails: %s =? %d (# features)' % (X[poisoned_indices[0]].sum(), D))
+    tls.logger.debug('Poisoned indices: %s' % poisoned_indices)
+    tls.logger.debug('- one of the poisoned emails: %s =? %d (# features)' % (X[poisoned_indices[0]].sum(), D))
 
     ## the contamination assumption
     Y[poisoned_indices] = spam_label
 
-    LOGGER.debug('- one of the poisoned emails\' label: %s =? 1' % Y[poisoned_indices[0]])
+    tls.logger.debug('- one of the poisoned emails\' label: %s =? 1' % Y[poisoned_indices[0]])
     ## TODO: these logging debugs should probably be asserts
 
     return X, Y

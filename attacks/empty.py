@@ -5,12 +5,11 @@ Implementation of an empty attack.
 
 Assumes no bias has been added yet.
 '''
-import logging
-LOGGER = logging.getLogger(__name__)
-
 import numpy as np
+from helpers.logging import tls, log
 
 
+@log
 def apply(features, labels,
         ## params
         percentage_samples_poisoned,
@@ -33,7 +32,6 @@ def apply(features, labels,
 
     TODO vary attacker knowledge (=influence over features)
     '''
-    LOGGER.info('Apply empty attack')
 
     ## notations
     spam_label = 1
@@ -41,20 +39,20 @@ def apply(features, labels,
     N, D = X.shape ## number of N: samples, D: features
     num_poisoned = int(N * percentage_samples_poisoned)
 
-    LOGGER.debug('X: (%s, %s)\tY: (%s, %s)' % (N, D, *Y.shape))
-    LOGGER.debug('Amount poisoned: %s' % num_poisoned)
+    tls.logger.debug('X: (%s, %s)\tY: (%s, %s)' % (N, D, *Y.shape))
+    tls.logger.debug('Amount poisoned: %s' % num_poisoned)
 
     ## randomly replace some samples with the poisoned ones
     ## so that total number of samples doesn't change
     poisoned_indices = np.random.choice(N, num_poisoned, replace=False)
     X[poisoned_indices] = 0
 
-    LOGGER.debug('Poisoned indices: %s' % poisoned_indices)
+    tls.logger.debug('Poisoned indices: %s' % poisoned_indices)
 
     ## the contamination assumption
     Y[poisoned_indices] = spam_label
 
-    LOGGER.debug('- one of the poisoned emails\' label: %s =? 1' % Y[poisoned_indices[0]])
+    tls.logger.debug('- one of the poisoned emails\' label: %s =? 1' % Y[poisoned_indices[0]])
     ## TODO: these logging debugs should probably be asserts
 
     return X, Y

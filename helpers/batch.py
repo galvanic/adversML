@@ -5,6 +5,7 @@ from __future__ import division
 import logging
 logger = logging.getLogger(__name__)
 
+from pprint import pformat
 import pandas as pd
 from functools import partial
 from multiprocessing.dummy import Pool as ThreadPool
@@ -14,7 +15,7 @@ from helpers.specs import generate_specs
 
 
 def perform_experiment_batch(parameter_ranges, fixed_parameters, infolder,
-        use_threads=True, num_threads=8):
+        num_threads=1):
     '''
 
     Inputs:
@@ -32,6 +33,8 @@ def perform_experiment_batch(parameter_ranges, fixed_parameters, infolder,
          experiment_dimensions dictionary should already be an instance of
          OrderedDict
     '''
+    logger.info('Default parameters:\n%s\n' % pformat(fixed_parameters))
+    logger.info('Experiment ranges:\n%s\n' % pformat(parameter_ranges))
 
     ## extract names to use later for DF
     dimension_names, keys, variations= zip(*((p['name'], tuple(p['key']), p['values']) for p in parameter_ranges))
@@ -44,7 +47,7 @@ def perform_experiment_batch(parameter_ranges, fixed_parameters, infolder,
     ## TODO incorporate infolder directly by changing the specs
     perform_exp = partial(perform_experiment, infolder=infolder)
 
-    ## use threads
+    use_threads = bool(num_threads)
     if use_threads:
         logger.info('Using %s threads' % num_threads)
         with ThreadPool(processes=num_threads) as pool:

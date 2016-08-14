@@ -4,10 +4,10 @@ disable_existing_loggers: false
 
 formatters:
   default:
-    format: '%(asctime)s.%(msecs)03d __%(name)s__ %(levelname)s: %(message)s'
+    format: '%(asctime)s.%(msecs)03d - %(thread)s [experiment #%(name)s] - %(module)s.%(funcName)s - %(levelname)s: %(message)s'
     datefmt: '%b %d %H:%M:%S'
   concise:
-    format: '%(asctime)s.%(msecs)03d %(name)s: %(message)s'
+    format: '%(asctime)s.%(msecs)03d #%(name)s - %(module)s: %(message)s'
     datefmt: '%M:%S'
 
 handlers:
@@ -16,7 +16,7 @@ handlers:
     level: INFO
     formatter: concise
     stream: ext://sys.stdout
-  batch:
+  file:
     class: logging.FileHandler
     level: DEBUG
     formatter: default
@@ -27,5 +27,5 @@ handlers:
 root:
   level: NOTSET
   propagate: false
-  handlers: [console, batch]
+  handlers: [console, file]
 

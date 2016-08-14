@@ -2,13 +2,12 @@
 from __future__ import division
 '''
 '''
-import logging
-LOGGER = logging.getLogger(__name__)
-
 import numpy as np
 from sklearn.metrics import mutual_info_score
+from helpers.logging import tls, log
 
 
+@log
 def select_most_present(features, labels, threshold=0, ham_label=-1):
     '''
     Returns indices of the most salient features for the ham class, using a
@@ -46,26 +45,25 @@ def select_using_MI(features, labels, threshold=0.01, ham_label=-1):
          potential (although this isn't necessary since we are doing a poison,
          not evasion attack); then compare this to initialised with 0s or with 1s
     '''
-    LOGGER.info('Use mutual information to select features')
 
     X, Y = features, np.ravel(labels)
     N, D = X.shape
     d = int(D * threshold) ## percentile of features to keep
 
-    LOGGER.info('Keep top %s features' % d)
+    tls.logger.info('Keep top %s features' % d)
 
     ## calculate frequency of feature presence relative to each class
     ham_freq  = np.mean(X[np.ravel(Y == ham_label)], axis=0)
     spam_freq = np.mean(X[np.ravel(Y != ham_label)], axis=0)
 
-    LOGGER.debug('- feature frequency in ham class: %s' % ham_freq)
-    LOGGER.debug('- feature frequency in spam class: %s' % spam_freq)
+    tls.logger.debug('- feature frequency in ham class: %s' % ham_freq)
+    tls.logger.debug('- feature frequency in spam class: %s' % spam_freq)
 
     ## calculate mutual information between features and labels
     MI_per_feature = (mutual_info_score(X[:, f], Y) for f in range(D))
     MI_per_feature = np.fromiter(MI_per_feature, dtype=np.float16)
 
-    LOGGER.debug('- mutual information scores: %s' % MI_per_feature)
+    tls.logger.debug('- mutual information scores: %s' % MI_per_feature)
 
     ## keep only salient features for ham (according to relative presence in that class)
     MI_per_feature[ham_freq < spam_freq] = 0
@@ -104,7 +102,6 @@ def apply(features, labels,
     - X: N * D poisoned features
     - Y: N * 1 poisoned labels
     '''
-    LOGGER.info('Apply ham attack')
 
     ## notations
     spam_label = 1
@@ -112,20 +109,20 @@ def apply(features, labels,
     N, D = X.shape ## number of N: samples, D: features
     num_poisoned = int(N * percentage_samples_poisoned)
 
-    LOGGER.debug('X: (%s, %s)\tY: (%s, %s)' % (N, D, *Y.shape))
-    LOGGER.debug('Amount poisoned: %s' % num_poisoned)
+    tls.logger.debug('X: (%s, %s)\tY: (%s, %s)' % (N, D, *Y.shape))
+    tls.logger.debug('Amount poisoned: %s' % num_poisoned)
 
     ## find the most salient features, indicative of the ham class
     salient_indices = feature_selection_method(X, Y, threshold)
 
-    LOGGER.info('Salient indices: %s' % salient_indices)
+    tls.logger.info('Salient indices: %s' % salient_indices)
 
     ## randomly replace some samples with the poisoned ones
     ## so that total number of samples doesn't change
     poisoned_indices = np.random.choice(N, num_poisoned, replace=False)
     X[poisoned_indices] = 0
 
-    LOGGER.debug('Poisoned indices: %s' % poisoned_indices)
+    tls.logger.debug('Poisoned indices: %s' % poisoned_indices)
 
     ## "turn on" features whose presence is indicative of ham
     X[np.ix_(poisoned_indices, salient_indices)] = 1
@@ -133,7 +130,7 @@ def apply(features, labels,
     ## the contamination assumption
     Y[poisoned_indices] = spam_label
 
-    LOGGER.debug('- one of the poisoned emails\' label: %s =? 1' % Y[poisoned_indices[0]])
+    tls.logger.debug('- one of the poisoned emails\' label: %s =? 1' % Y[poisoned_indices[0]])
     ## TODO: these logging debugs should probably be asserts
 
     return X, Y
