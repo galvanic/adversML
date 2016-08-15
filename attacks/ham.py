@@ -20,11 +20,12 @@ def select_most_present(features, labels, threshold=0, ham_label=-1):
 
     ## use features that appear most in ham emails
     count = np.sum(hams, axis=0)
-    salient_indices = np.nonzero(count > threshold)[0]
+    salient_indices = np.ravel(np.where(count > threshold))
 
     return salient_indices
 
 
+@log
 def select_using_MI(features, labels, threshold=0.01, ham_label=-1):
     '''
     Returns indices of the most salient features for the ham class, using a

@@ -64,8 +64,8 @@ def fit(features, labels,
 
     ## estimate likelihood parameters for each class
     ## looks at presence of features in each class
-    indices_ham  = np.nonzero(Y ==  ham_label)[0]
-    indices_spam = np.nonzero(Y == spam_label)[0]
+    indices_ham  = np.ravel(np.where(Y ==  ham_label))
+    indices_spam = np.ravel(np.where(Y == spam_label))
     N_ham  = len(indices_ham)
     N_spam = len(indices_spam)
 

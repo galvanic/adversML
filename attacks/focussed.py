@@ -60,7 +60,7 @@ def apply(features, labels,
 
         ## choose ham email
         if not target_index:
-            target_index = np.random.choice(np.nonzero(Y == ham_label)[0])
+            target_index = np.random.choice(np.ravel(np.where(Y == ham_label)))
 
         target = X[target_index]
 
@@ -69,7 +69,7 @@ def apply(features, labels,
     ## same tokens as email (only feature presence is taken into account)
     ## in this case, it is the email
     salient_mask = (target == 1)
-    salient_indices = np.nonzero(salient_mask)[0]
+    salient_indices = np.ravel(np.where(salient_mask))
 
     tls.logger.info('Salient indices: %s' % salient_indices)
 
