@@ -59,8 +59,8 @@ def fit(features, labels,
     prior_ham = np.sum(Y == ham_label) / N
     prior_spam  = 1 - prior_ham
 
-    tls.logger.info('- prior ham: %s' % prior_ham)
-    tls.logger.info('- prior spam: %s' % prior_spam)
+    tls.logger.debug('- prior ham: %s' % prior_ham)
+    tls.logger.debug('- prior spam: %s' % prior_spam)
 
     ## estimate likelihood parameters for each class
     ## looks at presence of features in each class

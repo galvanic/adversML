@@ -7,7 +7,6 @@ from sklearn.metrics import mutual_info_score
 from helpers.logging import tls, log
 
 
-@log
 def select_most_present(features, labels, threshold=0, ham_label=-1):
     '''
     Returns indices of the most salient features for the ham class, using a

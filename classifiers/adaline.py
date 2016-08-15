@@ -83,12 +83,10 @@ def predict(parameters, features,
     ## notation
     X, W = features, parameters
     N, D = features.shape
-    tls.logger.debug('using weights: %s' % np.ravel(W))
     tls.logger.debug('on X: (%s, %s)' % (N, D))
 
     ## apply model
     O = calculate_output(X, W)
-    tls.logger.debug('weighted sum O: %s' % np.ravel(O))
 
     ## calculate predicted output
     ## T is equivalent to threshold/step activation function
@@ -98,7 +96,6 @@ def predict(parameters, features,
     else:   ## ham label is assumed -1, spam label assumed 1
         T = np.ones(O.shape)
         T[O < 0] = -1
-    tls.logger.debug('- thresholded: %s' % np.ravel(T))
 
     return T
 

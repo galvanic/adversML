@@ -135,7 +135,6 @@ def gradient_descent(features, labels,
 
     ## initialise weights
     W = np.zeros((D, 1)) if initial_weights is None else initial_weights.reshape((D, 1))
-    tls.logger.debug('initial weights: %s' % np.ravel(W))
 
     ## evaluate the termination condition
     previous_errors = deque(maxlen=convergence_look_back)
@@ -165,16 +164,13 @@ def gradient_descent(features, labels,
 
         ## classifier output of current epoch
         o = calculate_output(x, W)
-        tls.logger.debug('- output: %s' % np.ravel(o))
 
         ## gradient descent: minimise the cost function
         ## gradient equation was obtained by deriving the LMS cost function
         gradient = -np.mean(np.multiply((y - o), x), axis=0)
-        tls.logger.debug('- gradient: %s' % gradient)
 
         ## update weights
         W = W - learning_rate * gradient.reshape(W.shape)
-        tls.logger.debug('- weights: %s' % np.ravel(W))
 
         ## Keep track of cost and error
         P = predict(W, X)

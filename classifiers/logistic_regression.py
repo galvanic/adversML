@@ -79,16 +79,13 @@ def predict(parameters, features,
     ## notation
     W, X = parameters, features
     N, D = X.shape
-    tls.logger.debug('using weights: %s' % parameters)
     tls.logger.debug('on X: (%s, %s)' % (N, D))
 
     ## apply model to calculate output
     O = calculate_output(X, W)
-    tls.logger.debug('weighted sum O: %s' % np.ravel(O))
 
     ## predict label using a threshold
     T = np.ones(O.shape)
     T[O < 0] = -1
-    tls.logger.debug('thresholded: %s' % np.ravel(T))
 
     return T
