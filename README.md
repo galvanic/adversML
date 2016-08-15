@@ -137,8 +137,6 @@ A few [ipython notebooks](https://ipython.org/notebook.html) try the implementat
 TODO
 ----
 
-- integrate w. Kayla's Enron dataset
-
 ### software eng (ie. not directly important for this project) stuff:
 
 - implement other termination conditions: detect convergence & divergence
@@ -151,7 +149,10 @@ TODO
 
 - ? optimise pipeline for experiments where the same dataset, same attacks, etc. are used
     or not worth the time ?
+  -> look into [Makefile](https://bost.ocks.org/mike/make/) to manage dependencies between files
 - profile code
+- re-implement logging of intermediate results, but maybe only first few characters, or statistics
+  or info on the array (contains nan, something like that), would need to see what is actually useful
 - ? [bit arrays](https://stackoverflow.com/questions/5602155/numpy-boolean-array-with-1-bit-entries)
 - ? [explicitly free memory](https://stackoverflow.com/questions/1316767/how-can-i-explicitly-free-memory-in-python)
 - ? make ipython notebook on MI and feature selection for ham
