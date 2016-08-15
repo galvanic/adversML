@@ -1,8 +1,8 @@
 # coding: utf-8
 from __future__ import division
 '''
-TODO: stochastic, mini-batch and batch should be refactored into functions
-TODO: make sure shapes of np arrays aren't causing bugs
+TODO: stochastic, mini-batch and batch functions should be refactored into
+      only one mini-batch function where batch size varies (1, mini, N)
 '''
 import numpy as np
 from helpers.logging import tls, log
