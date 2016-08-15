@@ -2,6 +2,7 @@
 from __future__ import division
 '''
 TODO: stochastic, mini-batch and batch should be refactored into functions
+TODO: make sure shapes of np arrays aren't causing bugs
 '''
 import numpy as np
 from helpers.logging import tls, log
@@ -63,6 +64,11 @@ def gradient_descent(features, labels,
             start = (epoch * batch_size) % N
             end = (epoch * batch_size + batch_size) % N or None
             samples = permuted_indices[start:end]
+
+            #end = end if (end and end > start) else None
+            if (end and end < start): ## do not train on smaller batch at the end
+                tls.logger.debug('New pass through dataset')
+                continue
             tls.logger.debug('- samples (%d-%s/%d): %s' % (start, end, N, samples))
             x, y = X[samples], Y[samples]
 
