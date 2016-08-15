@@ -5,6 +5,7 @@ TODO: stochastic, mini-batch and batch functions should be refactored into
       only one mini-batch function where batch size varies (1, mini, N)
 '''
 import numpy as np
+from collections import deque
 from helpers.logging import tls, log
 from helpers.performance import get_error
 
@@ -81,6 +82,8 @@ def gradient_descent(features, labels,
         learning_rate,
         max_epochs,
         initial_weights,
+        convergence_threshold,
+        convergence_look_back,
         ):
     '''
     '''
@@ -98,6 +101,9 @@ def gradient_descent(features, labels,
     tls.logger.debug('initial weights: %s' % np.ravel(W))
 
     ## evaluate the termination condition
+    previous_errors = deque(maxlen=convergence_look_back)
+    previous_errors.append(1e6)
+
     epoch = 0
     while epoch < max_epochs:
     #for epoch in range(max_epochs):
@@ -140,6 +146,12 @@ def gradient_descent(features, labels,
         tls.logger.info('- cost = %.2e' % cost)
         tls.logger.info('- error = %.2f' % error)
 
+        ## check for convergence in last x epochs
+        if all(abs(np.array(previous_errors) - error) < convergence_threshold):
+            tls.logger.info('converged')
+            break
+
+        previous_errors.append(error)
         epoch += 1
 
     return W

@@ -31,6 +31,8 @@ def fit(features, labels,
         max_epochs,
         learning_rate=0.05,
         initial_weights=None,
+        convergence_threshold=1e-5,
+        convergence_look_back=2,
         ham_label=-1,
         spam_label=1,
         ):
@@ -67,6 +69,8 @@ def fit(features, labels,
         learning_rate=learning_rate,
         max_epochs=max_epochs,
         initial_weights=initial_weights,
+        convergence_threshold=convergence_threshold,
+        convergence_look_back=convergence_look_back,
         )
 
     return W
