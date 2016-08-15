@@ -49,16 +49,10 @@ def fit(features, labels,
         with N: the number of training examples
         and  D: the number of features for each example
     - labels:   N * 1 Numpy vector of binary values (-1 and 1)
-    - initial_weights: D * 1 Numpy vector, beginning weights
-    - learning_rate: learning rate, a float between 0 and 1
 
     Output:
     - W: D * 1 Numpy vector of real values
 
-    TODO yield cost, error, weights as it is learning ?
-         this could allow possibility to inject new learning rate during
-         training
-    TODO implement an autostop if cost is rising instead of falling ?
     '''
 
     W = gradient_descent(features, labels,

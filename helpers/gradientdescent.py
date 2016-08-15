@@ -86,6 +86,43 @@ def gradient_descent(features, labels,
         convergence_look_back,
         ):
     '''
+    Returns the optimal weights for a given training set (features
+    and corresponding label inputs) for the given model*
+    These weights are found using the gradient descent method.
+    /!\ Assumes bias term is already in the features input.
+
+    *The given model is determined by the `calculate_output` and
+    `predict` functions.
+
+    TRAINING PHASE
+
+
+    Inputs:
+    - features: N * D Numpy matrix of binary values (0 and 1)
+        with N: the number of training examples
+        and  D: the number of features for each example
+    - labels:   N * 1 Numpy vector of binary values (-1 and 1)
+    - gradient_descent_method: string
+    - batch_size:              int, between 1 and N
+    - learning_rate:           float, between 0 and 1
+    - max_epochs:              int, >= 0
+    - initial_weights:         D * 1 Numpy vector
+    - convergence_threshold:   float, very small number
+    - convergence_look_back:   int, >= 1
+        stops if the error difference hasn't been over threshold
+        for the last X epochs
+
+    Output:
+    - W: D * 1 Numpy vector of real values
+
+
+    TODO adaptive learning rate ?
+    TODO yield cost, error, weights as it is learning ?
+         this could allow possibility to inject new learning rate during
+         training
+    TODO determine what to do if cost is rising instead of falling:
+         - abort ?
+         - retry w lower learning rate ?
     '''
     tls.logger.info('learning rate: %f' % learning_rate)
     tls.logger.info('using %s' % gradient_descent_method)

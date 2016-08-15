@@ -27,11 +27,16 @@ def fit(features, labels,
         max_epochs,
         learning_rate=0.5,
         initial_weights=None,
+        convergence_threshold=1e-5,
+        convergence_look_back=2,
         ham_label=-1,
         spam_label=1,
         ):
     '''
-    Returns
+    Returns the optimal weights for a given training set (features
+    and corresponding label inputs) for the logistic regression model.
+    These weights are found using the gradient descent method.
+    /!\ Assumes bias term is already in the features input.
 
     TRAINING PHASE
 
@@ -40,12 +45,10 @@ def fit(features, labels,
         with N: the number of training examples
         and  D: the number of features for each example
     - labels:   N * 1 Numpy vector of binary values (-1 and 1)
-    - initial_weights: D * 1 Numpy vector, beginning weights
-    - learning_rate: learning rate, a float between 0 and 1
-    - termination_condition: returns a bool
 
     Output:
     - W: D * 1 Numpy vector of real values
+
     '''
 
     W = gradient_descent(features, labels,
