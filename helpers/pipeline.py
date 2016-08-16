@@ -33,7 +33,7 @@ def perform_experiment(spec, infolder):
     spec = prepare_spec(spec)
     tls.logger.info('prepared spec:\n%s\n' % pformat(spec))
 
-    ifilepath = os.path.join(infolder, '%s' % spec['dataset_filename'])
+    ifilepath = os.path.join(infolder, spec['dataset_filename'])
     with open('%s-features.dat' % ifilepath, 'rb') as infile:
         X = pickle.load(infile)
 

@@ -5,6 +5,7 @@ from __future__ import division
 '''
 import sys
 import yaml
+import os.path
 
 import logging.config
 from helpers.logging import LOGGING_CONFIG
@@ -27,7 +28,8 @@ def main(batch_specs_filepath, infolder, outfolder, num_threads=1):
     batch_id = str(get_time_id())
     fixed_parameters['batch_id'] = batch_id
 
-    LOGGING_CONFIG['handlers']['file']['filename'] = './%s.log' % batch_id
+    log_filepath = os.path.join(outfolder, '%s.log' % batch_id)
+    LOGGING_CONFIG['handlers']['file']['filename'] = log_filepath
     logging.config.dictConfig(LOGGING_CONFIG)
 
     ## carry out experiments
@@ -42,8 +44,11 @@ def main(batch_specs_filepath, infolder, outfolder, num_threads=1):
 
 if __name__ == '__main__':
 
-    batch_specs_filepath = sys.argv[1] if len(sys.argv) > 1 else 'config/example.yaml'
-    infolder = sys.argv[2] if len(sys.argv) > 2 else '../datasets/processed'
+    code_dir = os.path.dirname(os.path.realpath(__file__))
+    top_dir = os.path.split(code_dir)[0]
+
+    batch_specs_filepath = sys.argv[1] if len(sys.argv) > 1 else os.path.join(code_dir, 'config', 'example.yaml')
+    infolder = sys.argv[2] if len(sys.argv) > 2 else os.path.join(top_dir, 'datasets', 'processed')
     outfolder = sys.argv[3] if len(sys.argv) > 3 else '.'
     num_threads = int(sys.argv[4]) if len(sys.argv) > 4 else None
 
