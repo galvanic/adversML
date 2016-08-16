@@ -29,6 +29,7 @@ def fit(features, labels,
         gradient_descent_method,
         batch_size,
         max_epochs,
+        divergence_threshold,
         learning_rate=0.05,
         initial_weights=None,
         convergence_threshold=1e-5,
@@ -65,6 +66,7 @@ def fit(features, labels,
         initial_weights=initial_weights,
         convergence_threshold=convergence_threshold,
         convergence_look_back=convergence_look_back,
+        divergence_threshold=divergence_threshold,
         )
 
     return W

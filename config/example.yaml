@@ -14,6 +14,7 @@ fixed_parameters:
       max_epochs: 100
       initial_weights: null
       convergence_look_back: 2
+      divergence_threshold: 0.5
     testing_parameters: {}
 
   attack:

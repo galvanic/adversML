@@ -84,6 +84,7 @@ def gradient_descent(features, labels,
         initial_weights,
         convergence_threshold,
         convergence_look_back,
+        divergence_threshold,
         ):
     '''
     Returns the optimal weights for a given training set (features
@@ -138,7 +139,7 @@ def gradient_descent(features, labels,
 
     ## evaluate the termination condition
     previous_errors = deque(maxlen=convergence_look_back)
-    previous_errors.append(1e6)
+    previous_errors.append(0)
 
     epoch = 0
     while epoch < max_epochs:
@@ -182,6 +183,11 @@ def gradient_descent(features, labels,
         ## check for convergence in last x epochs
         if all(abs(np.array(previous_errors) - error) < convergence_threshold):
             tls.logger.info('converged')
+            break
+
+        ## check for divergence TODO case when it oscillates
+        if all(abs(np.array(previous_errors)[-2:] - error) > divergence_threshold):
+            tls.logger.info('diverged')
             break
 
         previous_errors.append(error)
