@@ -34,10 +34,6 @@ def get_mini_batch(X, Y, permuted_indices, batch_ii, batch_size):
     tls.logger.debug('  samples (%d-%s/%d): %s' % (start, end, N, samples))
 
     x, y = X[samples], Y[samples]
-    try:
-        x, y = x.reshape(batch_size, D), y.reshape(batch_size, 1)
-    except ValueError:
-        from code import interact; interact(local=dict(locals(), **globals()))
     return x, y
 
 
