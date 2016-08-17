@@ -41,9 +41,17 @@ def save_df(df, outfolder, experiment_id=None, specs_filepath=None):
 
 def join_repetitions(ifilepaths):
     '''
+    Assumes:
+    - each individual df to be merged has an experiment_id index column
+    - indices are the same for all dfs
+
+    TODO use keys argument to pd.concat with value range(num_iterations)
+         and then reorder index levels to put iteration at the end
+         eg: pd.concat(dfs, keys=range(len(dfs)))
     '''
 
     dfs = [pd.read_pickle(filepath) for filepath in ifilepaths]
-    from code import interact; interact(local=dict(locals(), **globals()))
+    df = pd.concat(dfs).sort_index()
+
     return df
 
