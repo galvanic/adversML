@@ -4,6 +4,8 @@ Put as much of the logging(anything recorded for posteriority) logic in here
 '''
 import numpy as np
 np.set_printoptions(precision=2, threshold=10e6, linewidth=10e10)
+import pandas as pd
+pd.set_option('expand_frame_repr', False)
 
 import threading
 tls = threading.local()

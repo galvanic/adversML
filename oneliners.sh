@@ -8,16 +8,15 @@
 LOG_FILEPATH=./1608161201.log
 export LOG_FILEPATH
 
-## experiment number,number of epochs, error at end (to get idea of convergence)
-## /!\ only works if experiments were run serially, not using threads /!\
-cat $LOG_FILEPATH | grep -P -e 'gradientdescent| performance' | grep -P -e '(error|epoch|INFO: performance).*' -o | grep -o -P -e '\d\.?\d{0,2}|: perf' | xargs -n2 |  grep perf -B 1 | xargs -n3 -d'\n' | cut -d' ' -f1-2 | sed 's/ /\t/g' | awk '{print NR-1 "\t" $0}'
+cat $LOG_FILEPATH | grep -o -P -e '\b\w+ of specifications: \d+\b'
+echo
 
 ## overview of experiments run and still running
 cat $LOG_FILEPATH | grep -o -P -e '_\d{1,3}+' | sed 's/_//g' | sort | uniq -c | sort -n -r | cat -n | sort -n -r
-#cat $LOG_FILEPATH | cut -c38-65 | grep experiment | cut -c26- | sed 's/]//g' | sort -n | uniq -c | cat -n
+cat $LOG_FILEPATH | cut -c38-65 | grep experiment | cut -c26- | sed 's/]//g' | sort -n | uniq -c | cat -n
 
 ## overview of functions run per experiment
-#cat $LOG_FILEPATH | grep -o -P -e '_\d{1,3}\] - \w+\.\w+ - ' | sed 's/_//g' | sed 's/]//g' | cut -d'-' -f1-2 | sort | grep -v performexp | uniq -c | sed 's/- \w*\.//g'
+cat $LOG_FILEPATH | grep -o -P -e '_\d{1,3}\] - \w+\.\w+ - ' | sed 's/_//g' | sed 's/]//g' | cut -d'-' -f1-2 | sort | grep -v performexp | uniq -c | sed 's/- \w*\.//g'
 
 ## get epoch, cost and error for one experiment
 EXPERIMENT_NUM=0
@@ -33,3 +32,8 @@ cat $LOG_FILEPATH | grep metrics -A 100000 |  awk '{print NR-3 "\t" $0}' | sed '
 
 ## to see if mini-batch, batch, stochastic are working
 cat 1608171206.log | grep -P -e "experiment_id': |gradient_descent_method': | samples" | sed "s/samples/\'samples/g" | grep -o -P -e "'.*" | cut -c2-210 | less
+
+## experiment number, number of epochs, error at end (to get idea of convergence)
+## /!\ only works if experiments were run serially, not using threads /!\
+cat $LOG_FILEPATH | grep -P -e 'gradientdescent| performance' | grep -P -e '(error|epoch|INFO: performance).*' -o | grep -o -P -e '\d\.?\d{0,2}|: perf' | xargs -n2 |  grep perf -B 1 | xargs -n3 -d'\n' | cut -d' ' -f1-2 | sed 's/ /\t/g' | awk '{print NR-1 "\t" $0}'
+

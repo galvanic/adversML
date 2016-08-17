@@ -5,3 +5,4 @@ notes.md
 *.pkl
 *.log
 *.bak
+/*.yaml
