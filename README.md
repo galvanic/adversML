@@ -139,7 +139,6 @@ TODO
 
 ### software eng (ie. not directly important for this project) stuff:
 
-- implement other termination conditions: detect convergence & divergence
 - implement how to store experiment files, prob grouped in batches
 - assert all matrix shapes and types
 - implement data loading from different filetypes (automatically detect npy, dat, csv, etc.)

@@ -1,16 +1,14 @@
 # coding: utf-8
 from __future__ import division
 '''
-TODO: stochastic, mini-batch and batch functions should be refactored into
-      only one mini-batch function where batch size varies (1, mini, N)
 '''
 import numpy as np
+import math
 from collections import deque
+from functools import partial
+
 from helpers.logging import tls, log
 from helpers.performance import get_error
-
-class TooSmallBatchException(Exception):
-    pass
 
 
 def get_cost(Y, O):
@@ -20,56 +18,28 @@ def get_cost(Y, O):
     return cost
 
 
-###
-### Gradient descent methods functions
-###
-
 @log
-def stochastic(X, Y, permuted_indices, epoch, **kwargs):
+def get_mini_batch(X, Y, permuted_indices, batch_ii, batch_size):
     '''
+    batch_ii is the current iteration of batch in the whole training set
+    TODO to avoid keeping track of batch_ii, this could nicely be refactored
+         into a generator
     '''
-    N = X.shape[0]
+    N, D = X.shape
 
-    ## stochastic GD: only update using 1 sample
-    sample = permuted_indices[epoch % N]
-    tls.logger.debug('- sample (%d/%d): %d' % (epoch % N, N, sample))
-    x, y = X[sample].reshape(1, D), Y[sample]
-    return x, y
-
-
-@log
-def mini_batch(X, Y, permuted_indices, epoch, batch_size):
-    '''
-    '''
-    N = X.shape[0]
-
-    start = (epoch * batch_size) % N
-    end = (epoch * batch_size + batch_size) % N or None
+    start = (batch_ii * batch_size) % N
+    end = (batch_ii * batch_size + batch_size) % N or None
+    end = end if (end and end > start) else None
     samples = permuted_indices[start:end]
+    tls.logger.debug('  samples (%d-%s/%d): %s' % (start, end, N, samples))
 
-    #end = end if (end and end > start) else None
-    if (end and end < start): ## do not train on smaller batch at the end
-        raise TooSmallBatchException
-    tls.logger.debug('- samples (%d-%s/%d): %s' % (start, end, N, samples))
     x, y = X[samples], Y[samples]
+    try:
+        x, y = x.reshape(batch_size, D), y.reshape(batch_size, 1)
+    except ValueError:
+        from code import interact; interact(local=dict(locals(), **globals()))
     return x, y
 
-
-def batch(X, Y, **kwargs):
-    '''
-    '''
-    return X, Y
-
-
-GD_METHODS = {
-    'stochastic': stochastic,
-    'mini-batch': mini_batch,
-    'batch': batch,
-}
-
-###
-###
-###
 
 @log
 def gradient_descent(features, labels,
@@ -125,14 +95,21 @@ def gradient_descent(features, labels,
          - abort ?
          - retry w lower learning rate ?
     '''
-    tls.logger.info('learning rate: %f' % learning_rate)
-    tls.logger.info('using %s' % gradient_descent_method)
-    get_batch = GD_METHODS[gradient_descent_method]
+    tls.logger.debug('learning rate: %f' % learning_rate)
+    tls.logger.debug('using %s' % gradient_descent_method)
 
     ## notation
     X, Y = features, labels
     N, D = X.shape           # N #training samples; D #features
     tls.logger.debug('X: (%s, %s)\tY: %s' % (N, D, str(Y.shape)))
+
+    batch_size_per_method = {
+        'stochastic': 1,
+        'mini-batch': batch_size,
+        'batch': N,
+    }
+    batch_size = batch_size_per_method[gradient_descent_method]
+    get_batch = partial(get_mini_batch, batch_size=batch_size)
 
     ## initialise weights
     W = np.zeros((D, 1)) if initial_weights is None else initial_weights.reshape((D, 1))
@@ -141,57 +118,54 @@ def gradient_descent(features, labels,
     previous_errors = deque(maxlen=convergence_look_back)
     previous_errors.append(0)
 
-    epoch = 0
-    while epoch < max_epochs:
-    #for epoch in range(max_epochs):
+    for epoch in range(max_epochs): ## epoch defined as one pass through the whole training set
         tls.logger.info('epoch %d:' % epoch)
 
         ## mix up samples (they will therefore be fed in different order at
         ## each training) -> commonly accepted to improve gradient descent,
         ## making convergence faster)
-        if epoch % N == 0:
-            permuted_indices = np.random.permutation(N)
+        permuted_indices = np.random.permutation(N)
 
-        try:
-            x, y = get_batch(X, Y, permuted_indices, epoch, batch_size)
-        except TooSmallBatchException:
-            tls.logger.info('New pass through dataset')
-            epoch += 1
-            max_epochs += 1 ## to keep same number of weight updates
-            continue
+        total_batches = math.ceil(N / batch_size)  ## trains on all samples
+        for batch_ii in range(total_batches):
+            tls.logger.debug('  weight update cycle %d' % (epoch * total_batches + batch_ii))
+            x, y = get_batch(X, Y, permuted_indices, batch_ii) ## also called pattern
+                                                               ## (ie. "training pattern")
+            tls.logger.debug('  x: (%s, %s)' % x.shape)
+            tls.logger.debug('  y: %s' % str(y.shape))
 
-        tls.logger.debug('- x: (%s, %s)' % x.shape)
-        tls.logger.debug('- y: %s' % str(y.shape))
+            ## classifier output of current epoch
+            o = calculate_output(x, W)
 
-        ## classifier output of current epoch
-        o = calculate_output(x, W)
+            ## gradient descent: minimise the cost function
+            ## gradient equation was obtained by deriving the LMS cost function
+            gradient = -np.mean(np.multiply((y - o), x), axis=0)
 
-        ## gradient descent: minimise the cost function
-        ## gradient equation was obtained by deriving the LMS cost function
-        gradient = -np.mean(np.multiply((y - o), x), axis=0)
+            ## update weights
+            num_x = x.shape[0]
+            update_coef = num_x / batch_size if num_x < batch_size else 1 ## weigh update relative
+                                                                          ## to expected batch size
+            tls.logger.debug('  update coef: %.2f' % update_coef)
+            W = W - learning_rate * gradient.reshape(W.shape) * update_coef
 
-        ## update weights
-        W = W - learning_rate * gradient.reshape(W.shape)
+            ## Keep track of cost and error
+            P = predict(W, X)
+            error = get_error(Y, P)
+            cost = get_cost(Y, P)
+            tls.logger.debug('  cost = %.2e' % cost)
+            tls.logger.debug('  error = %.2f' % error)
 
-        ## Keep track of cost and error
-        P = predict(W, X)
-        error = get_error(Y, P)
-        cost = get_cost(Y, P)
-        tls.logger.info('- cost = %.2e' % cost)
-        tls.logger.info('- error = %.2f' % error)
+            ## check for convergence in last x weight update cycles
+            if all(abs(np.array(previous_errors) - error) < convergence_threshold):
+                tls.logger.info('converged')
+                return W
 
-        ## check for convergence in last x epochs
-        if all(abs(np.array(previous_errors) - error) < convergence_threshold):
-            tls.logger.info('converged')
-            break
+            ## check for divergence TODO case when it oscillates
+            if all(abs(np.array(previous_errors)[-2:] - error) > divergence_threshold):
+                tls.logger.info('diverged')
+                return W
 
-        ## check for divergence TODO case when it oscillates
-        if all(abs(np.array(previous_errors)[-2:] - error) > divergence_threshold):
-            tls.logger.info('diverged')
-            break
-
-        previous_errors.append(error)
-        epoch += 1
+            previous_errors.append(error)
 
     return W
 

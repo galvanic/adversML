@@ -68,7 +68,7 @@ def perform_experiment(spec, infolder):
     add_bias = lambda x: np.insert(x, 0, values=1, axis=1) # add bias term
     if spec['add_bias']:
         X_train, X_test = map(add_bias, [X_train, X_test])
-        tls.logger.info('- added bias')
+        tls.logger.debug('- added bias')
 
     ## apply model
     classifier = spec['classifier']['type']
