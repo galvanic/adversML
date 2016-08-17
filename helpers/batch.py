@@ -60,5 +60,9 @@ def perform_experiment_batch(parameter_ranges, fixed_parameters, infolder,
     df = pd.DataFrame.from_records(data=results, index=idx)
     df.columns.names = ['metrics']
 
+    df['experiment_id'] = [spec['experiment_id'] for spec in specifications]
+    df = df.set_index('experiment_id', append=True)
+    #df = df.reorder_levels(('experiment_id',) + dimension_names)
+
     return df
 
