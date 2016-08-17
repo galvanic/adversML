@@ -8,16 +8,6 @@
 LOG_FILEPATH=./1608161201.log
 export LOG_FILEPATH
 
-cat $LOG_FILEPATH | grep -o -P -e '\b\w+ of specifications: \d+\b'
-echo
-
-## overview of experiments run and still running
-cat $LOG_FILEPATH | grep -o -P -e '_\d{1,3}+' | sed 's/_//g' | sort | uniq -c | sort -n -r | cat -n | sort -n -r
-cat $LOG_FILEPATH | cut -c38-65 | grep experiment | cut -c26- | sed 's/]//g' | sort -n | uniq -c | cat -n
-
-## overview of functions run per experiment
-cat $LOG_FILEPATH | grep -o -P -e '_\d{1,3}\] - \w+\.\w+ - ' | sed 's/_//g' | sed 's/]//g' | cut -d'-' -f1-2 | sort | grep -v performexp | uniq -c | sed 's/- \w*\.//g'
-
 ## get epoch, cost and error for one experiment
 EXPERIMENT_NUM=0
 cat $LOG_FILEPATH 2>/dev/null | grep "_$EXPERIMENT_NUM]" 2>/dev/null | grep -P -e 'cost|error' 2>/dev/null | cut -d'=' -f2 | xargs -n2 | cat -n
