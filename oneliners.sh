@@ -18,7 +18,8 @@ cat 1608161201.log | grep -P -e "experiment #\d{10}_$EXPERIMENT_NUM\]" | cut -c6
 
 ## get results with experiment numbers and a pattern highlighted to delimit parts visually
 PATTERN=0.5
-cat $LOG_FILEPATH | grep metrics -A 100000 |  awk '{print NR-3 "\t" $0}' | sed 's/-[0-9]\b/  /g' | grep -P -e "$PATTERN|$"
+cat $LOG_FILEPATH | grep ' AUC ' -A 100000 |  awk '{print NR-3 "\t" $0}' | sed 's/-[0-9]\b/  /g' | grep -P -e "$PATTERN|$"
+#cat $LOG_FILEPATH | grep metrics -A 100000 |  awk '{print NR-3 "\t" $0}' | sed 's/-[0-9]\b/  /g' | grep -P -e "$PATTERN|$"
 
 ## to see if mini-batch, batch, stochastic are working
 cat 1608171206.log | grep -P -e "experiment_id': |gradient_descent_method': | samples" | sed "s/samples/\'samples/g" | grep -o -P -e "'.*" | cut -c2-210 | less
