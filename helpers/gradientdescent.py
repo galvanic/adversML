@@ -151,8 +151,8 @@ def gradient_descent(features, labels,
 
             ## Keep track of cost and error
             P = predict(W, X)
-            error = get_error(Y, P)
             cost = get_cost(Y, P)
+            error = get_error(Y, P)
             tls.logger.debug('  cost = %.2e' % cost)
             tls.logger.debug('  error = %.2f' % error)
 
