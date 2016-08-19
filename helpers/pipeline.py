@@ -12,6 +12,10 @@ from helpers.performance import get_error, get_FPR, get_FNR, get_ROC_AUC
 from helpers.specs import prepare_spec
 
 
+## helpers
+add_bias = lambda x: np.insert(x, 0, values=1, axis=1) # add bias term
+
+
 @log(get_experiment_id=lambda args: args[0]['experiment_id'])
 def perform_experiment(spec, infolder):
     '''
@@ -65,7 +69,6 @@ def perform_experiment(spec, infolder):
         X_train, Y_train = attack.apply(features=X_train, labels=Y_train, **attack_params)
 
     ## prepare dataset
-    add_bias = lambda x: np.insert(x, 0, values=1, axis=1) # add bias term
     if spec['add_bias']:
         X_train, X_test = map(add_bias, [X_train, X_test])
         tls.logger.debug('- added bias')

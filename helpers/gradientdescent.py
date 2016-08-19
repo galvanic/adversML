@@ -90,6 +90,8 @@ def gradient_descent(features, labels,
     TODO determine what to do if cost is rising instead of falling:
          - abort ?
          - retry w lower learning rate ?
+    TODO output is calculated twice per iteration (calculate_output and predict)
+         refactor
     '''
     tls.logger.debug('learning rate: %f' % learning_rate)
     tls.logger.debug('using %s' % gradient_descent_method)
@@ -124,7 +126,10 @@ def gradient_descent(features, labels,
 
         total_batches = math.ceil(N / batch_size)  ## trains on all samples
         for batch_ii in range(total_batches):
-            tls.logger.debug('  weight update cycle %d' % (epoch * total_batches + batch_ii))
+
+            weight_update_iteration = epoch * total_batches + batch_ii
+            tls.logger.debug('  weight update cycle %d' % weight_update_iteration)
+
             x, y = get_batch(X, Y, permuted_indices, batch_ii) ## also called pattern
                                                                ## (ie. "training pattern")
             tls.logger.debug('  x: (%s, %s)' % x.shape)
@@ -141,7 +146,7 @@ def gradient_descent(features, labels,
             num_x = x.shape[0]
             update_coef = num_x / batch_size if num_x < batch_size else 1 ## weigh update relative
                                                                           ## to expected batch size
-            tls.logger.debug('  update coef: %.2f' % update_coef)
+            if update_coef != 1: tls.logger.debug('  update coef: %.2f' % update_coef)
             W = W - learning_rate * gradient.reshape(W.shape) * update_coef
 
             ## Keep track of cost and error

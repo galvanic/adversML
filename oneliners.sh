@@ -8,6 +8,10 @@
 LOG_FILEPATH=./1608161201.log
 export LOG_FILEPATH
 
+## get results with experiment numbers and a pattern highlighted to delimit parts visually
+PATTERN=0.5
+cat $LOG_FILEPATH | grep ' AUC ' -A 100000 |  awk '{print NR-3 "\t" $0}' | sed 's/-[0-9]\b/  /g' | cut -c-100 | grep -P -e "$PATTERN|$"
+
 ## get epoch, cost and error for one experiment
 EXPERIMENT_NUM=0
 cat $LOG_FILEPATH 2>/dev/null | grep "_$EXPERIMENT_NUM]" 2>/dev/null | grep -P -e 'cost|error' 2>/dev/null | cut -d'=' -f2 | xargs -n2 | cat -n
@@ -15,11 +19,6 @@ cat $LOG_FILEPATH 2>/dev/null | grep "_$EXPERIMENT_NUM]" 2>/dev/null | grep -P -
 ## to start debugging a certain experiment
 EXPERIMENT_NUM=0
 cat 1608161201.log | grep -P -e "experiment #\d{10}_$EXPERIMENT_NUM\]" | cut -c69-174 | less
-
-## get results with experiment numbers and a pattern highlighted to delimit parts visually
-PATTERN=0.5
-cat $LOG_FILEPATH | grep ' AUC ' -A 100000 |  awk '{print NR-3 "\t" $0}' | sed 's/-[0-9]\b/  /g' | grep -P -e "$PATTERN|$"
-#cat $LOG_FILEPATH | grep metrics -A 100000 |  awk '{print NR-3 "\t" $0}' | sed 's/-[0-9]\b/  /g' | grep -P -e "$PATTERN|$"
 
 ## to see if mini-batch, batch, stochastic are working
 cat 1608171206.log | grep -P -e "experiment_id': |gradient_descent_method': | samples" | sed "s/samples/\'samples/g" | grep -o -P -e "'.*" | cut -c2-210 | less
