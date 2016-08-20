@@ -6,7 +6,7 @@ Training is done using batch gradient descent.
 
 TODO ? implement regularisation
 TODO ? cost and error could be measured outside the function
-     or at least use a callable to calculate them, otherwise duplicated code
+     or at least use a callable to compute them, otherwise duplicated code
      across models
 TODO clean up the code further, especially duplicated sections (adaline model
      etc.)
@@ -16,11 +16,23 @@ from helpers.gradientdescent import gradient_descent
 from helpers.logging import tls, log
 
 
-def calculate_output(X, W):
+def compute_output(X, W):
     '''output to train on'''
     ## specialty of ADALINE is that training is done on the weighted sum,
     ## _before_ the activation function
     return np.dot(X, W)
+
+def compute_prediction(output, ham_label=-1):
+    '''class label prediction from output'''
+    O = output
+
+    ## T is equivalent to threshold/step activation function
+    if ham_label is -1:              ## spam label assumed 1
+        T = np.sign(O)
+    else:    ## ham label is assumed 0, spam label assumed 1
+        T = (O > 0.5)
+
+    return T
 
 
 @log
@@ -57,7 +69,7 @@ def fit(features, labels,
     '''
 
     W = gradient_descent(features, labels,
-        calculate_output,
+        compute_output,
         predict,
         gradient_descent_method=gradient_descent_method,
         batch_size=batch_size,
@@ -84,20 +96,12 @@ def predict(parameters, features,
 
     ## notation
     X, W = features, parameters
-    N, D = features.shape
-    tls.logger.debug('on X: (%s, %s)' % (N, D))
 
     ## apply model
-    O = calculate_output(X, W)
+    O = compute_output(X, W)
 
-    ## calculate predicted output
-    ## T is equivalent to threshold/step activation function
-    if ham_label is 0:               ## spam label assumed 1
-        T = np.zeros(O.shape)
-        T[O > 0.5] = 1
-    else:   ## ham label is assumed -1, spam label assumed 1
-        T = np.ones(O.shape)
-        T[O < 0] = -1
+    ## compute predicted class labels
+    T = compute_prediction(O)
 
     return T
 

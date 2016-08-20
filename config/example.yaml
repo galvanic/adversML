@@ -1,5 +1,5 @@
 
-fixed_parameters:
+default_parameters:
 
   dataset_filename: trec2007-1607252257
   label_type:

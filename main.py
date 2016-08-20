@@ -10,7 +10,7 @@ import os.path
 import logging.config
 from helpers.logging import LOGGING_CONFIG, COMMIT_HASH
 
-from helpers.batch import perform_experiment_batch
+from helpers.batch import run_experiment_batch
 from helpers.i_o import get_time_id, save_df
 
 
@@ -22,19 +22,19 @@ def main(batch_specs_filepath, infolder, outfolder, num_threads=1):
     with open(batch_specs_filepath, 'r') as infile:
         batch_specs = yaml.safe_load(infile)
 
-    fixed_parameters = batch_specs['fixed_parameters']
+    default_parameters = batch_specs['default_parameters']
     parameter_ranges = batch_specs['parameter_ranges']
 
     batch_id = str(get_time_id())
-    fixed_parameters['batch_id'] = batch_id
-    fixed_parameters['commit_hash'] = COMMIT_HASH
+    default_parameters['batch_id'] = batch_id
+    default_parameters['commit_hash'] = COMMIT_HASH
 
     log_filepath = os.path.join(outfolder, '%s.log' % batch_id)
     LOGGING_CONFIG['handlers']['file']['filename'] = log_filepath
     logging.config.dictConfig(LOGGING_CONFIG)
 
     ## carry out experiments
-    df = perform_experiment_batch(parameter_ranges, fixed_parameters, infolder,
+    df = run_experiment_batch(parameter_ranges, default_parameters, infolder,
         num_threads=num_threads)
 
     ## save results

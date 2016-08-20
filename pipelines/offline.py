@@ -17,7 +17,7 @@ add_bias = lambda x: np.insert(x, 0, values=1, axis=1) # add bias term
 
 
 @log(get_experiment_id=lambda args: args[0]['experiment_id'])
-def perform_experiment(spec, infolder):
+def run_experiment(spec, infolder):
     '''
     Returns the performance of the experiment defined by the given specification
 

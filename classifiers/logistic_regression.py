@@ -14,9 +14,22 @@ sigmoid = lambda z: 1 / (1 + np.exp(-z))
 tanh = lambda z: np.tanh(z)
 
 
-def calculate_output(X, W):
+def compute_output(X, W):
     '''output to train on'''
     return tanh(np.dot(X, W))
+
+def compute_prediction(output, ham_label=-1):
+    '''class label prediction from output'''
+    O = output
+
+    ## T is equivalent to threshold/step activation function
+    if ham_label is -1:              ## spam label assumed 1
+        T = np.sign(O)
+    else:    ## ham label is assumed 0, spam label assumed 1
+    ## T is equivalent to threshold/step activation function
+        T = (O > 0.5)
+
+    return T
 
 
 @log
@@ -53,7 +66,7 @@ def fit(features, labels,
     '''
 
     W = gradient_descent(features, labels,
-        calculate_output,
+        compute_output,
         predict,
         gradient_descent_method=gradient_descent_method,
         batch_size=batch_size,
@@ -80,14 +93,11 @@ def predict(parameters, features,
 
     ## notation
     W, X = parameters, features
-    N, D = X.shape
-    tls.logger.debug('on X: (%s, %s)' % (N, D))
 
-    ## apply model to calculate output
-    O = calculate_output(X, W)
+    ## apply model to compute output
+    O = compute_output(X, W)
 
     ## predict label using a threshold
-    T = np.ones(O.shape)
-    T[O < 0] = -1
+    T = compute_prediction(O)
 
     return T
