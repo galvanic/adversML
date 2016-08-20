@@ -17,15 +17,13 @@ add_bias = lambda x: np.insert(x, 0, values=1, axis=1) # add bias term
 
 
 @log(get_experiment_id=lambda args: args[0]['experiment_id'])
-def run_experiment(spec, infolder):
+def run_experiment(spec):
     '''
     Returns the performance of the experiment defined by the given specification
 
     Inputs:
     - spec: specifications of the experiment
         A dictionary
-    - infolder: folderpath of directory where input data is
-    - index: pandas MultiIndex of the experiment batch context
 
     Outputs:
     - performance: metrics of the performance of the trained classifier
@@ -37,7 +35,7 @@ def run_experiment(spec, infolder):
     spec = prepare_spec(spec)
     tls.logger.info('prepared spec:\n%s\n' % pformat(spec))
 
-    ifilepath = os.path.join(infolder, spec['dataset_filename'])
+    ifilepath = os.path.join(spec['dataset_dirpath'], spec['dataset_filename'])
     with open('%s-features.dat' % ifilepath, 'rb') as infile:
         X = pickle.load(infile)
 

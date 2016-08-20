@@ -18,24 +18,25 @@ def main(batch_specs_filepath, infolder, outfolder, num_threads=1):
     '''
     '''
 
-    ## load data
+    ## load config for experiments to run
     with open(batch_specs_filepath, 'r') as infile:
         batch_specs = yaml.safe_load(infile)
 
     default_parameters = batch_specs['default_parameters']
     parameter_ranges = batch_specs['parameter_ranges']
 
+    ## set up parameters that are experiment batch specific
     batch_id = str(get_time_id())
     default_parameters['batch_id'] = batch_id
     default_parameters['commit_hash'] = COMMIT_HASH
+    default_parameters['dataset_dirpath'] = infolder ## should this just be in config ?
 
     log_filepath = os.path.join(outfolder, '%s.log' % batch_id)
     LOGGING_CONFIG['handlers']['file']['filename'] = log_filepath
     logging.config.dictConfig(LOGGING_CONFIG)
 
-    ## carry out experiments
-    df = run_experiment_batch(parameter_ranges, default_parameters, infolder,
-        num_threads=num_threads)
+    ## run experiments
+    df = run_experiment_batch(parameter_ranges, default_parameters, num_threads)
 
     ## save results
     save_df(df, outfolder, batch_id, batch_specs_filepath)
