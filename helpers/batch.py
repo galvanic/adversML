@@ -6,6 +6,7 @@ import logging
 logger = logging.getLogger(__name__)
 from pprint import pformat
 
+import sys
 import pandas as pd
 from multiprocessing.dummy import Pool as ThreadPool
 
@@ -28,7 +29,11 @@ def run_experiment_batch(parameter_ranges, default_parameters, run_experiment,
     logger.info('Experiment ranges:\n%s\n' % pformat(parameter_ranges))
 
     ## extract names to use later for DF
-    dimension_names, keys, variations= zip(*((p['name'], tuple(p['key']), p['values']) for p in parameter_ranges))
+    try:
+        dimension_names, keys, variations= zip(*((p['name'], tuple(p['key']), p['values']) for p in parameter_ranges))
+    except TypeError as e:
+        sys.stderr.write('No range of parameters specified\n')
+        sys.exit(1)
 
     ## get all possible variations for specs
     specifications = generate_specs(zip(keys, variations), default_parameters)
