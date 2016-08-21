@@ -1,0 +1,79 @@
+
+default_parameters:
+
+  experiment: adaptive combination
+
+  dataset_filename: enron-kayla
+  label_type:
+    ham_label: -1
+    spam_label: 1
+
+  classifier_fast:
+    type: adaline
+    training_parameters:
+      learning_rate: 0.01   ## fast
+      initial_weights: null
+    testing_parameters: {}
+
+  classifier_slow:
+    type: adaline
+    training_parameters:
+      learning_rate: 0.0005 ## slow
+      initial_weights: null
+    testing_parameters: {}
+
+  attack:
+    type: null
+    parameters:
+      percentage_samples_poisoned: .50
+      start_attack: 20000
+      end_attack: 25000
+
+
+parameter_ranges:
+
+# - name: dataset
+#   key: [dataset_filename]
+#   values:
+#     - trec2007-1607201347 ## 10000 features
+#     - trec2007-1607252257 ## 1000  features
+#     - trec2007-1607252259 ## 100   features
+#     - enron-kayla         ## 1000  features
+
+# - name: classifier
+#   key: [classifier, type]
+#   values:
+#     - adaline
+#     - logistic regression
+#     - naive bayes
+
+# - name: attack
+#   key: [attack, type]
+#   values:
+#     - dictionary
+#     - empty
+#     - ham
+#     - focussed
+#     - null
+
+# - name: '% poisoned'
+#   key: [attack, parameters, percentage_samples_poisoned]
+#   values:
+#     - .0
+#     - .1
+#     - .2
+#     - .3
+#     - .5
+
+# - name: η_fast
+#   key: [classifier_fast, training_parameters, learning_rate]
+#   values:
+#     - .01
+#     - .005
+
+# - name: η_slow
+#   key: [classifier_slow, training_parameters, learning_rate]
+#   values:
+#     - .001
+#     - .0005
+

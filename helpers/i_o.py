@@ -28,7 +28,7 @@ def save_df(df, outfolder, experiment_id=None, specs_filepath=None):
     df.to_pickle('%s-df.dat' % outfilepath)
     logger.info('Saved to %s\n' % outfilepath)
 
-    if specs_filepath and 'example' not in specs_filepath:
+    if specs_filepath:
         experiment_purpose = os.path.basename(specs_filepath)[:-5]
         shutil.move(specs_filepath, '%s-%s.yaml' % (outfilepath, experiment_purpose))
 

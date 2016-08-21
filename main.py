@@ -13,6 +13,15 @@ from helpers.logging import LOGGING_CONFIG, COMMIT_HASH
 from helpers.batch import run_experiment_batch
 from helpers.i_o import get_time_id, save_df
 
+## experiment types
+from pipelines import offline as OfflineTraining
+from pipelines import adaptive as AdaptiveCombination
+
+experiment_function = {
+    'offline training': OfflineTraining.run_experiment,
+    'adaptive combination': AdaptiveCombination.run_experiment,
+}
+
 
 def main(batch_specs_filepath, infolder, outfolder, num_threads=1):
     '''
@@ -36,7 +45,9 @@ def main(batch_specs_filepath, infolder, outfolder, num_threads=1):
     logging.config.dictConfig(LOGGING_CONFIG)
 
     ## run experiments
-    df = run_experiment_batch(parameter_ranges, default_parameters, num_threads)
+    df = run_experiment_batch(parameter_ranges, default_parameters,
+        run_experiment=experiment_function[default_parameters['experiment']],
+        num_threads=num_threads)
 
     ## save results
     save_df(df, outfolder, batch_id, batch_specs_filepath)
@@ -49,7 +60,7 @@ if __name__ == '__main__':
     code_dir = os.path.dirname(os.path.realpath(__file__))
     top_dir = os.path.split(code_dir)[0]
 
-    batch_specs_filepath = sys.argv[1] if len(sys.argv) > 1 else os.path.join(code_dir, 'config', 'example.yaml')
+    batch_specs_filepath = sys.argv[1]
     infolder = sys.argv[2] if len(sys.argv) > 2 else os.path.join(top_dir, 'datasets', 'processed')
     outfolder = sys.argv[3] if len(sys.argv) > 3 else '.'
     num_threads = int(sys.argv[4]) if len(sys.argv) > 4 else None

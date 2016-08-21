@@ -10,16 +10,16 @@ import pandas as pd
 from multiprocessing.dummy import Pool as ThreadPool
 
 from helpers.specs import generate_specs
-from pipelines.offline import run_experiment
 
 
-def run_experiment_batch(parameter_ranges, default_parameters,
+def run_experiment_batch(parameter_ranges, default_parameters, run_experiment,
         num_threads=1):
     '''
 
     Inputs:
     - parameter_ranges
     - default_parameters
+    - run_experiment: function
 
     Outputs:
     - df: pandas Dataframe of experiment metrics
