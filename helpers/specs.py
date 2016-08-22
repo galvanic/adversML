@@ -54,7 +54,7 @@ def generate_specs(parameter_ranges, fixed_parameters):
     for ii, spec in enumerate(specs):
 
         specification = defaultdict(dict)
-        specification.update({'experiment_id': '%s_%s' % (batch_id, ii)})
+        specification.update({'experiment_id': '%s %s' % (batch_id, ii)})
         specification.update(fixed_parameters)
 
         for key, value in spec.items():

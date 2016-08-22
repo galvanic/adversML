@@ -4,7 +4,8 @@ disable_existing_loggers: false
 
 formatters:
   default:
-    format: '%(asctime)s.%(msecs)03d - %(thread)s [experiment #%(name)s] - %(module)s.%(funcName)s - %(levelname)s: %(message)s'
+    ## fields seperated by spaces: 1|month 2|day 3|time 4|thread# 5|batch# 6|experiment# 7|function context 8|level 9|visual cue 10|message
+    format: '%(asctime)s.%(msecs)03d %(thread)s %(name)s %(module)s.%(funcName)s %(levelname)s >>> %(message)s'
     datefmt: '%b %d %H:%M:%S'
   concise:
     format: '%(asctime)s.%(msecs)03d #%(name)s - %(module)s: %(message)s'

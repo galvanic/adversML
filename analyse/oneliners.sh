@@ -30,3 +30,6 @@ cat $LOG_FILEPATH | grep -P -e 'gradientdescent| performance' | grep -P -e '(err
 ## look at why error diverged or converged
 ## works with threaded logs! (because of the sort flags, -s is for the order they were originally in)
 cat $LOG_FILEPATH | grep -P -e ' \[experiment #\d{10}_1?[5-90][0-9]\] .*' -o | cut -c26-130 | grep -P -e 'converged|diverged|cycle|error' | sort -k1,1n -t] -s | less
+
+## explore new fields format
+ls *.log | head -n1 | map cat | grep '>>>' | cut -d' ' -f5- | grep -P '^\d' | cut -d' ' -f6-
