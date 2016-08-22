@@ -48,7 +48,7 @@ def select_using_MI(features, labels, threshold=0.01, ham_label=-1):
 
     X, Y = features, np.ravel(labels)
     N, D = X.shape
-    d = int(D * threshold) ## percentile of features to keep
+    d = int(D * threshold) ## keep top d features with highest score
 
     tls.logger.info('Keep top %s features' % d)
 
