@@ -5,6 +5,7 @@ from __future__ import division
 import os
 import pickle
 import numpy as np
+import pandas as pd
 from pprint import pformat
 
 from helpers.logging import tls, log
@@ -80,12 +81,14 @@ def run_experiment(spec):
     classifier_fast = spec['classifier_fast']
     classifier_slow = spec['classifier_slow']
 
-    run(X_train, Y_train, X_test, Y_test, classifier_fast, classifier_slow)
+    results = run(X_train, Y_train, X_test, Y_test, classifier_fast, classifier_slow)
 
     ## collect performance measures
-    performance = {
-    }
-    tls.logger.info('performance:\n%s' % pformat(performance))
+    df = pd.DataFrame.from_dict(results)
+    df.index = df.index.set_names(['timestep'])
+    df.columns = df.columns.set_names(['metrics'])
+    df_row = df.unstack('timestep').to_frame().T
+    tls.logger.info('performance:\n%s' % df[-10:].to_string(col_space=8, float_format=lambda x: '%.3f' % x))
 
     ## release memory
     del X
@@ -95,8 +98,9 @@ def run_experiment(spec):
     del X_test
     del Y_test
 
-    return performance
+    return df_row
 
+from collections import defaultdict
 
 @log
 def run(X, Y, X_test, Y_test,
@@ -106,6 +110,7 @@ def run(X, Y, X_test, Y_test,
         ):
     '''
     '''
+    record = defaultdict(list)
 
     ## notation
     N, D = X.shape           # N #training samples; D #features
@@ -133,6 +138,8 @@ def run(X, Y, X_test, Y_test,
         error1 = get_error(Y_test, T_1)
         tls.logger.debug('  classifier 1 cost: %.3f' % cost1)
         tls.logger.debug('  classifier 1 error: %.3f' % error1)
+        record['cost1'].append(cost1)
+        record['error1'].append(error1)
 
         O_2 = classifier2.compute_output(X_test, W_2)
         T_2 = classifier2.compute_prediction(O_2)
@@ -140,6 +147,8 @@ def run(X, Y, X_test, Y_test,
         error2 = get_error(Y_test, T_2)
         tls.logger.debug('  classifier 2 cost: %.3f' % cost2)
         tls.logger.debug('  classifier 2 error: %.3f' % error2)
+        record['cost2'].append(cost2)
+        record['error2'].append(error2)
 
         ## update the weights for each classifier
         o_1 = classifier1.compute_output(x, W_1)
@@ -157,8 +166,10 @@ def run(X, Y, X_test, Y_test,
         error = get_error(Y_test, O)
         tls.logger.debug('  combination cost: %.3f' % cost)
         tls.logger.debug('  combination error: %.3f' % error)
+        record['cost'].append(cost)
+        record['error'].append(error)
 
-        ## update mixing parameter ƛ via a's update equation
+        ## update mixing parameter λ via a's update equation
         a_temp = a - η * cost * (cost1 - cost2) * λ * (1-λ)
 
         if sigmoid(a_temp) < 0.85 and sigmoid(a_temp) > 0.15:
@@ -166,8 +177,9 @@ def run(X, Y, X_test, Y_test,
 
         λ = sigmoid(a)
         tls.logger.info('  λ: %.2f' % λ)
+        record['λ'].append(λ)
 
-    return
+    return record
 
 
 from copy import deepcopy
