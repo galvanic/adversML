@@ -5,6 +5,7 @@ from __future__ import division
 import os
 import pickle
 import numpy as np
+import pandas as pd
 from pprint import pformat
 
 from helpers.logging import tls, log
@@ -91,6 +92,8 @@ def run_experiment(spec):
         'AUC': get_ROC_AUC(Y_test, O_test, **spec['label_type']),
     }
     tls.logger.info('performance:\n%s' % pformat(performance))
+    df_row = pd.DataFrame.from_records([performance])
+    df_row.columns = df_row.columns.set_names(['metrics'])
 
     ## release memory
     del X
@@ -100,7 +103,7 @@ def run_experiment(spec):
     del X_test
     del Y_test
 
-    return performance
+    return df_row
 
 
 from copy import deepcopy

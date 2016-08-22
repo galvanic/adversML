@@ -35,8 +35,9 @@ def run_experiment_batch(parameter_ranges, default_parameters, run_experiment,
         sys.stderr.write('No range of parameters specified\n')
         sys.exit(1)
 
-    ## get all possible variations for specs
+    ## get all possible variations for specs using a cartesian product
     specifications = generate_specs(zip(keys, variations), default_parameters)
+    indices = pd.MultiIndex.from_product(variations, names=dimension_names)
     logger.info('Amount of specifications: %d' % len(specifications))
 
     ## run each experiment
@@ -49,10 +50,7 @@ def run_experiment_batch(parameter_ranges, default_parameters, run_experiment,
         results = map(run_experiment, specifications)
 
     ## put into DataFrame for analysis
-    idx = pd.MultiIndex.from_product(variations, names=dimension_names)
-    df = pd.DataFrame.from_records(data=results, index=idx)
-    df.columns.names = ['metrics']
-
+    df = pd.concat(results, ignore_index=True).set_index(indices)
     df['experiment_id'] = [spec['experiment_id'] for spec in specifications]
     df = df.set_index('experiment_id', append=True)
     #df = df.reorder_levels(('experiment_id',) + dimension_names)
