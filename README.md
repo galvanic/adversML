@@ -85,7 +85,7 @@ Getting Started
   you run on 8 cores, make sure you have 16GB of RAM otherwise you will get a
   `MemoryError`.
 
-3. Run the pipeline, here with 4 cores for example:
+3. Run the pipeline, here with 4 threads for example:
 
     ```shell
     python3 main.py ~/path/to/experiment/config.yaml ~/folder/where/dataset/is/ ~/folder/to/save/results/to/ 4
@@ -136,6 +136,18 @@ A few [ipython notebooks](https://ipython.org/notebook.html) try the implementat
 
 TODO
 ----
+
+- implement attacker knowledge
+- prepare batch test specs to find good learning rates depending on classifier and dataset
+- implement different attacks in adaptive experiment pipeline
+- write extract functions for:
+
+  - enron
+  - MNIST
+
+- test experiments on MNIST
+- brainstorm attacks for adaptive convex combination experiment
+- implement regret measure
 
 ### software eng (ie. not directly important for this project) stuff:
 
