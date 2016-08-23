@@ -66,9 +66,10 @@ def run_experiment(spec):
     attack = spec['attack']['parameters']
     prob_poisoned = attack['percentage_samples_poisoned']
     start_attack = attack['start']
-    end_attack = attack['end']
-    num_poisoned = prob_poisoned * (end_attack - start_attack)
-    poisoned_indices = np.random.choice(np.arange(start_attack, end_attack), num_poisoned, replace=False)
+    duration_attack = attack['duration']
+    num_poisoned = prob_poisoned * duration_attack
+    attack_range = np.arange(start_attack, start_attack + duration_attack)
+    poisoned_indices = np.random.choice(attack_range, num_poisoned, replace=False)
     X_train[poisoned_indices] = 0
     Y_train[poisoned_indices] = 1
 

@@ -27,7 +27,7 @@ default_parameters:
     parameters:
       percentage_samples_poisoned: .50
       start: 20000
-      end: 25000
+      duration: 5000
 
 
 parameter_ranges:
