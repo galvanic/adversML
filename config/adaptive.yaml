@@ -40,12 +40,31 @@ parameter_ranges:
 #     - trec2007-1607252259 ## 100   features
 #     - enron-kayla         ## 1000  features
 
-# - name: classifier
-#   key: [classifier, type]
+# - name: classifier fast
+#   key: [classifier_fast, type]
 #   values:
 #     - adaline
 #     - logistic regression
 #     - naive bayes
+
+# - name: classifier slow
+#   key: [classifier_slow, type]
+#   values:
+#     - adaline
+#     - logistic regression
+#     - naive bayes
+
+# - name: η_fast
+#   key: [classifier_fast, training_parameters, learning_rate]
+#   values:
+#     - .01
+#     - .005
+
+# - name: η_slow
+#   key: [classifier_slow, training_parameters, learning_rate]
+#   values:
+#     - .001
+#     - .0005
 
 # - name: attack
 #   key: [attack, type]
@@ -65,15 +84,20 @@ parameter_ranges:
 #     - .3
 #     - .5
 
-# - name: η_fast
-#   key: [classifier_fast, training_parameters, learning_rate]
+# - name: attack start
+#   key: [attack, parameters, start]
 #   values:
-#     - .01
-#     - .005
+#     - 5000
+#     - 10000
+#     - 15000
+#     - 20000
+#     - 25000
 
-# - name: η_slow
-#   key: [classifier_slow, training_parameters, learning_rate]
+# - name: attack duration
+#   key: [attack, parameters, duration]
 #   values:
-#     - .001
-#     - .0005
+#     - 500
+#     - 1000
+#     - 5000
+#     - 10000
 
