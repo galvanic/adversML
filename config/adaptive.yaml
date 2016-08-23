@@ -26,8 +26,8 @@ default_parameters:
     type: null
     parameters:
       percentage_samples_poisoned: .50
-      start_attack: 20000
-      end_attack: 25000
+      start: 20000
+      end: 25000
 
 
 parameter_ranges:
