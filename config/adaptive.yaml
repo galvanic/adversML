@@ -11,14 +11,14 @@ default_parameters:
   classifier_fast:
     type: adaline
     training_parameters:
-      learning_rate: 0.01   ## fast
+      learning_rate: 0.01
       initial_weights: null
     testing_parameters: {}
 
   classifier_slow:
     type: adaline
     training_parameters:
-      learning_rate: 0.0005 ## slow
+      learning_rate: 0.0005
       initial_weights: null
     testing_parameters: {}
 
@@ -54,13 +54,13 @@ parameter_ranges:
 #     - logistic regression
 #     - naive bayes
 
-# - name: η_fast
+# - name: η fast
 #   key: [classifier_fast, training_parameters, learning_rate]
 #   values:
 #     - .01
 #     - .005
 
-# - name: η_slow
+# - name: η slow
 #   key: [classifier_slow, training_parameters, learning_rate]
 #   values:
 #     - .001
