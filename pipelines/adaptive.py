@@ -161,7 +161,7 @@ def run(X, Y, X_test, Y_test,
         O = λ * O_1 + (1-λ) * O_2  ## combining outputs
         T = np.sign(O)
         cost = get_cost(Y_test, O)
-        error = get_error(Y_test, O)
+        error = get_error(Y_test, T)
         #tls.logger.debug('  combination cost: %.3f' % cost)
         #tls.logger.debug('  combination error: %.3f' % error)
         record['cost'].append(cost)
