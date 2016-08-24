@@ -126,7 +126,7 @@ def run(X, Y, X_test, Y_test,
     W_2 = np.zeros((D, 1))
 
     for sample in range(N):
-        tls.logger.info('iteration %d' % sample)
+        if sample % 1000 == 0: tls.logger.info('iteration %d' % sample)
         x, y = X[sample], Y[sample]
 
         ## compute performance of both individual classifiers on the (entire) test set
@@ -134,8 +134,8 @@ def run(X, Y, X_test, Y_test,
         T_1 = classifier1.compute_prediction(O_1)
         cost1 = get_cost(Y_test, O_1)
         error1 = get_error(Y_test, T_1)
-        tls.logger.debug('  classifier 1 cost: %.3f' % cost1)
-        tls.logger.debug('  classifier 1 error: %.3f' % error1)
+        #tls.logger.debug('  classifier 1 cost: %.3f' % cost1)
+        #tls.logger.debug('  classifier 1 error: %.3f' % error1)
         record['cost1'].append(cost1)
         record['error1'].append(error1)
 
@@ -143,8 +143,8 @@ def run(X, Y, X_test, Y_test,
         T_2 = classifier2.compute_prediction(O_2)
         cost2 = get_cost(Y_test, O_2)
         error2 = get_error(Y_test, T_2)
-        tls.logger.debug('  classifier 2 cost: %.3f' % cost2)
-        tls.logger.debug('  classifier 2 error: %.3f' % error2)
+        #tls.logger.debug('  classifier 2 cost: %.3f' % cost2)
+        #tls.logger.debug('  classifier 2 error: %.3f' % error2)
         record['cost2'].append(cost2)
         record['error2'].append(error2)
 
@@ -162,8 +162,8 @@ def run(X, Y, X_test, Y_test,
         T = np.sign(O)
         cost = get_cost(Y_test, O)
         error = get_error(Y_test, O)
-        tls.logger.debug('  combination cost: %.3f' % cost)
-        tls.logger.debug('  combination error: %.3f' % error)
+        #tls.logger.debug('  combination cost: %.3f' % cost)
+        #tls.logger.debug('  combination error: %.3f' % error)
         record['cost'].append(cost)
         record['error'].append(error)
 
@@ -174,7 +174,7 @@ def run(X, Y, X_test, Y_test,
             a = a_temp
 
         λ = sigmoid(a)
-        tls.logger.info('  λ: %.2f' % λ)
+        #tls.logger.info('  λ: %.2f' % λ)
         record['λ'].append(λ)
 
     return record
