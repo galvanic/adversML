@@ -14,6 +14,8 @@ from helpers.logging import tls, log
 def apply(features, labels,
         ## params
         percentage_samples_poisoned,
+        start=None,
+        duration=None,
         ):
     '''
     Returns the input data with *replaced* data that is crafted specifically to
@@ -36,17 +38,19 @@ def apply(features, labels,
     spam_label = 1
     X, Y = features, labels
     N, D = X.shape ## number of N: samples, D: features
-    num_poisoned = int(N * percentage_samples_poisoned)
-
     tls.logger.debug('X: (%s, %s)\tY: %s' % (N, D, str(Y.shape)))
-    tls.logger.debug('Amount poisoned: %s' % num_poisoned)
+
+    ## attack parameters
+    duration = duration if duration else N
+    attack_range = np.arange(start, start + duration) if start else N
 
     ## randomly replace some samples with the poisoned ones
     ## so that total number of samples doesn't change
-    poisoned_indices = np.random.choice(N, num_poisoned, replace=False)
-    X[poisoned_indices] = 1
-
+    num_poisoned = int(duration * percentage_samples_poisoned)
+    tls.logger.debug('Amount poisoned: %s' % num_poisoned)
+    poisoned_indices = np.random.choice(attack_range, num_poisoned, replace=False)
     tls.logger.debug('Poisoned indices: %s' % poisoned_indices)
+    X[poisoned_indices] = 1
     tls.logger.debug('- one of the poisoned emails: %s =? %d (# features)' % (X[poisoned_indices[0]].sum(), D))
 
     ## the contamination assumption

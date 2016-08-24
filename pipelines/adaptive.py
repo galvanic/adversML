@@ -62,16 +62,11 @@ def run_experiment(spec):
     X_test  = X[-1000:]
     Y_test  = Y[-1000:]
 
-    ## apply attack: empty
-    attack = spec['attack']['parameters']
-    prob_poisoned = attack['percentage_samples_poisoned']
-    start_attack = attack['start']
-    duration_attack = attack['duration']
-    num_poisoned = prob_poisoned * duration_attack
-    attack_range = np.arange(start_attack, start_attack + duration_attack)
-    poisoned_indices = np.random.choice(attack_range, num_poisoned, replace=False)
-    X_train[poisoned_indices] = 0
-    Y_train[poisoned_indices] = 1
+    ## apply attack:
+    attack = spec['attack']['type']
+    attack_params = spec['attack']['parameters']
+    if attack_params['percentage_samples_poisoned'] != 0:
+        X_train, Y_train = attack.apply(features=X_train, labels=Y_train, **attack_params)
 
     ## prepare dataset
     if spec['add_bias']:

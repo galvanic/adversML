@@ -16,6 +16,8 @@ def apply(features, labels,
         ## params
         percentage_samples_poisoned,
         percentage_features_poisoned=1.0,
+        start=None,
+        duration=None,
         feature_selection_method=None,
         threshold=0.01,
         target=None,
@@ -51,10 +53,19 @@ def apply(features, labels,
     spam_label = 1
     X, Y = features, labels
     N, D = X.shape                        ## number of N: samples, D: features
-    num_poisoned = int(N * percentage_samples_poisoned)
-
     tls.logger.debug('X: (%s, %s)\tY: %s' % (N, D, str(Y.shape)))
+
+    ## attack parameters
+    duration = duration if duration else N
+    attack_range = np.arange(start, start + duration) if start else N
+
+    ## randomly replace some samples with the poisoned ones
+    ## so that total number of samples doesn't change
+    num_poisoned = int(duration * percentage_samples_poisoned)
     tls.logger.debug('Amount poisoned: %s' % num_poisoned)
+    poisoned_indices = np.random.choice(attack_range, num_poisoned, replace=False)
+    tls.logger.debug('Poisoned indices: %s' % poisoned_indices)
+    X[poisoned_indices] = 0
 
     if not target:
 
@@ -70,22 +81,13 @@ def apply(features, labels,
     ## in this case, it is the email
     salient_mask = (target == 1)
     salient_indices = np.ravel(np.where(salient_mask))
-
     tls.logger.info('Salient indices: %s' % salient_indices)
-
-    ## randomly replace some samples with the poisoned ones
-    ## so that total number of samples doesn't change
-    poisoned_indices = np.random.choice(N, num_poisoned, replace=False)
-    X[poisoned_indices] = 0
-
-    tls.logger.debug('Poisoned indices: %s' % poisoned_indices)
 
     ## "turn on" features whose presence is indicative of target
     X[np.ix_(poisoned_indices, salient_indices)] = 1
 
     ## the contamination assumption
     Y[poisoned_indices] = spam_label
-
     tls.logger.debug('- one of the poisoned emails\' label: %s =? 1' % Y[poisoned_indices[0]])
 
     return X, Y
