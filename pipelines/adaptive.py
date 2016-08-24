@@ -57,10 +57,12 @@ def run_experiment(spec):
     X = X[permuted_indices]
     Y = Y[permuted_indices]
 
-    X_train = X[:-1000]
-    Y_train = Y[:-1000]
-    X_test  = X[-1000:]
-    Y_test  = Y[-1000:]
+    N_test = 1000
+
+    X_train = X[:-N_test]
+    Y_train = Y[:-N_test]
+    X_test  = X[-N_test:]
+    Y_test  = Y[-N_test:]
 
     ## apply attack:
     attack = spec['attack']['type']
