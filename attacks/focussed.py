@@ -15,7 +15,7 @@ from helpers.logging import tls, log
 def apply(features, labels,
         ## params
         percentage_samples_poisoned,
-        percentage_features_poisoned=1.0,
+        percentage_features_poisoned=.99,
         start=None,
         duration=None,
         feature_selection_method=None,
@@ -83,8 +83,18 @@ def apply(features, labels,
     salient_indices = np.ravel(np.where(salient_mask))
     tls.logger.info('Salient indices: %s' % salient_indices)
 
-    ## "turn on" features whose presence is indicative of target
-    X[np.ix_(poisoned_indices, salient_indices)] = 1
+    ## model attacker knowledge of benign class' feature space
+    d = len(salient_indices)
+    d_poisoned = int(d * percentage_features_poisoned)
+    try:
+        known_features = np.random.choice(salient_indices, d_poisoned, replace=False)
+    except ValueError:
+        ## too little info about the targeted email is known, not worth
+        ## continuing experiment, TODO raise custom Exception
+        known_features = []
+
+    ## "turn on" features whose presence is indicative of ham
+    X[np.ix_(poisoned_indices, known_features)] = 1
 
     ## the contamination assumption
     Y[poisoned_indices] = spam_label

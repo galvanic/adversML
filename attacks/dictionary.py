@@ -14,6 +14,7 @@ from helpers.logging import tls, log
 def apply(features, labels,
         ## params
         percentage_samples_poisoned,
+        percentage_features_poisoned=.99,
         start=None,
         duration=None,
         ):
@@ -28,10 +29,19 @@ def apply(features, labels,
     - labels:   N * 1 Numpy vector of binary values (-1 and 1)
     - percentage_samples_poisoned: float between 0 and 1
         percentage of the dataset under the attacker's control
+    - percentage_features_poisoned: float between 0 and 1
+        percentage of the features under the attacker's control
+        (ie. attacker knowledge of features)
 
     Outputs:
     - X: poisoned features
     - Y: poisoned labels
+
+
+    Notes:
+    - if we assume the attacker is the same entity, then their knowledge
+      itself will not vary. Ie. they will know the same X features, instead
+      of for each email modelling a change in the X features they know.
     '''
 
     ## notations
@@ -50,7 +60,11 @@ def apply(features, labels,
     tls.logger.debug('Amount poisoned: %s' % num_poisoned)
     poisoned_indices = np.random.choice(attack_range, num_poisoned, replace=False)
     tls.logger.debug('Poisoned indices: %s' % poisoned_indices)
-    X[poisoned_indices] = 1
+
+    ## model attacker knowledge of feature space
+    d_poisoned = int(D * percentage_features_poisoned)
+    known_features = np.random.choice(D, d_poisoned, replace=False)
+    X[np.ix_(poisoned_indices, known_features)] = 1
     tls.logger.debug('- one of the poisoned emails: %s =? %d (# features)' % (X[poisoned_indices[0]].sum(), D))
 
     ## the contamination assumption

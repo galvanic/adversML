@@ -38,10 +38,11 @@ def select_using_MI(features, labels, threshold=0.01, ham_label=-1):
          requires extra array somewhere though
          Thinking about it, this is already what is happening since the ham
          malicious instances already have all their features set to zero
+
          (but this proportion of features controlled by the attacker could
          vary ? depending on attacket's dataset knowledge ? ie. malicious
          instances' feature values could be initialised randomly, or drawn from a
-         spammy dicstribution to mimick an email that still has a malicious
+         spammy distribution to mimick an email that still has a malicious
          potential (although this isn't necessary since we are doing a poison,
          not evasion attack); then compare this to initialised with 0s or with 1s
     '''
@@ -49,20 +50,17 @@ def select_using_MI(features, labels, threshold=0.01, ham_label=-1):
     X, Y = features, np.ravel(labels)
     N, D = X.shape
     d = int(D * threshold) ## keep top d features with highest score
-
     tls.logger.info('Keep top %s features' % d)
 
     ## calculate frequency of feature presence relative to each class
     ham_freq  = np.mean(X[np.ravel(Y == ham_label)], axis=0)
     spam_freq = np.mean(X[np.ravel(Y != ham_label)], axis=0)
-
     tls.logger.debug('- feature frequency in ham class: %s' % ham_freq)
     tls.logger.debug('- feature frequency in spam class: %s' % spam_freq)
 
     ## calculate mutual information between features and labels
     MI_per_feature = (mutual_info_score(X[:, f], Y) for f in range(D))
     MI_per_feature = np.fromiter(MI_per_feature, dtype=np.float16)
-
     tls.logger.debug('- mutual information scores: %s' % MI_per_feature)
 
     ## keep only salient features for ham (according to relative presence in that class)
@@ -76,7 +74,7 @@ def select_using_MI(features, labels, threshold=0.01, ham_label=-1):
 def apply(features, labels,
         ## params
         percentage_samples_poisoned,
-        percentage_features_poisoned=1.0,
+        percentage_features_poisoned=.99,
         start=None,
         duration=None,
         feature_selection_method=select_using_MI,
@@ -97,12 +95,18 @@ def apply(features, labels,
         percentage of the dataset under the attacker's control
     - percentage_features_poisoned: float between 0 and 1
         percentage of the features under the attacker's control
+        (ie. attacker knowledge of features)
     - feature_selection_method: string
     - threshold: percentile of ham features to keep
 
     Outputs:
     - X: N * D poisoned features
     - Y: N * 1 poisoned labels
+
+    Notes:
+    - instead of taking top X salient features, this could be modelled as
+      the attacker knowledge, ie. get all the salient features for ham,
+      then get percentage as that, as model for attacker knowledge
     '''
 
     ## notations
@@ -127,8 +131,13 @@ def apply(features, labels,
     salient_indices = feature_selection_method(X, Y, threshold)
     tls.logger.info('Salient indices: %s' % salient_indices)
 
+    ## model attacker knowledge of benign class' feature space
+    d = len(salient_indices)
+    d_poisoned = int(d * percentage_features_poisoned)
+    known_features = np.random.choice(salient_indices, d_poisoned, replace=False)
+
     ## "turn on" features whose presence is indicative of ham
-    X[np.ix_(poisoned_indices, salient_indices)] = 1
+    X[np.ix_(poisoned_indices, known_features)] = 1
 
     ## the contamination assumption
     Y[poisoned_indices] = spam_label

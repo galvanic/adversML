@@ -13,6 +13,7 @@ from helpers.logging import tls, log
 def apply(features, labels,
         ## params
         percentage_samples_poisoned,
+        percentage_features_poisoned=1.0,
         start=None,
         duration=None,
         ):
@@ -32,7 +33,20 @@ def apply(features, labels,
     - X: poisoned features
     - Y: poisoned labels
 
+
     TODO vary attacker knowledge (=influence over features)
+    IDEA after thinking about it, it doesn't make sense to vary attacker
+         knowledge for the empty attack. For example, in the case of spam,
+         they would just purely send an empty email. There would therefore
+         not be *any* features turned on, by definition.
+         You could imagine that there are features other than the email
+         content, ie. the words (or wtv instance is being classified) that
+         are taken into account (eg. meta-content, context-info, etc.) but
+         that would be both very out of the attacker's control and especially,
+         very specific, so there's no point modelling it as something random
+         here, because these extra features I can think of are not random
+         processes.
+
     TODO what happens if duration is longer than end of array ? WAAH
     '''
 

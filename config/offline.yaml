@@ -22,6 +22,8 @@ default_parameters:
   attack:
     type: null
     parameters: {}
+      percentage_samples_poisoned: .2
+      percentage_features_poisoned: .99
 
 
 parameter_ranges:
@@ -58,6 +60,15 @@ parameter_ranges:
       - .2
 #     - .3
 #     - .5
+
+# - name: 'attacker knowledge'
+#   key: [attack, parameters, percentage_features_poisoned]
+#   values:
+#     - .20
+#     - .50
+#     - .90
+#     - .95
+#     - .98
 
 # - name: learning rate
 #   key: [classifier, training_parameters, learning_rate]
