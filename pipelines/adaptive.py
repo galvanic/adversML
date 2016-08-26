@@ -19,6 +19,21 @@ tanh = lambda z: np.tanh(z)
 add_bias = lambda x: np.insert(x, 0, values=1, axis=1) # add bias term
 
 
+def apply_attack(attack_key, X, Y):
+
+    if type(attack_key) == dict:
+        attack = attack_key['type']
+        attack_params = attack_key['parameters']
+        if attack_params['percentage_samples_poisoned'] != 0:
+            X, Y = attack.apply(features=X, labels=Y, **attack_params)
+
+    elif type(attack_key) == list:
+        for attack in attack_key:
+            apply_attack(attack, X, Y)
+
+    return
+
+
 @log(get_experiment_id=lambda args: args[0]['experiment_id'])
 def run_experiment(spec):
     '''
@@ -65,10 +80,7 @@ def run_experiment(spec):
     Y_test  = Y[-N_test:]
 
     ## apply attack:
-    attack = spec['attack']['type']
-    attack_params = spec['attack']['parameters']
-    if attack_params['percentage_samples_poisoned'] != 0:
-        X_train, Y_train = attack.apply(features=X_train, labels=Y_train, **attack_params)
+    apply_attack(spec['attack'], X_train, Y_train)
 
     ## prepare dataset
     if spec['add_bias']:
@@ -209,6 +221,22 @@ Attacks = {
     'none': no_attack,
 }
 
+normalise_key = lambda k: k.lower().replace(' ', '')
+
+
+def prepare_attack(attack_key):
+
+    if type(attack_key) == dict:
+        attack = attack_key['type']
+        attack = 'none' if not attack else attack
+        attack = Attacks[normalise_key(attack)]
+        attack_key['type'] = attack
+
+    elif type(attack_key) == list:
+        list(map(prepare_attack, attack_key))
+
+    return
+
 
 def prepare_spec(spec):
     '''
@@ -225,8 +253,6 @@ def prepare_spec(spec):
 
     ham_label = spec['label_type']['ham_label']
 
-    normalise_key = lambda k: k.lower().replace(' ', '')
-
     for classifier_type in ['fast', 'slow']:
 
         classifier_key = 'classifier_%s' % classifier_type
@@ -241,11 +267,8 @@ def prepare_spec(spec):
         spec['add_bias'] = True if classifier != NaivebayesClassifier else False
         spec[classifier_key]['type'] = classifier
 
-    ## attack
-    attack = spec['attack']['type']
-    attack = 'none' if not attack else attack
-    attack = Attacks[normalise_key(attack)]
-    spec['attack']['type'] = attack
+    ## attacks
+    prepare_attack(spec['attack'])
 
     return spec
 
