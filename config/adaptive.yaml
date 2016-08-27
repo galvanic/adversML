@@ -23,11 +23,16 @@ default_parameters:
     testing_parameters: {}
 
   attack:
-    type: null
-    parameters:
-      percentage_samples_poisoned: .50
-      start: 20000
-      duration: 5000
+    - type: empty
+      parameters:
+        percentage_samples_poisoned: .50
+        start: 15000
+        duration: 5000
+    - type: dictionary
+      parameters:
+        percentage_samples_poisoned: .50
+        start: 20000
+        duration: 5000
 
 
 parameter_ranges:
