@@ -11,14 +11,14 @@ default_parameters:
   classifier_fast:
     type: adaline
     training_parameters:
-      learning_rate: 0.01
+      learning_rate: 0.005
       initial_weights: null
     testing_parameters: {}
 
   classifier_slow:
     type: adaline
     training_parameters:
-      learning_rate: 0.0005
+      learning_rate: 0.001
       initial_weights: null
     testing_parameters: {}
 

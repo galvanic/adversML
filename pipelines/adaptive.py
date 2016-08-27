@@ -130,6 +130,36 @@ def run(X, Y, X_test, Y_test,
         if sample % 1000 == 0: tls.logger.info('iteration %d' % sample)
         x, y = X[sample], Y[sample]
 
+        ###
+        ### update each part of the model
+        ###
+
+        ## update the weights for each classifier
+        o_1 = classifier1.compute_output(x, W_1)
+        gradient = np.multiply((o_1 - y), x)
+        W_1 = W_1 - η1 * gradient.reshape(W_1.shape)
+
+        o_2 = classifier2.compute_output(x, W_2)
+        gradient = np.multiply((o_2 - y), x)
+        W_2 = W_2 - η2 * gradient.reshape(W_2.shape)
+
+        ## update mixing parameter λ via a's update equation (5) from the paper
+        t_1 = classifier1.compute_prediction(o_1)
+        t_2 = classifier2.compute_prediction(o_2)
+        o = λ * o_1 + (1-λ) * o_2  ## combining outputs
+        t = np.sign(o)
+        e = (y - t)
+        a_temp = a - η * e * (t_1 - t_2) * λ * (1-λ)
+
+        a = a_temp[0] if sigmoid(a_temp) < 0.85 and sigmoid(a_temp) > 0.15 else a
+        ## note: extract unique value [0] because of array shape
+
+        λ = sigmoid(a)
+
+        ###
+        ### measure performance
+        ###
+
         ## compute performance of both individual classifiers on the (entire) test set
         O_1 = classifier1.compute_output(X_test, W_1)
         T_1 = classifier1.compute_prediction(O_1)
@@ -149,16 +179,9 @@ def run(X, Y, X_test, Y_test,
         record['cost2'].append(cost2)
         record['error2'].append(error2)
 
-        ## update the weights for each classifier
-        o_1 = classifier1.compute_output(x, W_1)
-        gradient = np.multiply((o_1 - y), x)
-        W_1 = W_1 - η1 * gradient.reshape(W_1.shape)
-
-        o_2 = classifier2.compute_output(x, W_2)
-        gradient = np.multiply((o_2 - y), x)
-        W_2 = W_2 - η2 * gradient.reshape(W_2.shape)
-
         ## compute performance of the adaptive combination on the test set
+        record['λ'].append(λ)
+        #tls.logger.info('  λ: %.2f' % λ)
         O = λ * O_1 + (1-λ) * O_2  ## combining outputs
         T = np.sign(O)
         cost = get_cost(Y_test, O)
@@ -167,16 +190,6 @@ def run(X, Y, X_test, Y_test,
         #tls.logger.debug('  combination error: %.3f' % error)
         record['cost'].append(cost)
         record['error'].append(error)
-
-        ## update mixing parameter λ via a's update equation
-        a_temp = a - η * cost * (cost1 - cost2) * λ * (1-λ)
-
-        if sigmoid(a_temp) < 0.85 and sigmoid(a_temp) > 0.15:
-            a = a_temp
-
-        λ = sigmoid(a)
-        #tls.logger.info('  λ: %.2f' % λ)
-        record['λ'].append(λ)
 
     return record
 
