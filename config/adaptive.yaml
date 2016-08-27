@@ -45,14 +45,12 @@ parameter_ranges:
 #   values:
 #     - adaline
 #     - logistic regression
-#     - naive bayes
 
 # - name: classifier slow
 #   key: [classifier_slow, type]
 #   values:
 #     - adaline
 #     - logistic regression
-#     - naive bayes
 
 # - name: η fast
 #   key: [classifier_fast, training_parameters, learning_rate]
