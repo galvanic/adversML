@@ -104,8 +104,8 @@ def run_experiment(spec):
     df = df.sort_index(axis=1)
     df = df.ix[1:]
 
+    tls.logger.info('performance:\n%s' % df.ix[len(df)-4:].to_string(col_space=8, float_format=lambda x: '%.3f' % x))
     df_row = df.unstack('timestep').to_frame().T
-    tls.logger.info('performance:\n%s' % df[-10:].to_string(col_space=8, float_format=lambda x: '%.3f' % x))
 
     ## release memory
     del X
