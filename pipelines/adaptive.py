@@ -18,6 +18,14 @@ tanh = lambda z: np.tanh(z)
 ## helpers
 add_bias = lambda x: np.insert(x, 0, values=1, axis=1) # add bias term
 
+def get_prediction(df, classifier_name):
+    column = np.sign(df[(classifier_name, 'output')])
+    return column.astype(np.int8).rename((classifier_name, 'prediction'))
+
+def get_loss(df, classifier_name):
+    column = (df[(classifier_name, 'prediction')] - df['y']) ** 2
+    return column.astype(np.int8).rename((classifier_name, 'loss'))
+
 
 @log(get_experiment_id=lambda args: args[0]['experiment_id'])
 def run_experiment(spec):
@@ -86,6 +94,15 @@ def run_experiment(spec):
     df = pd.DataFrame.from_dict(results)
     df.index = df.index.set_names(['timestep'])
     df.columns = df.columns.set_names(['classifier', 'metrics'])
+    df = df.join(pd.Series(np.ravel(Y_train)).rename(('y', '')))
+
+    classifier_names = ['fast', 'slow', 'combination']
+    for name in classifier_names:
+        df = df.join(get_prediction(df, name))
+        df = df.join(get_loss(df, name))
+
+    df = df.sort_index(axis=1)
+    df = df.ix[1:]
 
     df_row = df.unstack('timestep').to_frame().T
     tls.logger.info('performance:\n%s' % df[-10:].to_string(col_space=8, float_format=lambda x: '%.3f' % x))
