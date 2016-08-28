@@ -144,12 +144,9 @@ def run(X, Y, X_test, Y_test,
         W_2 = W_2 - η2 * gradient.reshape(W_2.shape)
 
         ## update mixing parameter λ via a's update equation (5) from the paper
-        t_1 = classifier1.compute_prediction(o_1)
-        t_2 = classifier2.compute_prediction(o_2)
         o = λ * o_1 + (1-λ) * o_2  ## combining outputs
-        t = np.sign(o)
-        e = (y - t)
-        a_temp = a - η * e * (t_1 - t_2) * λ * (1-λ)
+        e = (y - o)
+        a_temp = a - η * e * (o_1 - o_2) * λ * (1-λ)
 
         a = a_temp[0] if sigmoid(a_temp) < 0.85 and sigmoid(a_temp) > 0.15 else a
         ## note: extract unique value [0] because of array shape
