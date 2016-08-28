@@ -7,6 +7,7 @@ np.set_printoptions(precision=2, threshold=10e6, linewidth=10e10)
 import pandas as pd
 pd.set_option('expand_frame_repr', False)
 pd.set_option('display.max_columns', 8)
+pd.set_option('display.max_rows', 10)
 
 import threading
 tls = threading.local()
