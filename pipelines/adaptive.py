@@ -85,7 +85,8 @@ def run_experiment(spec):
     ## collect performance measures
     df = pd.DataFrame.from_dict(results)
     df.index = df.index.set_names(['timestep'])
-    df.columns = df.columns.set_names(['metrics'])
+    df.columns = df.columns.set_names(['classifier', 'metrics'])
+
     df_row = df.unstack('timestep').to_frame().T
     tls.logger.info('performance:\n%s' % df[-10:].to_string(col_space=8, float_format=lambda x: '%.3f' % x))
 
@@ -109,6 +110,8 @@ def run(X, Y, X_test, Y_test,
         ):
     '''
     '''
+    ## keep track of various metrics
+    ## tuple keys will become DataFrame MultiIndex
     record = defaultdict(list)
 
     ## notation
@@ -152,10 +155,29 @@ def run(X, Y, X_test, Y_test,
         ## note: extract unique value [0] because of array shape
 
         λ = sigmoid(a)
+        #tls.logger.info('  λ: %.2f' % λ)
+        record[('λ', '')].append(λ)
 
         ###
-        ### measure performance
+        ### keep track of output and predictions on sample for all classifiers
         ###
+
+        record[('fast', 'output')].append(o_1[0])
+        record[('slow', 'output')].append(o_2[0])
+        record[('combination', 'output')].append(o[0])
+
+        ## threshold, cost, error can be calculated from this
+        ## using the true label, available outside the function
+        ## and all these can be used to compute the cumulative loss
+        ## over a time window, to calculate the regret
+
+        ###
+        ### measure performance on test set
+        ###
+
+        ## idea is to see how these weights compare to a whole "test" set
+        ## even though point is to use them on a non-stationary distribution
+        ## so not that useful
 
         ## compute performance of both individual classifiers on the (entire) test set
         O_1 = classifier1.compute_output(X_test, W_1)
@@ -164,8 +186,8 @@ def run(X, Y, X_test, Y_test,
         error1 = get_error(Y_test, T_1)
         #tls.logger.debug('  classifier 1 cost: %.3f' % cost1)
         #tls.logger.debug('  classifier 1 error: %.3f' % error1)
-        record['cost1'].append(cost1)
-        record['error1'].append(error1)
+        record[('fast', 'cost')].append(cost1)
+        record[('fast', 'error')].append(error1)
 
         O_2 = classifier2.compute_output(X_test, W_2)
         T_2 = classifier2.compute_prediction(O_2)
@@ -173,20 +195,18 @@ def run(X, Y, X_test, Y_test,
         error2 = get_error(Y_test, T_2)
         #tls.logger.debug('  classifier 2 cost: %.3f' % cost2)
         #tls.logger.debug('  classifier 2 error: %.3f' % error2)
-        record['cost2'].append(cost2)
-        record['error2'].append(error2)
+        record[('slow', 'cost')].append(cost2)
+        record[('slow', 'error')].append(error2)
 
-        ## compute performance of the adaptive combination on the test set
-        record['λ'].append(λ)
-        #tls.logger.info('  λ: %.2f' % λ)
         O = λ * O_1 + (1-λ) * O_2  ## combining outputs
+        ## compute performance of the adaptive combination on the test set
         T = np.sign(O)
         cost = get_cost(Y_test, O)
         error = get_error(Y_test, T)
         #tls.logger.debug('  combination cost: %.3f' % cost)
         #tls.logger.debug('  combination error: %.3f' % error)
-        record['cost'].append(cost)
-        record['error'].append(error)
+        record[('combination', 'cost')].append(cost)
+        record[('combination', 'error')].append(error)
 
     return record
 
