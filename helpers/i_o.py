@@ -34,7 +34,7 @@ def save_df(df, outfolder, experiment_id=None, specs_filepath=None):
 
     ## save also as string for human readability
     if len(df.columns) > 8: ## TODO should be individual to ExperimentBatchSetup class or something
-        df = df.xs(df.columns.levels[1][-2], axis=1, level='timestep')
+        df = df.xs(df.columns.get_level_values('timestep')[-1], axis=1, level='timestep')
     string = df.to_string(col_space=8, float_format=lambda x: '%.3f' % x)
     logger.info('\n%s' % string)
 
