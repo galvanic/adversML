@@ -134,7 +134,7 @@ def run(X, Y, X_test, Y_test,
     ## notation
     N, D = X.shape           # N #training samples; D #features
     tls.logger.debug('X: (%s, %s)\tY: %s' % (N, D, str(Y.shape)))
-    a = 0          ## λ is modified indirectly via a (see paper)
+    a = 0.5        ## λ is modified indirectly via a (see paper)
     λ = sigmoid(a) ## mixing parameter
     η = 2          ## learning parameter for the mixing parameter (adaptation speed)
     η1 = classifier1['training_parameters']['learning_rate']
