@@ -111,65 +111,59 @@ def prepare(df):
 ###
 
 
-def get_legend_labels(df, latexify=True):
-    try:
-        labels = df.columns.get_level_values('classifier')
-    except AttributeError:
-        labels = [df.name]
-
-    if latexify:
-        labels = map(lambda l: '$%s$' % l, labels)
-    return labels
-
-
-def visualise(df, axes, idx=0, title='', attacks=None, **custom_params):
+def visualise(df, plot_specs, axes, idx=0, title='', attacks=[], **custom_params):
     '''visualise 1 experiment'''
 
     PARAMS = {
         'sharex': True,
-        'ylim': (0, 1),
         'legend': None,
     }
 
-    columns = [df.xs('cost',  axis=1, level='metrics'),
-               df.xs('error', axis=1, level='metrics'),
-               df['λ'],]
-    labels = map(get_legend_labels, columns)
+    patch_params = {
+        'facecolor': 'gray',
+        'edgecolor': 'none' if len(attacks) == 1 else 'black',
+        'alpha': 0.1
+    }
 
-    for ii, (xs, label) in enumerate(zip(columns, labels)):
+    for ii, spec in enumerate(plot_specs):
 
         axis = plt.subplot(axes[ii, idx])
-        params = {**deepcopy(PARAMS), **custom_params}
+        params = {**deepcopy(PARAMS), **custom_params, **spec['specific_params']}
 
-        ## plot attack
-        edgecolor = 'none' if len(attacks) == 1 else 'black'
-        if attacks:
-            for attack in attacks:
-                axis.add_patch(patches.Rectangle(
-                    (attack['start'], 0), attack['duration'], 1,
-                     facecolor='gray', edgecolor=edgecolor, alpha=0.1))
+        xs = spec['get_data'](df)
 
-        ## metric is λ
-        if ii == 2:
-            params.update({'color': 'black'})
+        for y, color in spec['y_colors'].items():
+            xs.plot(y=y, ax=axis, color=color, **params)
 
-        xs.plot(x=df.index, y=['fast', 'slow', 'combination'], ax=axis, **params)
+        ## draw attack
+        for attack in attacks:
+            axis.add_patch(patches.Rectangle(
+                xy = (attack['start'], axis.get_ylim()[0]),
+                width = attack['duration'],
+                height = axis.get_ylim()[1] - axis.get_ylim()[0],
+                **patch_params))
 
         ## left-most graph shows Y axis labels, others hide them
-        axis.set_yticklabels([])
-        if idx == 0:
-            axis.set_yticklabels([''] + list(np.arange(0.2, 1.2, 0.2)),
-                                 position=(-0.01, 0), verticalalignment='top')
+        if idx != 0:
+            axis.set_yticklabels([])
+        else:
+            #from code import interact; interact(local=dict(locals(), **globals()))
+            y_labels = spec['y_ticklabels'] if 'y_ticklabels' in spec else plt.yticks()[0][1:]
+            axis.set_yticklabels([''] + list(y_labels),
+                                 position=(-0.001, 0), verticalalignment='top')
 
         ## right-most graph hosts legend
         if idx == axes._ncols-1:
             axis.legend(frameon=False, loc='center left', bbox_to_anchor=(1, 0.5),
-                        labels=list(label), fontsize=14)
+                        labels=list(spec['y_labels']), fontsize=14)
 
             ## metric is λ
-            if ii == 2:
-                plt.yticks([0.15, 0.85], ['slow', 'fast'])
-                axis.yaxis.set_ticks_position('right')
+            ## TODO put this in outside function so that it can only be run for λ ?
+            if ii == len(plot_specs)-1:
+                y_labels = ['slow', 'fast']
+                plt.yticks([0.15, 0.85], y_labels)
+                axis.tick_params(axis='y', which='both', labelleft='off', labelright='on')
+                axis.set_yticklabels(y_labels, position=(1, 0), verticalalignment='center')
                 for tick, color in zip(axis.yaxis.get_ticklabels(), ['green', 'blue']):
                     tick.set_color(color)
 
@@ -183,21 +177,23 @@ def visualise(df, axes, idx=0, title='', attacks=None, **custom_params):
     return
 
 
-def visualise_group(dfs, figsize=(27, 7), **custom_params):
-    '''visualise multiple experiments'''
+def visualise_group(dfs, plot_specs, figsize=(27, 7), **custom_params):
+    '''visualise multiple experiments
+    dfs is horizontally
+    plot_specs is vertically (locally)'''
     fig = plt.figure(figsize=figsize)
     axes = gridspec.GridSpec(3, len(dfs), height_ratios=[2, 2, 1])
     axes.update(hspace=0, wspace=0.05)
 
     for idx, (df, title, attacks) in enumerate(dfs):
 
-        visualise(prepare(df), axes, idx, title, attacks, **custom_params)
+        visualise(df, plot_specs, axes, idx, title, attacks, **custom_params)
 
     plt.show()
     return
 
 
-def compare_group(df, experiment_ids_group, attacks_info, **custom_params):
+def compare_group(df, plot_specs, experiment_ids_group, attacks_info, **custom_params):
     '''Plot the group horizontally, one graph per experiment in the group'''
 
     to_plot = []
@@ -208,9 +204,9 @@ def compare_group(df, experiment_ids_group, attacks_info, **custom_params):
         experiment_num = experiment_id.split(' ')[1]
         title = 'experiment %s\n%s' % (experiment_num, get_title(xs))
 
-        to_plot.append((xs, title, attacks))
+        to_plot.append((prepare(xs), title, attacks))
 
-    visualise_group(to_plot, **custom_params)
+    visualise_group(to_plot, plot_specs, **custom_params)
     return
 
 
@@ -250,6 +246,70 @@ def get_sorted_experiment_ids(df):
     return experiment_ids
 
 
+from collections import OrderedDict
+
+CLASSIFIER_COLORS = OrderedDict([
+    ('fast', 'blue'),
+    ('slow', 'green'),
+    ('combination', 'red'),
+])
+
+PLOT_SPECS = {
+    'test set': [
+        {
+            'name': 'cost',
+            'get_data': lambda df: df.xs('cost',  axis=1, level='metrics'),
+            'y_colors': CLASSIFIER_COLORS,
+            'specific_params': { 'ylim': (0, 1) },
+        },
+        {
+            'name': 'error',
+            'get_data': lambda df: df.xs('error', axis=1, level='metrics'),
+            'y_colors': CLASSIFIER_COLORS,
+            'specific_params': { 'ylim': (0, 1) },
+        },
+        {
+            'name': 'λ',
+            'get_data': lambda df: df,
+            'y_colors': { 'λ': 'black' },
+            'specific_params': { 'ylim': (0, 1) },
+        },
+    ],
+
+    'regret': [
+        {
+            'name': 'regret',
+            'get_data': lambda df: df,
+            'y_colors': { 'regret': 'orange' },
+        },
+        {
+            'name': 'cumulative loss',
+            'get_data': lambda df: df.xs('cumulative loss', axis=1, level='metrics'),
+            'y_colors': CLASSIFIER_COLORS,
+        },
+        {
+            'name': 'λ',
+            'get_data': lambda df: df,
+            'y_colors': { 'λ': 'black' },
+            'specific_params': { 'ylim': (0, 1) },
+        },
+    ],
+}
+
+## TODO ^ add possibility to change gridspec proportions for each etc.
+
+def get_existing_plot_specs(name):
+    ''''''
+    return PLOT_SPECS[name]
+
+
+def update_plot_specs(plot_specs):
+    plot_specs = deepcopy(plot_specs)
+    for spec in plot_specs:
+        spec['specific_params'] = spec.get('specific_params', {})
+        spec['y_labels'] = map(lambda l: '$%s$' % l, list(spec['y_colors'].keys()))
+    return plot_specs
+
 
 def main(batch_id, dataset_dir, group_size):
     '''
@@ -266,10 +326,14 @@ def main(batch_id, dataset_dir, group_size):
     print('\ntotal timesteps: %d' % total_timesteps)
 
 
+    plot_specs = get_existing_plot_specs('test set')
+    plot_specs = update_plot_specs(plot_specs)
+
+
     for experiment_ids_group in chunks(experiment_ids, groups_of=group_size):
 
         custom_params = {}
-        compare_group(df, experiment_ids_group, attacks, **custom_params)
+        compare_group(df, plot_specs, experiment_ids_group, attacks, **custom_params)
 
         from code import interact; interact(local=dict(locals(), **globals()))
 
