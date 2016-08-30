@@ -23,6 +23,7 @@ default_parameters:
     testing_parameters: {}
 
   training_parameters:
+    adaptation_rate: 1
     window_size: 5
     window_operator: mean
 

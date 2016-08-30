@@ -140,6 +140,7 @@ def run(X, Y, X_test, Y_test,
         ## params
         classifier1,
         classifier2,
+        adaptation_rate,
         window_size,
         window_operator,
         ):
@@ -148,13 +149,20 @@ def run(X, Y, X_test, Y_test,
     ## keep track of various metrics
     ## tuple keys will become DataFrame MultiIndex
     record = defaultdict(list)
+    '''
+    record.update({
+        'fast': defaultdict(list),
+        'slow': defaultdict(list),
+        'combination': defaultdict(list),
+    })
+    '''
 
     ## setup
     N, D = X.shape           # N #training samples; D #features
     tls.logger.debug('X: (%s, %s)\tY: %s' % (N, D, str(Y.shape)))
-    a = 0.5        ## λ is modified indirectly via a (see paper)
-    λ = sigmoid(a) ## mixing parameter
-    η = 2          ## learning parameter for the mixing parameter (adaptation speed)
+    a = 0.5              ## λ is modified indirectly via a (see paper)
+    λ = sigmoid(a)       ## mixing parameter
+    η = adaptation_rate  ## learning parameter for the mixing parameter (adaptation speed)
     η1 = classifier1['training_parameters']['learning_rate']
     η2 = classifier2['training_parameters']['learning_rate']
     classifier1 = classifier1['type']
