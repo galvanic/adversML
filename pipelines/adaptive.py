@@ -20,11 +20,21 @@ add_bias = lambda x: np.insert(x, 0, values=1, axis=1) # add bias term
 
 def get_prediction(df, classifier_name):
     column = np.sign(df[(classifier_name, 'output')])
-    return column.astype(np.int8).rename((classifier_name, 'prediction'))
+    column = column.rename((classifier_name, 'prediction'))
+    try:
+        column = column.astype(np.int8)
+    except ValueError:
+        pass
+    return column
 
 def get_loss(df, classifier_name):
     column = (df[(classifier_name, 'prediction')] - df['y']) ** 2
-    return column.astype(np.int8).rename((classifier_name, 'loss'))
+    column = column.rename((classifier_name, 'loss'))
+    try:
+        column = column.astype(np.int8)
+    except ValueError:
+        pass
+    return column
 
 
 @log(get_experiment_id=lambda args: args[0]['experiment_id'])
