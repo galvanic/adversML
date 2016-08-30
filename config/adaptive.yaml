@@ -22,6 +22,10 @@ default_parameters:
       initial_weights: null
     testing_parameters: {}
 
+  training_parameters:
+    window_size: 5
+    window_operator: mean
+
   attack:
     - type: empty
       parameters:

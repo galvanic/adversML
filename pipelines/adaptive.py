@@ -88,7 +88,9 @@ def run_experiment(spec):
     classifier_fast = spec['classifier_fast']
     classifier_slow = spec['classifier_slow']
 
-    results = run(X_train, Y_train, X_test, Y_test, classifier_fast, classifier_slow)
+    results = run(X_train, Y_train, X_test, Y_test,
+                  classifier_fast, classifier_slow,
+                  **spec['training_parameters'])
 
     ## collect performance measures
     df = pd.DataFrame.from_dict(results)
@@ -118,12 +120,28 @@ def run_experiment(spec):
     return df_row
 
 from collections import defaultdict
+from collections import deque
+
+WINDOW_OPERATORS = {
+    'mean': np.mean,
+    'median': np.median,
+}
+
+def get_error_gradient(windows, y, λ, operator=np.mean):
+    ''''''
+    o, o_1, o_2 = map(np.array, windows)
+    e = (y - o)
+    error_gradient = e * (o_1 - o_2) * λ * (1-λ)
+    return operator(error_gradient, axis=0)
+
 
 @log
 def run(X, Y, X_test, Y_test,
         ## params
         classifier1,
         classifier2,
+        window_size,
+        window_operator,
         ):
     '''
     '''
@@ -131,7 +149,7 @@ def run(X, Y, X_test, Y_test,
     ## tuple keys will become DataFrame MultiIndex
     record = defaultdict(list)
 
-    ## notation
+    ## setup
     N, D = X.shape           # N #training samples; D #features
     tls.logger.debug('X: (%s, %s)\tY: %s' % (N, D, str(Y.shape)))
     a = 0.5        ## λ is modified indirectly via a (see paper)
@@ -141,6 +159,10 @@ def run(X, Y, X_test, Y_test,
     η2 = classifier2['training_parameters']['learning_rate']
     classifier1 = classifier1['type']
     classifier2 = classifier2['type']
+    operator = WINDOW_OPERATOR[window_operator]
+    window_o  = deque(maxlen=window_size)
+    window_o1 = deque(maxlen=window_size)
+    window_o2 = deque(maxlen=window_size)
 
     ## initialise weights for both filters
     W_1 = np.zeros((D, 1))
@@ -165,8 +187,11 @@ def run(X, Y, X_test, Y_test,
 
         ## update mixing parameter λ via a's update equation (5) from the paper
         o = λ * o_1 + (1-λ) * o_2  ## combining outputs
-        e = (y - o)
-        a_temp = a - η * e * (o_1 - o_2) * λ * (1-λ)
+        window_o.append(o)
+        window_o1.append(o_1)
+        window_o2.append(o_2)
+        error_gradient = get_error_gradient([window_o, window_o1, window_o2], y, λ, operator)
+        a_temp = a - η * error_gradient
 
         a = a_temp[0] if sigmoid(a_temp) < 0.85 and sigmoid(a_temp) > 0.15 else a
         ## note: extract unique value [0] because of array shape
