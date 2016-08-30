@@ -167,7 +167,7 @@ def run(X, Y, X_test, Y_test,
     η2 = classifier2['training_parameters']['learning_rate']
     classifier1 = classifier1['type']
     classifier2 = classifier2['type']
-    operator = WINDOW_OPERATOR[window_operator]
+    operator = WINDOW_OPERATORS[window_operator]
     window_o  = deque(maxlen=window_size)
     window_o1 = deque(maxlen=window_size)
     window_o2 = deque(maxlen=window_size)
