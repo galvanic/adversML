@@ -31,13 +31,13 @@ default_parameters:
     - type: empty
       parameters:
         percentage_samples_poisoned: .50
-        start: 15000
-        duration: 5000
+        start: .25
+        duration: .30
     - type: dictionary
       parameters:
         percentage_samples_poisoned: .50
-        start: 20000
-        duration: 5000
+        start: .50
+        duration: .20
 
 
 parameter_ranges:
@@ -95,19 +95,15 @@ parameter_ranges:
 # - name: attack start
 #   key: [attack, parameters, start]
 #   values:
-#     - 5000
-#     - 10000
-#     - 15000
-#     - 20000
-#     - 25000
+#     - .20
+#     - .50
+#     - .80
 
 # - name: attack duration
 #   key: [attack, parameters, duration]
 #   values:
-#     - 500
-#     - 1000
-#     - 5000
-#     - 10000
+#     - .20
+#     - .50
 
 # - name: adaptation rate
 #   key: [training_parameters, adaptation_rate]

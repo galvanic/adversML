@@ -57,12 +57,17 @@ def apply(features, labels,
     tls.logger.debug('X: (%s, %s)\tY: %s' % (N, D, str(Y.shape)))
 
     ## attack parameters
-    duration = duration if duration else N
-    attack_range = np.arange(start, start + duration) if start else N
+    if start:
+        start = int(N * start)
+        duration = int(N * duration) if duration else N
+        end = start + duration if start + duration < N else N
+        attack_range = np.arange(start, end+1)
+    else:
+        attack_range = N
 
     ## randomly replace some samples with the poisoned ones
     ## so that total number of samples doesn't change
-    num_poisoned = int(duration * percentage_samples_poisoned)
+    num_poisoned = int(len(attack_range) * percentage_samples_poisoned)
     tls.logger.debug('Amount poisoned: %s' % num_poisoned)
     poisoned_indices = np.random.choice(attack_range, num_poisoned, replace=False)
     tls.logger.debug('Poisoned indices: %s' % poisoned_indices)
