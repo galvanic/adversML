@@ -109,3 +109,26 @@ parameter_ranges:
 #     - 5000
 #     - 10000
 
+# - name: adaptation rate
+#   key: [training_parameters, adaptation_rate]
+#   values:
+#     - 0.5
+#     - 1
+#     - 1.5
+#     - 2
+
+# - name: window operator
+#   key: [training_parameters, window_operator]
+#   values:
+#     - mean
+#     - median
+
+# - name: window size
+#   key: [training_parameters, window_size]
+#   values:
+#     - 5
+#     - 10
+#     - 50
+#     - 100
+#     - 500
+
