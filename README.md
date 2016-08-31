@@ -132,7 +132,11 @@ This repo includes code for:
   - [Naive Bayes classifier](https://en.wikipedia.org/wiki/Naive_Bayes_classifier) model: [**naivebayes.py**](https://github.com/galvanic/adversarialML/blob/master/classifiers/naivebayes.py)
 
 
-A few [ipython notebooks](https://ipython.org/notebook.html) try the implementations out and can serve as examples: [**notebooks/**](https://github.com/galvanic/adversML/tree/master/notebooks)
+A few [ipython notebooks](https://ipython.org/notebook.html) showcase the results and brief initial observations/interpretations:
+
+  - analysis of experiment batch [1608232142](https://nbviewer.jupyter.org/urls/gist.github.com/galvanic/2719ae005a16a4f71139fcaa3c4e0eb3/raw/8b4584878bbb6592813b156eb7e6daf9e85aae15/1608232142.ipynb) and corresponding [specifications](https://gist.githubusercontent.com/galvanic/2719ae005a16a4f71139fcaa3c4e0eb3/raw/8b4584878bbb6592813b156eb7e6daf9e85aae15/1608232142.yml)
+
+  - analysis of experiment batches [1608310218](https://gist.github.com/galvanic/7f7a3233fbb52893a63008be9643c8ac#file-1608310218-adaptive-yaml) and [1608302248](https://gist.github.com/galvanic/7f7a3233fbb52893a63008be9643c8ac#file-1608302248-adaptive-yaml), where I looked at the effect of varying the adaptive rate: [online notebook](https://nbviewer.jupyter.org/urls/gist.github.com/galvanic/7f7a3233fbb52893a63008be9643c8ac/raw/5b056187f229f8cc3267e4ebeb9c191d15078090/1608310218.ipynb)
 
 TODO
 ----
