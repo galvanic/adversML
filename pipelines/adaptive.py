@@ -209,7 +209,7 @@ def run(X, Y, X_test, Y_test,
         window_o1.append(o_1)
         window_o2.append(o_2)
         error_gradient = get_error_gradient([window_o, window_o1, window_o2], y, λ, operator)
-        a_temp = a - η * error_gradient
+        a_temp = a + η * error_gradient
 
         a = a_temp[0] if sigmoid(a_temp) < 0.85 and sigmoid(a_temp) > 0.15 else a
         ## note: extract unique value [0] because of array shape
