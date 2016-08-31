@@ -36,3 +36,13 @@ def compute_regret(DF, window_size, classifier_names=CLASSIFIERS):
 
     return df_regret, df
 
+
+def transform_for_plot(df, T):
+    ''''''
+    df_regret, df_cumloss = compute_regret(df, T)
+
+    df = df.join(df_regret)
+    df = df.join(df_cumloss).sort_index(axis=1)
+    return df
+
+

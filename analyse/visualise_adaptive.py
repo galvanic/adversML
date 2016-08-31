@@ -193,8 +193,16 @@ def visualise_group(dfs, plot_specs, figsize=(27, 7), **custom_params):
     return
 
 
-def compare_group(df, plot_specs, experiment_ids_group, attacks_info, **custom_params):
+identity = lambda x: x
+
+def compare_group(df, experiment_ids_group, plot_specs, attacks_info,
+        transform=identity,
+        **custom_params):
     '''Plot the group horizontally, one graph per experiment in the group'''
+
+    if type(plot_specs) == str:
+        plot_specs = get_existing_plot_specs(plot_specs)
+        plot_specs = update_plot_specs(plot_specs)
 
     to_plot = []
     for experiment_id in experiment_ids_group:
@@ -204,7 +212,9 @@ def compare_group(df, plot_specs, experiment_ids_group, attacks_info, **custom_p
         experiment_num = experiment_id.split(' ')[1]
         title = 'experiment %s\n%s' % (experiment_num, get_title(xs))
 
-        to_plot.append((prepare(xs), title, attacks))
+        xs = prepare(xs)   ## unstack timestep
+        xs = transform(xs)
+        to_plot.append((xs, title, attacks))
 
     visualise_group(to_plot, plot_specs, **custom_params)
     return
@@ -297,6 +307,7 @@ PLOT_SPECS = {
 }
 
 ## TODO ^ add possibility to change gridspec proportions for each etc.
+## TODO ^ add outside options for whole graph, eg. transform function for df
 
 def get_existing_plot_specs(name):
     ''''''
@@ -326,14 +337,13 @@ def main(batch_id, dataset_dir, group_size):
     print('\ntotal timesteps: %d' % total_timesteps)
 
 
-    plot_specs = get_existing_plot_specs('test set')
-    plot_specs = update_plot_specs(plot_specs)
-
-
     for experiment_ids_group in chunks(experiment_ids, groups_of=group_size):
 
         custom_params = {}
-        compare_group(df, plot_specs, experiment_ids_group, attacks, **custom_params)
+        compare_group(df, experiment_ids_group,
+            plot_specs='test set',
+            attacks_info=attacks,
+            **custom_params)
 
         from code import interact; interact(local=dict(locals(), **globals()))
 
