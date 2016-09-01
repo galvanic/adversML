@@ -28,13 +28,13 @@ pd.set_option('display.precision', 4)
 ###
 
 
-def get_attacks_info(attack_key):
+def get_attacks_info(attack_key, N):
     '''Return list of dictionaries with information for visualising the attack'''
 
     if type(attack_key) == dict:
         info = attack_key['parameters']
-        if 'duration' not in info:
-            info.update({'duration': info['end'] - info['start']})
+        info['start'] = int(info['start'] * N)
+        info['duration'] = int(info['duration'] * N)
         return [info]
 
     elif type(attack_key) == list:
@@ -238,8 +238,8 @@ def get_batch_specs(batch_id, dataset_dir):
     return batch_specs
 
 
-def get_attacks_info_from_specs(batch_specs):
-    attacks = get_attacks_info(batch_specs['default_parameters']['attack'])
+def get_attacks_info_from_specs(batch_specs, N):
+    attacks = get_attacks_info(batch_specs['default_parameters']['attack'], N)
     return attacks
 
 
