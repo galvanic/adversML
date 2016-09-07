@@ -9,7 +9,7 @@ import pandas as pd
 from pprint import pformat
 
 from helpers.logging import tls, log
-from helpers.performance import get_error, get_FPR, get_FNR, get_ROC_AUC
+from helpers.performance import get_error, get_FPR, get_FNR, get_ROC_AUC, get_TP, get_TN, get_FP, get_FN
 
 
 ## helpers
