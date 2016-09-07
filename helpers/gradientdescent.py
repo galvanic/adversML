@@ -162,9 +162,9 @@ def gradient_descent(features, labels,
                 return W
 
             ## check for divergence TODO case when it oscillates
-            if all(abs(np.array(previous_errors)[-2:] - error) > divergence_threshold):
-                tls.logger.info('diverged')
-                return W
+#           if all(abs(np.array(previous_errors)[-2:] - error) > divergence_threshold):
+#               tls.logger.info('diverged')
+#               return W
 
             previous_errors.append(error)
 
