@@ -21,8 +21,8 @@ default_parameters:
 
   attack:
     type: null
-    parameters: {}
-      percentage_samples_poisoned: .2
+    parameters:
+      percentage_samples_poisoned: .20
       percentage_features_poisoned: .99
 
 

@@ -90,6 +90,10 @@ def run_experiment(spec):
         'FPR': get_FPR(Y_test, O_test, **spec['label_type']),
         'FNR': get_FNR(Y_test, O_test, **spec['label_type']),
         'AUC': get_ROC_AUC(Y_test, O_test, **spec['label_type']),
+        'TP': get_TP(Y_test, O_test, **spec['label_type']),
+        'TN': get_TN(Y_test, O_test, **spec['label_type']),
+        'FP': get_FP(Y_test, O_test, **spec['label_type']),
+        'FN': get_FN(Y_test, O_test, **spec['label_type']),
     }
     tls.logger.info('performance:\n%s' % pformat(performance))
     df_row = pd.DataFrame.from_records([performance])
