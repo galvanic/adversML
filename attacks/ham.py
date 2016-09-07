@@ -119,7 +119,7 @@ def apply(features, labels,
     start = int(N * start) if start else 0
     duration = int(N * duration) if duration else N
     end = start + duration if start + duration < N else N
-    attack_range = np.arange(start, end+1)
+    attack_range = np.arange(start, end)
 
     ## randomly replace some samples with the poisoned ones
     ## so that total number of samples doesn't change
