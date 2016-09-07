@@ -157,9 +157,9 @@ def gradient_descent(features, labels,
             tls.logger.debug('  error = %.2f' % error)
 
             ## check for convergence in last x weight update cycles
-            if all(abs(np.array(previous_errors) - error) < convergence_threshold):
-                tls.logger.info('converged')
-                return W
+#           if all(abs(np.array(previous_errors) - error) < convergence_threshold):
+#               tls.logger.info('converged')
+#               return W
 
             ## check for divergence TODO case when it oscillates
 #           if all(abs(np.array(previous_errors)[-2:] - error) > divergence_threshold):
