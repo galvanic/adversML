@@ -134,7 +134,7 @@ This repo includes code for:
 
 A few [ipython notebooks](https://ipython.org/notebook.html) showcase the results and brief initial observations/interpretations:
 
-  - analysis of offline experiment batch [1608030254](https://nbviewer.jupyter.org/urls/gist.github.com/galvanic/d76501e02a902ed623c8e0ceb4ac645b/raw/56571338efbcbca3f9ee7f6e67cb3c141767f4ca/1608030254.ipynb)
+  - analysis of offline experiment batch [1608030254](https://nbviewer.jupyter.org/urls/gist.github.com/galvanic/d76501e02a902ed623c8e0ceb4ac645b/raw/5e9408ee49d1ee786c55767c8d91809b352c85a7/1608030254.ipynb)
 
   - analysis of experiment batch [1608232142](https://nbviewer.jupyter.org/urls/gist.github.com/galvanic/2719ae005a16a4f71139fcaa3c4e0eb3/raw/8b4584878bbb6592813b156eb7e6daf9e85aae15/1608232142.ipynb) and corresponding [specifications](https://gist.githubusercontent.com/galvanic/2719ae005a16a4f71139fcaa3c4e0eb3/raw/8b4584878bbb6592813b156eb7e6daf9e85aae15/1608232142.yml)
 
