@@ -1,6 +1,5 @@
 __pycache__/
 notes.md
-*.txt
 *.dat
 *.pkl
 *.log
