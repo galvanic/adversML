@@ -27,7 +27,7 @@ def visualise(df, dimension_rows, dimension_color, xaxis_label=None, custom_para
     }
     params = {**params, **custom_params}
 
-    xticklabels = list(np.arange(0, 0.6, 0.1))
+    xticklabels = list(np.arange(0, 60, 10))
     xticklabels.pop(0)
     xticklabels.insert(0, '')
 
