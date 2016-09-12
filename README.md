@@ -136,9 +136,11 @@ A few [ipython notebooks](https://ipython.org/notebook.html) showcase the result
 
   - analysis of offline experiment batch [1608030254](https://nbviewer.jupyter.org/urls/gist.github.com/galvanic/d76501e02a902ed623c8e0ceb4ac645b/raw/5e9408ee49d1ee786c55767c8d91809b352c85a7/1608030254.ipynb)
 
-  - analysis of experiment batch [1608232142](https://nbviewer.jupyter.org/urls/gist.github.com/galvanic/2719ae005a16a4f71139fcaa3c4e0eb3/raw/8b4584878bbb6592813b156eb7e6daf9e85aae15/1608232142.ipynb) and corresponding [specifications](https://gist.githubusercontent.com/galvanic/2719ae005a16a4f71139fcaa3c4e0eb3/raw/8b4584878bbb6592813b156eb7e6daf9e85aae15/1608232142.yml)
-
   - analysis of experiment batches [1608310218](https://gist.github.com/galvanic/7f7a3233fbb52893a63008be9643c8ac#file-1608310218-adaptive-yaml) and [1608302248](https://gist.github.com/galvanic/7f7a3233fbb52893a63008be9643c8ac#file-1608302248-adaptive-yaml), where I looked at the effect of varying the adaptive rate: [online notebook](https://nbviewer.jupyter.org/urls/gist.github.com/galvanic/7f7a3233fbb52893a63008be9643c8ac/raw/5b056187f229f8cc3267e4ebeb9c191d15078090/1608310218.ipynb)
+
+  - [window operator](https://nbviewer.jupyter.org/urls/gist.github.com/galvanic/5d2f042b392709fc8f0ac74ed2bc34ab/raw/f3192512d00bffe14df1181a1a2b9cd70e84e610/1609010108.ipynb)
+
+  - [window size](https://nbviewer.jupyter.org/urls/gist.github.com/galvanic/c52ff93484058e23534be8d72f1d9949/raw/f810fc291244da799587b0aaef8d7b49531ce454/1609041349.ipynb)
 
   - analysis of varying [attacker knowledge](https://nbviewer.jupyter.org/urls/gist.github.com/galvanic/c76f9cf0bfdc35c430e56da7f66ec77f/raw/cfd56ab06faecfeb9a88a49e03c36a36300e1708/1609071531.ipynb)
 
