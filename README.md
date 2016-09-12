@@ -140,6 +140,8 @@ A few [ipython notebooks](https://ipython.org/notebook.html) showcase the result
 
   - analysis of experiment batches [1608310218](https://gist.github.com/galvanic/7f7a3233fbb52893a63008be9643c8ac#file-1608310218-adaptive-yaml) and [1608302248](https://gist.github.com/galvanic/7f7a3233fbb52893a63008be9643c8ac#file-1608302248-adaptive-yaml), where I looked at the effect of varying the adaptive rate: [online notebook](https://nbviewer.jupyter.org/urls/gist.github.com/galvanic/7f7a3233fbb52893a63008be9643c8ac/raw/5b056187f229f8cc3267e4ebeb9c191d15078090/1608310218.ipynb)
 
+  - analysis of varying [attacker knowledge](https://nbviewer.jupyter.org/urls/gist.github.com/galvanic/c76f9cf0bfdc35c430e56da7f66ec77f/raw/cfd56ab06faecfeb9a88a49e03c36a36300e1708/1609071531.ipynb)
+
 TODO
 ----
 
